@@ -1,0 +1,258 @@
+import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_bloc.dart';
+import 'package:dhap_flutter_project/features/donor/bloc/donor_bloc.dart';
+import 'package:dhap_flutter_project/features/volunteer/presentation/pages/myTasks_page.dart';
+import 'package:dhap_flutter_project/features/volunteer/presentation/pages/switchRole_page.dart';
+import 'package:dhap_flutter_project/features/volunteer/presentation/pages/tasks_page.dart';
+import 'package:flutter/material.dart';
+import 'package:dhap_flutter_project/features/coordinator/presentation/pages/createTask_page.dart';
+import 'package:dhap_flutter_project/features/coordinator/presentation/pages/viewHelpers_page.dart';
+import 'package:dhap_flutter_project/features/coordinator/presentation/pages/viewResources_page.dart';
+import 'package:dhap_flutter_project/features/coordinator/presentation/pages/viewTasks_page.dart';
+import 'package:dhap_flutter_project/features/coordinator/presentation/pages/verifyTasks_page.dart';
+import 'package:dhap_flutter_project/features/donor/presentation/pages/donateResources.dart';
+import 'package:dhap_flutter_project/features/donor/presentation/pages/myContributions_page.dart';
+import 'package:dhap_flutter_project/features/coordinator/presentation/pages/requestResponse_page.dart';
+import 'package:dhap_flutter_project/features/coordinator/presentation/pages/resourceRequest_page.dart';
+import 'package:dhap_flutter_project/features/donor/presentation/pages/viewResourcerequests_page.dart';
+
+import 'package:dhap_flutter_project/features/coordinator/presentation/pages/coApplication_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class RoleBasedDrawerItems extends StatelessWidget {
+  final String role;
+
+  const RoleBasedDrawerItems({super.key, required this.role});
+  static const Color drawerTextColor = Color(0xFF0A2744);
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> items = [
+      ListTile(
+        leading: const Icon(Icons.home, color: drawerTextColor),
+        title: const Text('Home', style: TextStyle(color: drawerTextColor)),
+        onTap: () {
+          Navigator.pop(context);
+        },
+      ),
+    ];
+
+    if (role == 'Coordinator') {
+      items.addAll([
+        ListTile(
+          leading: const Icon(Icons.add_task, color: drawerTextColor),
+          title: const Text('Create Tasks'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => BlocProvider(
+                  create: (_) => CoordinatorBloc(),
+                  child: const CreateTasksPage(),
+                ),
+              ),
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.task, color: drawerTextColor),
+          title: const Text('View Tasks'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => BlocProvider(
+                  create: (_) => CoordinatorBloc(),
+                  child: const ViewTasksPage(),
+                ),
+              ),
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.people, color: drawerTextColor),
+          title: const Text('View Helpers'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => BlocProvider(
+                  create: (context) => CoordinatorBloc(),
+                  child: ViewHelpersPage(),
+                ),
+              ),
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.verified, color: drawerTextColor),
+          title: const Text('Verify Tasks'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => BlocProvider(
+                  create: (context) => CoordinatorBloc(),
+                  child: VerifyTasksPage(),
+                ),
+              ),
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.request_page, color: drawerTextColor),
+          title: const Text('Resource Request'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => BlocProvider(
+                  create: (context) => CoordinatorBloc(),
+                  child: ResourceRequestPage(),
+                ),
+              ),
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.food_bank_rounded, color: drawerTextColor),
+          title: const Text('View Resources'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => BlocProvider(
+                  create: (context) => CoordinatorBloc(),
+                  child: ViewResourcesPage(),
+                ),
+              ),
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(
+            Icons.question_answer_rounded,
+            color: drawerTextColor,
+          ),
+          title: const Text('Resource Responses'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => BlocProvider(
+                  create: (context) => CoordinatorBloc(),
+                  child: ResourceResponsesPage(),
+                ),
+              ),
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.assignment_ind, color: drawerTextColor),
+          title: const Text('Coordinator Applications'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => CoordinatorApplicationsPage(),
+              ),
+            );
+          },
+        ),
+      ]);
+    } else if (role == 'Volunteer') {
+      items.addAll([
+        ListTile(
+          leading: const Icon(Icons.task_alt, color: drawerTextColor),
+          title: const Text('Available Tasks'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (context) => tasksPage()));
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.assignment, color: drawerTextColor),
+          title: const Text('My Tasks'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (context) => MyTasksPage()));
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.swap_horiz, color: drawerTextColor),
+          title: const Text('Switch Role'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (context) => SwitchRolePage()));
+          },
+        ),
+      ]);
+    } else if (role == 'Donor') {
+      items.addAll([
+        ListTile(
+          leading: const Icon(Icons.request_page, color: drawerTextColor),
+          title: const Text('View Resource Requests'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => ViewResourceRequestsPage(),
+              ),
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.volunteer_activism, color: drawerTextColor),
+          title: const Text('Donate Resources'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => BlocProvider(
+                  create: (context) => DonorBloc(),
+                  child: DonateResourcesPage(),
+                ),
+              ),
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.history, color: drawerTextColor),
+          title: const Text('My Contributions'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => MyContributionsPage()),
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.swap_horiz, color: drawerTextColor),
+          title: const Text('Switch Role'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (context) => SwitchRolePage()));
+          },
+        ),
+      ]);
+    }
+
+    items.add(
+      ListTile(
+        leading: const Icon(Icons.settings, color: drawerTextColor),
+        title: const Text('Settings'),
+        onTap: () {
+          Navigator.pop(context);
+        },
+      ),
+    );
+
+    return Column(children: items);
+  }
+}
