@@ -92,7 +92,7 @@ class DashboardPage extends StatelessWidget {
                 child: ListView(
                   padding: EdgeInsets.zero,
                   children: [
-                    RoleBasedDrawerItems(role: role),
+                    RoleBasedDrawerItems(role: role, userDetails: userDetails,),
                   ],
                 ),
               ),

@@ -18,7 +18,8 @@ class MyApp extends StatelessWidget {
     'city': 'b',
     'country': 'c',
     'pincode': '456456',
-    'role': 'Coordinator',
+    'role': 'Volunteer',
+    'taskIds': [1, 2, 3, 4],
   };
 
   @override

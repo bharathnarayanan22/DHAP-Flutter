@@ -230,7 +230,7 @@ class volunteerDashboard extends StatelessWidget {
             title: 'My Tasks',
             imageAsset: 'images/Task.png',
             description: 'View the tasks you are currently assigned to and track progress.',
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) =>  MyTasksPage())),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) =>  MyTasksPage(userDetails: userDetails,))),
           ),
           const SizedBox(height: 12),
         ],
