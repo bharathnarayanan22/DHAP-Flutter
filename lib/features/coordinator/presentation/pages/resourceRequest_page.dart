@@ -132,7 +132,7 @@ class _ResourceRequestPageState extends State<ResourceRequestPage> {
                 title: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.assignment_turned_in, color: Colors.white,
+                    Icon(Icons.request_page, color: Colors.white,
                         size: 24),
                     SizedBox(width: 8),
                     Text(

@@ -64,7 +64,7 @@ class _ViewHelpersPageState extends State<ViewHelpersPage> {
         title: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.assignment_turned_in, color: Colors.white, size: 24),
+            Icon(Icons.people, color: Colors.white, size: 24),
             SizedBox(width: 8),
             Text(
               "Helpers",

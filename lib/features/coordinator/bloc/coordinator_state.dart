@@ -1,4 +1,6 @@
+import 'package:dhap_flutter_project/data/model/request_model.dart';
 import 'package:dhap_flutter_project/data/model/resource_model.dart';
+import 'package:dhap_flutter_project/data/model/response_model.dart';
 import 'package:dhap_flutter_project/data/model/task_model.dart';
 import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:equatable/equatable.dart';
@@ -65,4 +67,28 @@ class ResourceSuccess extends CoordinatorState {
 class ResourceFailure extends CoordinatorState {
   final String error;
   const ResourceFailure({required this.error});
+}
+
+class FetchRequestSuccess extends CoordinatorState {
+  final String msg;
+  final List<Request> requests;
+  const FetchRequestSuccess({required this.msg, required this.requests});
+}
+
+class FetchRequestFailure extends CoordinatorState {
+  final String error;
+  const FetchRequestFailure({required this.error});
+}
+
+class FetchResponseSuccess extends CoordinatorState {
+  final String msg;
+  final List<ResponseModel> responses;
+  const FetchResponseSuccess({required this.msg, required this.responses});
+}
+
+class FetchRequestResponseSuccess extends CoordinatorState {
+  final String message;
+  final List<Request> requests;
+  final List<ResponseModel> responses;
+  const FetchRequestResponseSuccess({required this.message, required this.requests, required this.responses});
 }

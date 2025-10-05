@@ -46,6 +46,7 @@ class PieChartPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
 
+
 class TaskStatusPieChart extends StatelessWidget {
   final List<Map<String, dynamic>> data;
 
@@ -56,78 +57,121 @@ class TaskStatusPieChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final chartTotal = total;
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: Colors.grey,
             spreadRadius: 2,
-            blurRadius: 5,
+            blurRadius: 10,
             offset: const Offset(0, 3),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(16.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Task Distribution', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: primaryColor)),
-          const SizedBox(height: 10),
-          SizedBox(
-            height: 250,
+          Container(
+            padding: const EdgeInsets.all(16.0),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
+            ),
             child: Row(
               children: [
-                // Chart Area
-                Expanded(
-                  child: Center(
-                    child: CustomPaint(
-                      size: const Size(150, 150),
-                      painter: PieChartPainter(data: data, total: total),
-                      child: Center(
-                        child: Text(
-                          '${total.toInt()}',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor),
+                Icon(Icons.pie_chart, color: primaryColor, size: 24),
+                const SizedBox(width: 8),
+                Text(
+                    'Task Distribution',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: primaryColor
+                    )
+                ),
+              ],
+            ),
+          ),
+
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
+            decoration: const BoxDecoration(
+              color: primaryColor,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(12),
+                bottomRight: Radius.circular(12),
+              ),
+            ),
+            child: SizedBox(
+              height: 200,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: CustomPaint(
+                        size: const Size(100, 100),
+                        painter: PieChartPainter(data: data, total: chartTotal),
+                        child: Center(
+                          child: Text(
+                            '${chartTotal.toInt()}',
+                            style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                // Legend
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.only(left: 10),
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: data.map((item) {
-                      final percentage = (item['value'] / total * 100).toStringAsFixed(0);
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4.0),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 10,
-                              height: 10,
-                              decoration: BoxDecoration(
-                                color: item['color'] as Color,
-                                shape: BoxShape.circle,
+
+                  const SizedBox(width: 10,),
+
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.only(left: 10),
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: data.map((item) {
+                        final percentage = (item['value'] / chartTotal * 100).toStringAsFixed(0);
+                        return Padding(
+                          padding: const EdgeInsets.all(1.0),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 10,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: item['color'] as Color,
+                                  shape: BoxShape.circle,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                '${item['label']} (${percentage}%)',
-                                style: const TextStyle(fontSize: 14),
-                                overflow: TextOverflow.ellipsis,
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  '${item['label']} (${percentage}%)',
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.white
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

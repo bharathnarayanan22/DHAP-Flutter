@@ -102,14 +102,13 @@ class _SubmitProofSheetState extends State<SubmitProofSheet> {
             const Text(
               "Submit Proof",
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: primaryColor,
               ),
             ),
             const SizedBox(height: 12),
 
-            // Message field
             TextField(
               controller: messageController,
               maxLines: 3,
@@ -120,11 +119,26 @@ class _SubmitProofSheetState extends State<SubmitProofSheet> {
             ),
             const SizedBox(height: 12),
 
-            ElevatedButton.icon(
+            ElevatedButton(
               onPressed: () => _pickFiles(context),
-              icon: const Icon(Icons.add_a_photo, color: primaryColor),
-              label: const Text("Add Images/Videos", style: TextStyle(color: primaryColor)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF001F3F),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                elevation: 4, // Adds shadow
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              ),
+              child: const Text(
+                "Add Images/Videos",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
+
 
             if (selectedFiles.isNotEmpty) ...[
               const SizedBox(height: 12),

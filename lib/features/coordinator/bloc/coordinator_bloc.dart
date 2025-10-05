@@ -1,4 +1,5 @@
 import 'package:dhap_flutter_project/data/model/request_model.dart';
+import 'package:dhap_flutter_project/data/repository/response_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repository/task_repository.dart';
 import '../../../data/repository/user_repository.dart';
@@ -15,6 +16,8 @@ final TaskRepository _taskRepository = TaskRepository();
 final UserRepository _userRepository = UserRepository();
 final RequestRepository _requestRepository = RequestRepository();
 final ResourceRepository _resourceRepository = ResourceRepository();
+final ResponseRepository _responseRepository = ResponseRepository();
+
 
 class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
   CoordinatorBloc() : super(CoordinatorInitial()) {
@@ -143,33 +146,97 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
       }
     });
 
-    // on<AddResourceEvent>((event, emit) async {
+    on<AddResourceEvent>((event, emit) async {
+      emit(CoordinatorLoading());
+      try {
+        final resource = Resource(
+          resource: event.resource,
+          quantity: event.quantity,
+          address: event.address,
+          location: event.location,
+          DonorName: 'Tester',
+        );
+        if (resource.resource.isEmpty ||
+            resource.quantity == 0 ||
+            resource.address.isEmpty ||
+            resource.location == null) {
+          emit(CoordinatorFailure(error: 'All fields are required'));
+          return;
+        } else {
+          _resourceRepository.addResource(resource);
+          emit(
+            ResourceSuccess(
+              message: 'Resource created successfully',
+              resources: _resourceRepository.getAllResources(),
+            ),
+          );
+        }
+      } catch (e) {
+        emit(CoordinatorFailure(error: e.toString()));
+      }
+    });
+
+    // on<FetchRequestsEvent>((event, emit) async {
     //   emit(CoordinatorLoading());
     //   try {
-    //     final resource = Resource(
-    //       resource: event.resource,
-    //       quantity: event.quantity,
-    //       address: event.address,
-    //       location: event.location,
-    //     );
-    //     if (resource.resource.isEmpty ||
-    //         resource.quantity == 0 ||
-    //         resource.address.isEmpty ||
-    //         resource.location == null) {
-    //       emit(CoordinatorFailure(error: 'All fields are required'));
-    //       return;
+    //     final allRequests = _requestRepository.getAllRequests();
+    //
+    //     if (allRequests.isEmpty) {
+    //       emit(const FetchRequestFailure(error: "No Requests found"));
     //     } else {
-    //       _resourceRepository.addResource(resource);
-    //       print('Request created successfully');
     //       emit(
-    //         RequestSuccess(
-    //           message: 'Request created successfully',
+    //         FetchRequestSuccess(
+    //           msg: "Fetched requests successfully",
+    //           requests: allRequests,
     //         ),
     //       );
     //     }
     //   } catch (e) {
-    //     emit(CoordinatorFailure(error: e.toString()));
+    //     emit(FetchRequestFailure(error: e.toString()));
     //   }
     // });
+    //
+    // on<FetchResponsesEvent>((event, emit) async {
+    //   emit(CoordinatorLoading());
+    //   try {
+    //     final allResponses = _responseRepository.getAllResponses();
+    //
+    //     if (allResponses.isEmpty) {
+    //       emit(const FetchRequestFailure(error: "No Responses found"));
+    //     } else {
+    //       emit(
+    //         FetchResponseSuccess(
+    //           msg: "Fetched responses successfully",
+    //           responses: allResponses,
+    //         ),
+    //       );
+    //     }
+    //   } catch (e) {
+    //     emit(FetchRequestFailure(error: e.toString()));
+    //   }
+    // });
+
+    on<FetchRequestsAndResponsesEvent>((event, emit) async {
+      emit(CoordinatorLoading());
+      try {
+        final allRequests = _requestRepository.getAllRequests();
+        final allResponses = _responseRepository.getAllResponses();
+
+        if (allRequests.isEmpty) {
+          emit(const FetchRequestFailure(error: "No Requests found"));
+        } else {
+          emit(
+            FetchRequestResponseSuccess(
+              message: "Fetched requests and responses successfully",
+              requests: allRequests,
+              responses: allResponses
+            ),
+          );
+        }
+      } catch (e) {
+        emit(FetchRequestFailure(error: e.toString()));
+      }
+    });
+
   }
 }

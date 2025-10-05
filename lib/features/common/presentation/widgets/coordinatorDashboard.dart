@@ -259,7 +259,7 @@ class coordinatorDashboard extends StatelessWidget {
     ];
 
     final resourceRequestData = [
-      {'label': 'Food', 'value': 1500.0, 'color': primaryColor},
+      {'label': 'Food', 'value': 1500.0, 'color': warningColor},
       {'label': 'Water', 'value': 800.0, 'color': accentColor},
       {'label': 'Medical', 'value': 400.0, 'color': secondaryAccentColor},
       {'label': 'Shelter Kits', 'value': 250.0, 'color': successColor},
@@ -349,13 +349,24 @@ class coordinatorDashboard extends StatelessWidget {
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4.0),
-            child: Text(
-              'Operational Overview',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: primaryColor,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.dashboard,
+                  color: primaryColor,
+                  size: 24,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Operational Overview',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: primaryColor,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 15),

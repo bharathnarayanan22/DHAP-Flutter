@@ -127,7 +127,7 @@ class _DonateResourcePageState extends State<DonateResourcesPage> {
                 title: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.assignment_turned_in, color: Colors.white,
+                    Icon(Icons.volunteer_activism, color: Colors.white,
                         size: 24),
                     SizedBox(width: 8),
                     Text(

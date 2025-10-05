@@ -145,7 +145,7 @@ class _CreateTasksPageState extends State<CreateTasksPage> {
                 title: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.assignment_turned_in, color: Colors.white, size: 24),
+                    Icon(Icons.add_task, color: Colors.white, size: 24),
                     SizedBox(width: 8),
                     Text(
                       "Create New Task",

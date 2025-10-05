@@ -17,3 +17,26 @@ class AddResourceEvent extends DonorEvent {
     required this.DonorName,
   });
 }
+
+class FetchRequestsEvent extends DonorEvent {}
+
+class RespondEvent extends DonorEvent {
+  final int requestId;
+  final String message;
+  final int quantityProvided;
+  final LatLng location;
+  final String user;
+
+
+  RespondEvent({
+    required this.requestId,
+    required this.message,
+    required this.quantityProvided,
+    required this.location,
+    required this.user,
+  });
+
+  @override
+  List<Object> get props => [requestId, message, quantityProvided, location, user];
+}
+

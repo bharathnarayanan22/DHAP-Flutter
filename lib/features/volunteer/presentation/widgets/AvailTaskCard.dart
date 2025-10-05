@@ -17,19 +17,23 @@ class AvailTaskCard extends StatelessWidget {
   Future<void> _openMap(BuildContext context, LatLng start, LatLng end) async {
     final url = Uri.parse(
       "https://www.google.com/maps/dir/?api=1"
-          "&origin=${start.latitude},${start.longitude}"
-          "&destination=${end.latitude},${end.longitude}"
-          "&travelmode=driving",
+      "&origin=${start.latitude},${start.longitude}"
+      "&destination=${end.latitude},${end.longitude}"
+      "&travelmode=driving",
     );
 
-    try{
+    try {
       await launchUrl(url, mode: LaunchMode.externalApplication);
-    } catch(e) {
+    } catch (e) {
       debugPrint('Could not launch $url: $e');
     }
   }
 
-  Widget _buildDetailRow({required String label, required String value, IconData? icon}) {
+  Widget _buildDetailRow({
+    required String label,
+    required String value,
+    IconData? icon,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6.0),
       child: Row(
@@ -37,18 +41,29 @@ class AvailTaskCard extends StatelessWidget {
         children: [
           if (icon != null) Icon(icon, size: 16, color: primaryColor),
           if (icon != null) const SizedBox(width: 8),
-          Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(
-                  text: '$label: ',
-                  style: const TextStyle(fontWeight: FontWeight.w800, color: primaryColor),
-                ),
-                TextSpan(
-                  text: value,
-                  style: const TextStyle(color: primaryColor, fontSize: 14, fontWeight: FontWeight.w500),
-                ),
-              ],
+          Flexible(
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: '$label: ',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      color: primaryColor,
+                    ),
+                  ),
+                  TextSpan(
+                    text: value,
+                    style: const TextStyle(
+                      color: primaryColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              softWrap: true,
+              overflow: TextOverflow.visible,
             ),
           ),
         ],
@@ -70,7 +85,7 @@ class AvailTaskCard extends StatelessWidget {
             blurRadius: 10,
             spreadRadius: 2,
             offset: const Offset(0, 5),
-          )
+          ),
         ],
       ),
       child: Card(
@@ -92,9 +107,10 @@ class AvailTaskCard extends StatelessWidget {
                     child: Text(
                       task.title,
                       style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -103,14 +119,22 @@ class AvailTaskCard extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: accentColor,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
                     ),
                     onPressed: () {
                       debugPrint("Accept Clicked for ${task.title}");
                     },
                     icon: const Icon(Icons.check_circle_outline, size: 20),
-                    label: const Text("Accept", style: TextStyle(fontWeight: FontWeight.bold)),
+                    label: const Text(
+                      "Accept",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
               ),
@@ -120,8 +144,9 @@ class AvailTaskCard extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               decoration: const BoxDecoration(
                 color: Colors.white,
-                borderRadius:
-                BorderRadius.vertical(bottom: Radius.circular(12)),
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(12),
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,17 +158,38 @@ class AvailTaskCard extends StatelessWidget {
                       style: const TextStyle(color: primaryColor),
                     ),
                   ),
-                  const Divider(color: primaryColor, height: 10, thickness: 0.5),
+                  const Divider(color: Colors.grey, height: 10, thickness: 1),
                   const SizedBox(height: 12),
 
-                  _buildDetailRow(label: "Volunteers Needed", value: task.volunteer.toString(), icon: Icons.group),
-                  _buildDetailRow(label: "Accepted", value: task.volunteersAccepted.toString(), icon: Icons.done_all),
-                  _buildDetailRow(label: "Still Needed", value: stillNeeded.toString(), icon: Icons.waving_hand),
+                  _buildDetailRow(
+                    label: "Volunteers Needed",
+                    value: task.volunteer.toString(),
+                    icon: Icons.group,
+                  ),
+                  _buildDetailRow(
+                    label: "Accepted",
+                    value: task.volunteersAccepted.toString(),
+                    icon: Icons.done_all,
+                  ),
+                  _buildDetailRow(
+                    label: "Still Needed",
+                    value: stillNeeded.toString(),
+                    icon: Icons.waving_hand,
+                  ),
+                  const Divider(color: Colors.grey, height: 10, thickness: 1),
 
                   const SizedBox(height: 12),
 
-                  _buildDetailRow(label: "From", value: task.StartAddress, icon: Icons.arrow_upward),
-                  _buildDetailRow(label: "To", value: task.EndAddress, icon: Icons.arrow_downward),
+                  _buildDetailRow(
+                    label: "From",
+                    value: task.StartAddress,
+                    icon: Icons.arrow_upward,
+                  ),
+                  _buildDetailRow(
+                    label: "To",
+                    value: task.EndAddress,
+                    icon: Icons.arrow_downward,
+                  ),
 
                   const SizedBox(height: 16),
 
@@ -151,16 +197,30 @@ class AvailTaskCard extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: TextButton.icon(
                       style: TextButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            side: const BorderSide(color: Colors.white38),
-                          )
+                        foregroundColor: Colors.white,
+                        backgroundColor: primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          side: const BorderSide(color: Colors.white38),
+                        ),
                       ),
-                      onPressed: () => _openMap(context, task.StartLocation, task.EndLocation),
-                      icon: const Icon(Icons.map, size: 20, color: Colors.white),
-                      label: const Text("View Route", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+                      onPressed: () => _openMap(
+                        context,
+                        task.StartLocation,
+                        task.EndLocation,
+                      ),
+                      icon: const Icon(
+                        Icons.map,
+                        size: 20,
+                        color: Colors.white,
+                      ),
+                      label: const Text(
+                        "View Route",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
                   ),
                 ],

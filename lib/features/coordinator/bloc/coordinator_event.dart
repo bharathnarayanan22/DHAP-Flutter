@@ -63,3 +63,9 @@ class AddResourceEvent extends CoordinatorEvent {
 class FetchUsersEvent extends CoordinatorEvent {}
 
 class FetchResourcesEvent extends CoordinatorEvent {}
+
+// class FetchRequestsEvent extends CoordinatorEvent {}
+//
+// class FetchResponsesEvent extends CoordinatorEvent {}
+
+class FetchRequestsAndResponsesEvent extends CoordinatorEvent {}

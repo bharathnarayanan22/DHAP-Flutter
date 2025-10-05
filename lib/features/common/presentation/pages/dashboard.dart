@@ -1,3 +1,4 @@
+import 'package:dhap_flutter_project/features/common/bloc/commonBloc.dart';
 import 'package:dhap_flutter_project/features/common/presentation/pages/profile_page.dart';
 import 'package:dhap_flutter_project/features/common/presentation/widgets/drawerList.dart';
 import 'package:dhap_flutter_project/features/common/presentation/widgets/coordinatorDashboard.dart';
@@ -5,6 +6,7 @@ import 'package:dhap_flutter_project/features/common/presentation/widgets/donorD
 import 'package:dhap_flutter_project/features/common/presentation/widgets/switchButton.dart';
 import 'package:dhap_flutter_project/features/common/presentation/widgets/volunteerDashboard.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DashboardPage extends StatelessWidget {
   final Map<String, dynamic> userDetails;
@@ -22,10 +24,7 @@ class DashboardPage extends StatelessWidget {
           foregroundColor: Colors.white,
           backgroundColor: Color(0xFF0A2744),
           actions: [
-            IconButton(
-              icon: Icon(Icons.notifications),
-              onPressed: () {},
-            ),
+            IconButton(icon: Icon(Icons.notifications), onPressed: () {}),
           ],
         ),
         drawer: Drawer(
@@ -35,7 +34,12 @@ class DashboardPage extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).pop();
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => profilePage()),
+                    MaterialPageRoute(
+                      builder: (context) => BlocProvider(
+                        create: (context) => commonBloc(),
+                        child: ProfilePage(user: userDetails),
+                      ),
+                    ),
                   );
                 },
                 child: Container(
@@ -92,7 +96,7 @@ class DashboardPage extends StatelessWidget {
                 child: ListView(
                   padding: EdgeInsets.zero,
                   children: [
-                    RoleBasedDrawerItems(role: role, userDetails: userDetails,),
+                    RoleBasedDrawerItems(role: role, userDetails: userDetails),
                   ],
                 ),
               ),
@@ -110,7 +114,9 @@ class DashboardPage extends StatelessWidget {
             ],
           ),
         ),
-        floatingActionButton: (role == 'Volunteer' || role == 'Donor') ? SwitchButton(role: userDetails['role']) : null,
+        floatingActionButton: (role == 'Volunteer' || role == 'Donor')
+            ? SwitchButton(role: userDetails['role'])
+            : null,
         body: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1000),

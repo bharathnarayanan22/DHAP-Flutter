@@ -1,8 +1,8 @@
+import 'package:dhap_flutter_project/features/common/presentation/pages/Co-Application.dart';
 import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_bloc.dart';
 import 'package:dhap_flutter_project/features/donor/bloc/donor_bloc.dart';
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_bloc.dart';
 import 'package:dhap_flutter_project/features/volunteer/presentation/pages/myTasks_page.dart';
-import 'package:dhap_flutter_project/features/volunteer/presentation/pages/switchRole_page.dart';
 import 'package:dhap_flutter_project/features/volunteer/presentation/pages/tasks_page.dart';
 import 'package:flutter/material.dart';
 import 'package:dhap_flutter_project/features/coordinator/presentation/pages/createTask_page.dart';
@@ -23,7 +23,11 @@ class RoleBasedDrawerItems extends StatelessWidget {
   final String role;
   final Map<String, dynamic> userDetails;
 
-  const RoleBasedDrawerItems({super.key, required this.role, required this.userDetails});
+  const RoleBasedDrawerItems({
+    super.key,
+    required this.role,
+    required this.userDetails,
+  });
   static const Color drawerTextColor = Color(0xFF0A2744);
   @override
   Widget build(BuildContext context) {
@@ -160,7 +164,8 @@ class RoleBasedDrawerItems extends StatelessWidget {
           },
         ),
       ]);
-    } else if (role == 'Volunteer') {
+    }
+    else if (role == 'Volunteer') {
       items.addAll([
         ListTile(
           leading: const Icon(Icons.task_alt, color: drawerTextColor),
@@ -186,7 +191,7 @@ class RoleBasedDrawerItems extends StatelessWidget {
               MaterialPageRoute(
                 builder: (context) => BlocProvider(
                   create: (context) => volunteerBloc(),
-                  child: MyTasksPage(userDetails: userDetails,),
+                  child: MyTasksPage(userDetails: userDetails),
                 ),
               ),
             );
@@ -194,16 +199,17 @@ class RoleBasedDrawerItems extends StatelessWidget {
         ),
         ListTile(
           leading: const Icon(Icons.swap_horiz, color: drawerTextColor),
-          title: const Text('Switch Role'),
+          title: const Text('Become A Co'),
           onTap: () {
             Navigator.pop(context);
             Navigator.of(
               context,
-            ).push(MaterialPageRoute(builder: (context) => SwitchRolePage()));
+            ).push(MaterialPageRoute(builder: (context) => CoApplication()));
           },
         ),
       ]);
-    } else if (role == 'Donor') {
+    }
+    else if (role == 'Donor') {
       items.addAll([
         ListTile(
           leading: const Icon(Icons.request_page, color: drawerTextColor),
@@ -212,7 +218,10 @@ class RoleBasedDrawerItems extends StatelessWidget {
             Navigator.pop(context);
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => ViewResourceRequestsPage(),
+                builder: (context) => BlocProvider(
+                  create: (context) => DonorBloc(),
+                  child: ViewResourceRequestsPage(),
+                ),
               ),
             );
           },
@@ -244,12 +253,12 @@ class RoleBasedDrawerItems extends StatelessWidget {
         ),
         ListTile(
           leading: const Icon(Icons.swap_horiz, color: drawerTextColor),
-          title: const Text('Switch Role'),
+          title: const Text('Become A Co'),
           onTap: () {
             Navigator.pop(context);
             Navigator.of(
               context,
-            ).push(MaterialPageRoute(builder: (context) => SwitchRolePage()));
+            ).push(MaterialPageRoute(builder: (context) => CoApplication()));
           },
         ),
       ]);

@@ -36,7 +36,7 @@ class _TasksPageState extends State<tasksPage> {
         title: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.assignment_turned_in, color: Colors.white, size: 24),
+            Icon(Icons.task_alt, color: Colors.white, size: 24),
             SizedBox(width: 8),
             Text(
               "Available Tasks",

@@ -77,7 +77,7 @@ class _VerifyTasksPageState extends State<VerifyTasksPage> {
         title: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.assignment_turned_in, color: Colors.white, size: 24),
+            Icon(Icons.verified, color: Colors.white, size: 24),
             SizedBox(width: 8),
             Text("Verify Tasks", style: TextStyle(fontWeight: FontWeight.bold)),
           ],

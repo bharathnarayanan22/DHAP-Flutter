@@ -8,6 +8,8 @@ class Request {
   final String description;
   final String address;
   final LatLng location;
+  String status;
+  final List<int> responseIds;
 
   Request({
     required this.resource,
@@ -15,5 +17,8 @@ class Request {
     required this.description,
     required this.address,
     required this.location,
-  }) : id = ++_counter;
+    this.status = 'Pending',
+    List<int>? responseIds,
+  }) : id = ++_counter,
+        responseIds = responseIds ?? [];
 }

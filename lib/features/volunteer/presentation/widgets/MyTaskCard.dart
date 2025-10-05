@@ -250,7 +250,7 @@ class _MyTaskCardState extends State<MyTaskCard> {
                     ),
                   ),
                   const Divider(
-                    color: primaryColor,
+                    color: Colors.black12,
                     height: 10,
                     thickness: 2,
                   ),

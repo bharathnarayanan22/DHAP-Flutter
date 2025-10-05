@@ -57,7 +57,7 @@ class _ViewResourcesPageState extends State<ViewResourcesPage> {
         title: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.assignment_turned_in, color: Colors.white, size: 24),
+            Icon(Icons.food_bank_rounded, color: Colors.white, size: 24),
             SizedBox(width: 8),
             Text(
               "View Resources",

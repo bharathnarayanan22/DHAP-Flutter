@@ -553,7 +553,7 @@ class _MyTasksPageState extends State<MyTasksPage> {
         title: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.assignment_turned_in, color: Colors.white, size: 24),
+            Icon(Icons.assignment, color: Colors.white, size: 24),
             SizedBox(width: 8),
             Text("My Tasks", style: TextStyle(fontWeight: FontWeight.bold)),
           ],

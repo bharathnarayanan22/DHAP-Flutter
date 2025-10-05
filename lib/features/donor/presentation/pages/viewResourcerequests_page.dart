@@ -1,17 +1,88 @@
+import 'package:dhap_flutter_project/features/donor/bloc/donor_bloc.dart';
+import 'package:dhap_flutter_project/features/donor/bloc/donor_event.dart';
+import 'package:dhap_flutter_project/features/donor/bloc/donor_state.dart';
+import 'package:dhap_flutter_project/features/donor/presentation/widgets/RequestsCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ViewResourceRequestsPage extends StatelessWidget {
+const Color primaryColor = Color(0xFF0A2744);
+
+class ViewResourceRequestsPage extends StatefulWidget {
+  const ViewResourceRequestsPage({super.key});
+
+  @override
+  State<ViewResourceRequestsPage> createState() =>
+      _ViewResourceRequestsPageState();
+}
+
+class _ViewResourceRequestsPageState extends State<ViewResourceRequestsPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<DonorBloc>().add(FetchRequestsEvent());
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ViewResourceRequestsPage'),
+        title: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.request_page, color: Colors.white, size: 24),
+            SizedBox(width: 8),
+            Text(
+              "Resource Requests",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        backgroundColor: Color(0xFF0A2744),
+        foregroundColor: Colors.white,
       ),
-      body: Center(
-        child: Text('This is the ViewResourceRequestsPage.'),
+      body: BlocConsumer<DonorBloc, DonorState>(
+        listener: (context, state) {
+          if (state is FetchRequestSuccess && state.msg != null) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.msg!)));
+          } else if (state is DonorFailure) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Error: ${state.error}')));
+          }
+        },
+        builder: (context, state) {
+          if (state is DonorLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is FetchRequestSuccess) {
+            final requests = state.requests;
+            return Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1000),
+                child: Center(
+                  child: ListView.builder(
+                    itemCount: requests.length,
+                    itemBuilder: (context, idx) {
+                      final request = requests[idx];
+                      return RequestsCard(request: request);
+                    },
+                  ),
+                ),
+              ),
+            );
+          }
+          return const Center(child: Text("Something went wrong"));
+        },
       ),
     );
-
   }
 }
