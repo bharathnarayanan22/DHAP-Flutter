@@ -1,3 +1,4 @@
+import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_bloc.dart';
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_event.dart';
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_state.dart';
@@ -14,7 +15,8 @@ const Color primaryColor = Color(0xFF0A2744);
 const Color accentColor = Color(0xFF42A5F5);
 
 class MyTasksPage extends StatefulWidget {
-  final Map<String, dynamic> userDetails;
+  //final Map<String, dynamic> userDetails;
+  final User userDetails;
   const MyTasksPage({super.key, required this.userDetails});
 
   @override
@@ -541,7 +543,7 @@ class _MyTasksPageState extends State<MyTasksPage> {
   void initState() {
     super.initState();
     context.read<volunteerBloc>().add(
-      FetchMyTasksEvent(taskIds: widget.userDetails['taskIds']),
+      FetchMyTasksEvent(taskIds: widget.userDetails.taskIds),
     );
   }
 

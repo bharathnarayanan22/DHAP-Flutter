@@ -1,3 +1,4 @@
+import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:dhap_flutter_project/features/common/presentation/pages/Co-Application.dart';
 import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_bloc.dart';
 import 'package:dhap_flutter_project/features/donor/bloc/donor_bloc.dart';
@@ -21,7 +22,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RoleBasedDrawerItems extends StatelessWidget {
   final String role;
-  final Map<String, dynamic> userDetails;
+  //final Map<String, dynamic> userDetails;
+  final User userDetails;
+
 
   const RoleBasedDrawerItems({
     super.key,

@@ -124,6 +124,7 @@
 //   }
 // }
 
+import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:dhap_flutter_project/features/common/presentation/widgets/builtMetricCard.dart';
 import 'package:dhap_flutter_project/features/common/presentation/widgets/dashboardCards.dart';
 import 'package:dhap_flutter_project/features/volunteer/presentation/pages/myTasks_page.dart';
@@ -135,14 +136,15 @@ const Color accentColor = Color(0xFF42A5F5);
 const Color successColor = Color(0xFF66BB6A);
 
 class volunteerDashboard extends StatelessWidget {
-  final Map<String, dynamic> userDetails;
+  //final Map<String, dynamic> userDetails;
+  final User userDetails;
 
   const volunteerDashboard({super.key, required this.userDetails});
 
   @override
   Widget build(BuildContext context) {
-    int availableTasks = userDetails['availableTasks'] ?? 10;
-    int tasksDone = userDetails['tasksDone'] ?? 3;
+    int availableTasks =  10;
+    int tasksDone = 3;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
@@ -155,7 +157,7 @@ class volunteerDashboard extends StatelessWidget {
               Icon(Icons.waving_hand, color: primaryColor, size: 24),
               const SizedBox(width: 8),
               Text(
-                'Welcome, ${userDetails['name'] ?? 'Volunteer'}!',
+                'Welcome, ${userDetails.name ?? 'Volunteer'}!',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,

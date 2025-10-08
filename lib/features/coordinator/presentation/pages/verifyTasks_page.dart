@@ -9,7 +9,7 @@ class VerifyTasksPage extends StatefulWidget {
 }
 
 class _VerifyTasksPageState extends State<VerifyTasksPage> {
-  // Mock data
+
   final List<Map<String, dynamic>> tasks = [
     {
       'title': 'Distribute Food Packets',
@@ -20,7 +20,7 @@ class _VerifyTasksPageState extends State<VerifyTasksPage> {
         'https://picsum.photos/400/200?image=2',
       ],
       'videos': [
-        'https://drive.google.com/file/d/1KvJsRw5IP5FdxMPLhaTWLQ66qnKfXH-H/view?usp=sharing',
+        'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
       ],
     },
     {
@@ -48,9 +48,8 @@ class _VerifyTasksPageState extends State<VerifyTasksPage> {
       _videoControllers[i] = {};
       for (int j = 0; j < videos.length; j++) {
         final controller = VideoPlayerController.networkUrl(
-          Uri.parse('https://drive.google.com/file/d/1KvJsRw5IP5FdxMPLhaTWLQ66qnKfXH-H/view?usp=sharing')
+          Uri.parse(videos[j])
         );
-        debugPrint('${videos[j]}');
         await controller.initialize();
         controller.setLooping(true);
         _videoControllers[i]![j] = controller;

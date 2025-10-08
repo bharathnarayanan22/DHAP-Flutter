@@ -7,14 +7,15 @@ const Color successColor = Color(0xFF66BB6A);
 const Color warningColor = Color(0xFFFFC107);
 
 class ProfilePage extends StatelessWidget {
-  final Map<String, dynamic> user;
+  //final Map<String, dynamic> user;
+  final User user;
 
   const ProfilePage({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
     final fullAddress =
-        '${user['addressLine']}, ${user['city']}, ${user['pincode']}, ${user['country']}';
+        '${user.addressLine}, ${user.city}, ${user.pincode}, ${user.country}';
 
     return Scaffold(
       appBar: AppBar(
@@ -48,7 +49,7 @@ class ProfilePage extends StatelessWidget {
                       radius: 40,
                       backgroundColor: accentColor,
                       child: Text(
-                        user['name'][0].toUpperCase(),
+                        user.name[0].toUpperCase(),
                         style: const TextStyle(
                           fontSize: 36,
                           color: Colors.white,
@@ -62,7 +63,7 @@ class ProfilePage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            user['name'],
+                            user.name,
                             style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -71,7 +72,7 @@ class ProfilePage extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            user['role'].toUpperCase(),
+                            user.role.toUpperCase(),
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.white.withOpacity(0.7),
@@ -110,7 +111,7 @@ class ProfilePage extends StatelessWidget {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                user['email'],
+                                user.email ,
                                 style: const TextStyle(
                                   fontSize: 16,
                                   color: primaryColor,
@@ -144,7 +145,7 @@ class ProfilePage extends StatelessWidget {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                user['mobile'],
+                                user.mobile,
                                 style: const TextStyle(
                                   fontSize: 16,
                                   color: primaryColor,
@@ -232,7 +233,7 @@ class ProfilePage extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              user['taskIds'].length.toString(),
+                              (user.taskIds?.length ?? 0).toString(),
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -262,7 +263,7 @@ class ProfilePage extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              (user['resourceIds']?.length ?? 0).toString(),
+                              (user.resourceIds?.length ?? 0).toString(),
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,

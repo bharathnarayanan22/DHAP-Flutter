@@ -1,3 +1,4 @@
+import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:dhap_flutter_project/features/auth/presentation/pages/auth_page.dart';
 import 'package:dhap_flutter_project/features/common/presentation/pages/dashboard.dart';
 import 'package:flutter/material.dart';
@@ -9,18 +10,16 @@ void main() {
 class MyApp extends StatelessWidget {
    MyApp({super.key});
 
-  final newUserDetails = {
-    'name': 'test user',
-    'email': 'testuser@gmail.com',
-    'password': '123456789',
-    'mobile': '7894561239',
-    'addressLine': 'a',
-    'city': 'b',
-    'country': 'c',
-    'pincode': '456456',
-    'role': 'Volunteer',
-    'taskIds': [1, 2, 3, 4],
-  };
+  final User userDetails = User(name: 'test user',
+    email: 'testuser@gmail.com',
+    password: '123456789',
+    mobile: '7894561239',
+    addressLine: 'a',
+    city: 'b',
+    country: 'c',
+    pincode: '456456',
+    role: 'Coordinator',
+    taskIds: [1, 2, 3, 4],);
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +37,10 @@ class MyApp extends StatelessWidget {
       //   scaffoldBackgroundColor: const Color(0xFF0A2744),
       // ),
       home: SafeArea(child: DashboardPage(userDetails:
-          newUserDetails
+          userDetails
       ))
+      //   home: SafeArea(child: AuthPage()
+      //   )
     );
   }
 }

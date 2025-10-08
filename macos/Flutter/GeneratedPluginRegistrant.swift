@@ -5,6 +5,8 @@
 import FlutterMacOS
 import Foundation
 
+import audioplayers_darwin
+import cbl_flutter_ce
 import file_selector_macos
 import geolocator_apple
 import package_info_plus
@@ -13,6 +15,8 @@ import url_launcher_macos
 import video_player_avfoundation
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
+  AudioplayersDarwinPlugin.register(with: registry.registrar(forPlugin: "AudioplayersDarwinPlugin"))
+  CblFlutterCe.register(with: registry.registrar(forPlugin: "CblFlutterCe"))
   FileSelectorPlugin.register(with: registry.registrar(forPlugin: "FileSelectorPlugin"))
   GeolocatorPlugin.register(with: registry.registrar(forPlugin: "GeolocatorPlugin"))
   FPPPackageInfoPlusPlugin.register(with: registry.registrar(forPlugin: "FPPPackageInfoPlusPlugin"))

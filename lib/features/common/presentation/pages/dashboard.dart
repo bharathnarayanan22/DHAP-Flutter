@@ -1,3 +1,4 @@
+import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:dhap_flutter_project/features/common/bloc/commonBloc.dart';
 import 'package:dhap_flutter_project/features/common/presentation/pages/profile_page.dart';
 import 'package:dhap_flutter_project/features/common/presentation/widgets/drawerList.dart';
@@ -9,13 +10,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DashboardPage extends StatelessWidget {
-  final Map<String, dynamic> userDetails;
+  //final Map<String, dynamic> userDetails;
+  final User userDetails;
 
   const DashboardPage({super.key, required this.userDetails});
 
   @override
   Widget build(BuildContext context) {
-    final String role = userDetails['role'] ?? 'User';
+    final String role = userDetails.role ?? 'User';
 
     return SafeArea(
       child: Scaffold(
@@ -56,7 +58,7 @@ class DashboardPage extends StatelessWidget {
                         radius: 30,
                         backgroundColor: Colors.grey[300],
                         child: Text(
-                          "${(userDetails['name'] as String?)?.isNotEmpty == true ? (userDetails['name'] as String).substring(0, 1).toUpperCase() : 'U'}",
+                          "${(userDetails.name  as String?)?.isNotEmpty == true ? (userDetails.name as String).substring(0, 1).toUpperCase() : 'U'}",
                           style: const TextStyle(
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
@@ -71,7 +73,7 @@ class DashboardPage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "${userDetails['name'] ?? 'User'}",
+                              "${userDetails.name ?? 'User'}",
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
@@ -115,7 +117,7 @@ class DashboardPage extends StatelessWidget {
           ),
         ),
         floatingActionButton: (role == 'Volunteer' || role == 'Donor')
-            ? SwitchButton(role: userDetails['role'])
+            ? SwitchButton(role: userDetails.role)
             : null,
         body: Center(
           child: ConstrainedBox(
@@ -129,14 +131,14 @@ class DashboardPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Welcome, ${userDetails['name'] ?? 'User'}!',
+                      'Welcome, ${userDetails.name ?? 'User'}!',
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Text('Email: ${userDetails['email']}'),
+                    Text('Email: ${userDetails.email}'),
                     Text('Role: $role'),
                   ],
                 ),

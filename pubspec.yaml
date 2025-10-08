@@ -38,9 +38,13 @@ dependencies:
   latlong2: ^0.9.1
   geocoding: ^4.0.0
   video_player: ^2.10.0
+  audioplayers: ^6.5.1
   url_launcher: ^6.3.2
   image_picker: ^1.2.0
   geolocator: ^14.0.2
+  cbl: ^3.6.0+2
+  cbl_flutter: ^3.3.5
+  cbl_flutter_ce: ^3.5.1
 
 dev_dependencies:
   flutter_test:

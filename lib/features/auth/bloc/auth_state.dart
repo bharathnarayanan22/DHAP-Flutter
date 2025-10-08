@@ -1,3 +1,4 @@
+import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class AuthState extends Equatable {
@@ -13,7 +14,7 @@ class AuthLoading extends AuthState {}
 
 class AuthSuccess extends AuthState {
   final String message;
-  final Map<String, dynamic> user;
+  final User user;
   AuthSuccess({required this.message, required this.user});
 
   @override

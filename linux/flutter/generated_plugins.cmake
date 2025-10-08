@@ -3,6 +3,8 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  audioplayers_linux
+  cbl_flutter_ce
   file_selector_linux
   url_launcher_linux
 )

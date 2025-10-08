@@ -220,6 +220,7 @@
 //   }
 // }
 
+import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:dhap_flutter_project/features/common/presentation/widgets/ResourceRequestBarChart.dart';
 import 'package:dhap_flutter_project/features/common/presentation/widgets/TaskStatusPieChart.dart';
 import 'package:dhap_flutter_project/features/common/presentation/widgets/builtMetricCard.dart';
@@ -241,15 +242,16 @@ const Color infoColor = Color(0xFF9E9E9E);
 const Color secondaryAccentColor = Color(0xFF1E88E5);
 
 class coordinatorDashboard extends StatelessWidget {
-  final Map<String, dynamic> userDetails;
+//  final Map<String, dynamic> userDetails;
+final User userDetails;
   const coordinatorDashboard({super.key, required this.userDetails});
 
   @override
   Widget build(BuildContext context) {
-    int totalTasks = userDetails['totalTasks'] ?? 85;
-    int unverifiedTasks = userDetails['unverifiedTasks'] ?? 12;
-    int activeVolunteers = userDetails['activeVolunteers'] ?? 45;
-    int pendingRequests = userDetails['pendingRequests'] ?? 7;
+    int totalTasks = 85;
+    int unverifiedTasks =  12;
+    int activeVolunteers = 45;
+    int pendingRequests =  7;
 
     final taskStatusData = [
       {'label': 'Completed', 'value': 50.0, 'color': successColor},
@@ -286,7 +288,7 @@ class coordinatorDashboard extends StatelessWidget {
               Icon(Icons.waving_hand, color: primaryColor, size: 24),
               const SizedBox(width: 8),
               Text(
-                'Welcome, ${userDetails['name'] ?? 'Coordinator'}!',
+                'Welcome, ${userDetails.name ?? 'Coordinator'}!',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
