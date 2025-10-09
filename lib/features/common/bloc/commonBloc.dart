@@ -29,5 +29,12 @@ class commonBloc extends Bloc<commonEvent, commonState> {
       emit(LogoutSuccess(message: "Logout successful"));
     });
 
+    on<SwitchRoleSubmitted>((event, emit) async {
+      emit(commonLoading());
+      await Future.delayed(const Duration(seconds: 1));
+      await _userRepository.updateUserRole(event.email, event.newRole);
+      emit(SwitchRoleSuccess(message: "Switch role successful"));
+    });
   }
+
 }

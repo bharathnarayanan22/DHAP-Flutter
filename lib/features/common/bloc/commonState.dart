@@ -27,3 +27,8 @@ class LogoutSuccess extends commonState {
   final String message;
   LogoutSuccess({required this.message});
 }
+
+class SwitchRoleSuccess extends commonState {
+  final String message;
+  SwitchRoleSuccess({required this.message});
+}

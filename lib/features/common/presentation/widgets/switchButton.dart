@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:dhap_flutter_project/data/model/user_model.dart';
 
 class SwitchButton extends StatelessWidget {
-  final String role;
-  const SwitchButton({super.key, required this.role});
+  final User userDetails;
+  final VoidCallback onSwitch;
+
+  const SwitchButton({
+    super.key,
+    required this.userDetails,
+    required this.onSwitch,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,14 +22,14 @@ class SwitchButton extends StatelessWidget {
       ),
       child: FloatingActionButton.extended(
         backgroundColor: Colors.transparent,
-        // elevation: 0,
-        onPressed: () {
-          debugPrint("SwitchButton Clicked: $role");
-        },
+        onPressed: onSwitch, // just call the callback
         icon: const Icon(Icons.swap_horiz, color: Colors.white),
         label: Text(
-          role == "Volunteer" ? "Donor" : "Volunteer",
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          userDetails.role == "Volunteer" ? "Donor" : "Volunteer",
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );

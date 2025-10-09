@@ -3,8 +3,10 @@ import 'package:dhap_flutter_project/data/db/sessiondb_helper.dart';
 import 'package:dhap_flutter_project/data/db/userdb_helper.dart';
 import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:dhap_flutter_project/features/auth/presentation/pages/auth_page.dart';
+import 'package:dhap_flutter_project/features/common/bloc/commonBloc.dart';
 import 'package:dhap_flutter_project/features/common/presentation/pages/dashboard.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +15,7 @@ void main() async {
   final isLoggedIn = await sessionHelper.isLoggedIn();
   final userHelper = Userdb_helper();
   User? userDetails;
-  if(isLoggedIn) {
+  if (isLoggedIn) {
     final userEmail = await sessionHelper.getUserEmail();
     userDetails = await userHelper.getUserByEmail(userEmail);
   }
@@ -24,6 +26,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   final bool isLoggedIn;
   final User? userDetails;
+
   MyApp({super.key, required this.isLoggedIn, required this.userDetails});
 
   @override
@@ -46,7 +49,10 @@ class MyApp extends StatelessWidget {
       // ))
       home: SafeArea(
         child: isLoggedIn && userDetails != null
-            ? DashboardPage(userDetails: userDetails!)
+            ? BlocProvider(
+          create: (context) => commonBloc(),
+          child: DashboardPage(userDetails: userDetails!),
+        )
             : AuthPage(),
       ),
     );

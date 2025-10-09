@@ -100,6 +100,22 @@ class Userdb_helper {
     }
   }
 
+  Future<void> updateUserRole(String email, String newRole) async {
+    final db = await _core.database;
+    final doc = await db.document(email);
+    if (doc == null) {
+      debugPrint("User not found: $email");
+      return;
+    }
+
+    final mutableDoc = doc.toMutable();
+    mutableDoc.setString(key: 'role', newRole);
+    await db.saveDocument(mutableDoc);
+
+    debugPrint("User role updated to: $newRole for $email");
+  }
+
+
   Future<void> acceptTask(int taskId, String userEmail) async {
     final db = await _core.database;
 

@@ -2,6 +2,7 @@ import 'package:dhap_flutter_project/data/db/sessiondb_helper.dart';
 import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:dhap_flutter_project/features/auth/presentation/pages/auth_page.dart';
 import 'package:dhap_flutter_project/features/common/bloc/commonBloc.dart';
+import 'package:dhap_flutter_project/features/common/bloc/commonEvent.dart';
 import 'package:dhap_flutter_project/features/common/presentation/pages/profile_page.dart';
 import 'package:dhap_flutter_project/features/common/presentation/widgets/drawerList.dart';
 import 'package:dhap_flutter_project/features/common/presentation/widgets/coordinatorDashboard.dart';
@@ -16,6 +17,8 @@ class DashboardPage extends StatelessWidget {
   final User userDetails;
 
   const DashboardPage({super.key, required this.userDetails});
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +63,7 @@ class DashboardPage extends StatelessWidget {
                         radius: 30,
                         backgroundColor: Colors.grey[300],
                         child: Text(
-                          "${(userDetails.name  as String?)?.isNotEmpty == true ? (userDetails.name as String).substring(0, 1).toUpperCase() : 'U'}",
+                          "${(userDetails.name as String?)?.isNotEmpty == true ? (userDetails.name as String).substring(0, 1).toUpperCase() : 'U'}",
                           style: const TextStyle(
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
@@ -115,7 +118,8 @@ class DashboardPage extends StatelessWidget {
                   final sessionHelper = Sessiondb_helper();
                   await sessionHelper.clearSession();
                   Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => AuthPage()), (route) => false,
+                    MaterialPageRoute(builder: (context) => AuthPage()),
+                    (route) => false,
                   );
                 },
               ),
@@ -123,8 +127,53 @@ class DashboardPage extends StatelessWidget {
           ),
         ),
         floatingActionButton: (role == 'Volunteer' || role == 'Donor')
-            ? SwitchButton(role: userDetails.role)
+            ? BlocProvider.value(
+          value: context.read<commonBloc>(), // reuse existing bloc
+          child: SwitchButton(
+            userDetails: userDetails,
+            onSwitch: () async {
+              final newRole =
+              userDetails.role == "Volunteer" ? "Donor" : "Volunteer";
+
+              // Dispatch event
+              context.read<commonBloc>().add(
+                SwitchRoleSubmitted(
+                  email: userDetails.email,
+                  newRole: newRole,
+                ),
+              );
+
+              // Show snackbar
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Switched to $newRole dashboard"),
+                  backgroundColor: Colors.blueAccent,
+                ),
+              );
+
+              // Navigate to new dashboard
+              if (newRole == "Volunteer") {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        volunteerDashboard(userDetails: userDetails),
+                  ),
+                );
+              } else {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        donorDashboard(userDetails: userDetails),
+                  ),
+                );
+              }
+            },
+          ),
+        )
             : null,
+
         body: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1000),

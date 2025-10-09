@@ -20,4 +20,8 @@ class UserRepository {
   Future<void> acceptTask(int taskId, String userEmail) async {
     await _dbHelper.acceptTask(taskId, userEmail);
   }
+
+  Future<void> updateUserRole(String email, String newRole) async {
+    await _dbHelper.updateUserRole(email, newRole);
+  }
 }
