@@ -61,6 +61,7 @@ class _ViewTasksPageState extends State<ViewTasksPage> {
   }
 
   void _onDelete(BuildContext blocContext,Task task) {
+    print('Deleting Task: ${task.id}');
     showDialog(
       context: blocContext,
       builder: (dialogContext) => AlertDialog(
@@ -130,6 +131,7 @@ class _ViewTasksPageState extends State<ViewTasksPage> {
             return const Center(child: CircularProgressIndicator());
           } else if (state is CoordinatorSuccess) {
             final allTasks = state.tasks;
+            print('All Tasks: $allTasks');
             final filteredTasks = _filterTasks(allTasks as List<Task>);
 
             return Column(

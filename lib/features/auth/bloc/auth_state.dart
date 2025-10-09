@@ -30,3 +30,9 @@ class AuthModeState extends AuthState {
   final bool isLogin;
   AuthModeState({required this.isLogin});
 }
+
+// class LogoutSuccess extends AuthState {
+//   final String message;
+//   LogoutSuccess({required this.message});
+// }
+

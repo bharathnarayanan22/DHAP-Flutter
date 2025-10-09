@@ -1,10 +1,13 @@
 import 'package:dhap_flutter_project/data/model/task_model.dart';
 import 'package:dhap_flutter_project/data/repository/task_repository.dart';
+import 'package:dhap_flutter_project/data/repository/user_repository.dart';
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_event.dart';
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 final TaskRepository _taskRepository = TaskRepository();
+final UserRepository _userRepository = UserRepository();
+
 
 class volunteerBloc extends Bloc<volunteerEvent, volunteerState> {
   volunteerBloc() : super(volunteerInitial()) {
@@ -15,7 +18,7 @@ class volunteerBloc extends Bloc<volunteerEvent, volunteerState> {
         final pendingTasks = tasks
             .where(
               (task) =>
-                  task.Status == 'Pending' || task.Status == 'In Progress',
+                  task.Status == 'Pending' || task.Status == 'In Progress' && task.volunteer > task.volunteersAccepted,
             )
             .toList();
         emit(
@@ -80,6 +83,16 @@ class volunteerBloc extends Bloc<volunteerEvent, volunteerState> {
       }
     });
 
+    on<AcceptTaskEvent>((event, emit) async {
+      try {
+        emit(volunteerLoading());
+        await _userRepository.acceptTask(event.taskId, event.userEmail);
+        emit(AcceptSuccess(message: "Task accepted successfully"));
+      } catch (e) {
+        emit(volunteerFailure(error: e.toString()));
+      }
 
+    });
   }
+
 }

@@ -13,7 +13,7 @@ class User {
   final String country;
   final String pincode;
   final String role;
-
+  bool inTask;
   final List<int> taskIds;
   final List<int> resourceIds;
 
@@ -27,6 +27,7 @@ class User {
     required this.country,
     required this.pincode,
     required this.role,
+    this.inTask = false,
     List<int>? taskIds,
     List<int>? resourceIds,
   }) : id = ++Counter,

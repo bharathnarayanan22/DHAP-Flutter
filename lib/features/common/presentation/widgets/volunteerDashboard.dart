@@ -157,7 +157,7 @@ class volunteerDashboard extends StatelessWidget {
               Icon(Icons.waving_hand, color: primaryColor, size: 24),
               const SizedBox(width: 8),
               Text(
-                'Welcome, ${userDetails.name ?? 'Volunteer'}!',
+                'Welcome, ${userDetails.name}!',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -222,7 +222,7 @@ class volunteerDashboard extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) =>  tasksPage()),
+                MaterialPageRoute(builder: (context) =>  tasksPage(user: userDetails,)),
               );
             },
           ),

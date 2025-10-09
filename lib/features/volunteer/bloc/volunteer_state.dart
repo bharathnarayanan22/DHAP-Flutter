@@ -21,3 +21,8 @@ class volunteerFailure extends volunteerState {
   final String error;
   const volunteerFailure({required this.error});
 }
+
+class AcceptSuccess extends volunteerState {
+  final String message;
+  const AcceptSuccess({required this.message});
+}

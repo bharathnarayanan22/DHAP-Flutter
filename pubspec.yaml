@@ -82,6 +82,10 @@ flutter:
     - images/c7.svg
     - images/c8.svg
     - videos/v1.mp4
+    - lib/assets/data/tasks.json
+    - lib/assets/data/resources.json
+    - lib/assets/data/requests.json
+    - lib/assets/data/users.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:

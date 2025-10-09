@@ -1,3 +1,4 @@
+import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_bloc.dart';
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_event.dart';
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_state.dart';
@@ -10,7 +11,8 @@ const Color primaryColor = Color(0xFF0A2744);
 const Color accentColor = Color(0xFF42A5F5);
 
 class tasksPage extends StatefulWidget {
-  const tasksPage({super.key});
+  final User user;
+  const tasksPage({super.key, required this.user});
   @override
   State<tasksPage> createState() => _TasksPageState();
 }
@@ -54,6 +56,9 @@ class _TasksPageState extends State<tasksPage> {
           }
           else if (state is volunteerSuccess) {
             final tasks = state.tasks;
+            if (tasks.isEmpty) {
+              return const Center(child: Text("No tasks available"));
+            }
             return Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 1000),
@@ -64,6 +69,7 @@ class _TasksPageState extends State<tasksPage> {
                       final task = tasks[index];
                       return AvailTaskCard(
                         task: task,
+                        user: widget.user,
                       );
                     }
                   ),

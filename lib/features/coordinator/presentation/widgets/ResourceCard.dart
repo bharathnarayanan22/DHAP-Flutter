@@ -7,7 +7,7 @@ const Color primaryColor = Color(0xFF0A2744);
 const Color accentColor = Color(0xFF42A5F5);
 
 class ResourceCard extends StatelessWidget {
-  final Resource resource;
+  final ResourceModel resource;
   const ResourceCard({required this.resource, super.key});
   //
   // Future<void> _openMap(double lat, double lng) async {

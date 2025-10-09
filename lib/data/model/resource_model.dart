@@ -1,6 +1,6 @@
 import 'package:latlong2/latlong.dart';
 
-class Resource {
+class ResourceModel {
   static int _counter = 0;
   final int id;
   final String resource;
@@ -9,7 +9,7 @@ class Resource {
   final LatLng location;
   final String DonorName;
 
-  Resource({
+  ResourceModel({
     required this.resource,
     required this.quantity,
     required this.address,

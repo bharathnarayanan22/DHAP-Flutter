@@ -31,5 +31,8 @@ class SignupSubmitted extends AuthEvent {
   });
 }
 
+// class LogoutSubmitted extends AuthEvent {}
+
+
 
 class ToggleAuthMode extends AuthEvent {}

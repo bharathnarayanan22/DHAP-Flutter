@@ -20,3 +20,12 @@ class SubmitProofEvent extends volunteerEvent {
     required this.files,
   });
 }
+
+class AcceptTaskEvent extends volunteerEvent {
+  final int taskId;
+  final String userEmail;
+
+  AcceptTaskEvent({required this.taskId, required this.userEmail});
+}
+
+

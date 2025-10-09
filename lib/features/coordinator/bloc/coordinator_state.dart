@@ -60,7 +60,7 @@ class RequestFailure extends CoordinatorState {
 
 class ResourceSuccess extends CoordinatorState {
   final String message;
-  final List<Resource> resources;
+  final List<ResourceModel> resources;
   const ResourceSuccess({required this.message, required this.resources});
 }
 

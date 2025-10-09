@@ -1,4 +1,6 @@
+import 'package:dhap_flutter_project/data/db/sessiondb_helper.dart';
 import 'package:dhap_flutter_project/data/model/user_model.dart';
+import 'package:dhap_flutter_project/features/auth/presentation/pages/auth_page.dart';
 import 'package:dhap_flutter_project/features/common/bloc/commonBloc.dart';
 import 'package:dhap_flutter_project/features/common/presentation/pages/profile_page.dart';
 import 'package:dhap_flutter_project/features/common/presentation/widgets/drawerList.dart';
@@ -109,8 +111,12 @@ class DashboardPage extends StatelessWidget {
                   'Logout',
                   style: TextStyle(color: Colors.red),
                 ),
-                onTap: () {
-                  Navigator.pop(context);
+                onTap: () async {
+                  final sessionHelper = Sessiondb_helper();
+                  await sessionHelper.clearSession();
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => AuthPage()), (route) => false,
+                  );
                 },
               ),
             ],

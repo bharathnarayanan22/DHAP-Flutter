@@ -44,12 +44,12 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
           emit(CoordinatorFailure(error: 'All fields are required'));
           return;
         } else {
-          _taskRepository.addTask(task);
+          await _taskRepository.addTask(task);
           print('Task created successfully');
           emit(
             CoordinatorSuccess(
               message: 'Task created successfully',
-              tasks: _taskRepository.getAllTasks(),
+              tasks: await _taskRepository.getAllTasks(),
             ),
           );
         }
@@ -61,10 +61,12 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
     on<FetchTasksEvent>((event, emit) async {
       emit(CoordinatorLoading());
       try {
+        final tasks = await _taskRepository.getAllTasks();
+        print("Fetched tasks: $tasks");
         emit(
           CoordinatorSuccess(
             message: 'Tasks fetched successfully',
-            tasks: _taskRepository.getAllTasks(),
+            tasks: tasks,
           ),
         );
       } catch (e) {
@@ -75,11 +77,11 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
     on<DeleteTaskEvent>((event, emit) async {
       emit(CoordinatorLoading());
       try {
-        _taskRepository.deleteTask(event.taskId);
+        await _taskRepository.deleteTask(event.taskId);
         emit(
           CoordinatorSuccess(
             message: 'Task deleted successfully',
-            tasks: _taskRepository.getAllTasks(),
+            tasks: await _taskRepository.getAllTasks(),
           ),
         );
       } catch (e) {
@@ -90,10 +92,11 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
     on<FetchUsersEvent>((event, emit) async {
       emit(CoordinatorLoading());
       try {
+        final users = await _userRepository.getAllUsers();
         emit(
           UserSuccess(
             message: 'Users fetched successfully',
-            users: _userRepository.getAllUsers(),
+            users: users,
           ),
         );
       } catch (e) {
@@ -138,7 +141,7 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
         emit(
           ResourceSuccess(
             message: 'Resources fetched successfully',
-            resources: _resourceRepository.getAllResources(),
+            resources: await _resourceRepository.getAllResources(),
           ),
         );
       } catch (e) {
@@ -149,7 +152,7 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
     on<AddResourceEvent>((event, emit) async {
       emit(CoordinatorLoading());
       try {
-        final resource = Resource(
+        final resource = ResourceModel(
           resource: event.resource,
           quantity: event.quantity,
           address: event.address,
@@ -163,11 +166,11 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
           emit(CoordinatorFailure(error: 'All fields are required'));
           return;
         } else {
-          _resourceRepository.addResource(resource);
+          await _resourceRepository.addResource(resource);
           emit(
             ResourceSuccess(
               message: 'Resource created successfully',
-              resources: _resourceRepository.getAllResources(),
+              resources: await _resourceRepository.getAllResources(),
             ),
           );
         }

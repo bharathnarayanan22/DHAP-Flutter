@@ -39,7 +39,7 @@ class _ViewResourcesPageState extends State<ViewResourcesPage> {
     setState(() {});
   }
 
-  List<Resource> _filterResources(List<Resource> resource) {
+  List<ResourceModel> _filterResources(List<ResourceModel> resource) {
     final searchTerm = _searchController.text.toLowerCase();
 
     final resourceFiltered = resource

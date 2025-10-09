@@ -1,3 +1,4 @@
+import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
@@ -11,8 +12,9 @@ const Color accentColor = Color(0xFF4CAF50);
 
 class AvailTaskCard extends StatelessWidget {
   final Task task;
+  final User user;
 
-  const AvailTaskCard({super.key, required this.task});
+  const AvailTaskCard({super.key, required this.task, required this.user});
 
   Future<void> _openMap(BuildContext context, LatLng start, LatLng end) async {
     final url = Uri.parse(
@@ -128,7 +130,15 @@ class AvailTaskCard extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      debugPrint("Accept Clicked for ${task.title}");
+                      debugPrint(user.inTask.toString());
+                      user.inTask
+                          ? null
+                          : (context.read<volunteerBloc>().add(
+                              AcceptTaskEvent(
+                                taskId: task.id,
+                                userEmail: user.email,
+                              ),
+                            ));
                     },
                     icon: const Icon(Icons.check_circle_outline, size: 20),
                     label: const Text(

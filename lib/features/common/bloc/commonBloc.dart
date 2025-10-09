@@ -1,3 +1,4 @@
+import 'package:dhap_flutter_project/data/db/sessiondb_helper.dart';
 import 'package:dhap_flutter_project/data/repository/user_repository.dart';
 import 'package:dhap_flutter_project/features/common/bloc/commonEvent.dart';
 import 'package:dhap_flutter_project/features/common/bloc/commonState.dart';
@@ -11,12 +12,21 @@ class commonBloc extends Bloc<commonEvent, commonState> {
       emit(commonLoading());
       try {
         //final users = _userRepository.getAllUsers();
-        emit(commonSuccess(message: "Users fetched successfully", user: _userRepository.getAllUsers()));
+        final users = await _userRepository.getAllUsers();
+        emit(commonSuccess(message: "Users fetched successfully", user: users));
       }
       catch (e) {
         emit(commonFailure(error: e.toString()));
       }
 
+    });
+
+    on<LogoutSubmitted>((event, emit) async {
+      emit(commonLoading());
+      await Future.delayed(const Duration(seconds: 1));
+      final sessionHelper = Sessiondb_helper();
+      await sessionHelper.clearSession();
+      emit(LogoutSuccess(message: "Logout successful"));
     });
 
   }

@@ -16,7 +16,7 @@ class DonorBloc extends Bloc<DonorEvent, DonorState> {
     on<AddResourceEvent>((event, emit) async {
       emit(DonorLoading());
       try {
-        final resource = Resource(
+        final resource = ResourceModel(
           resource: event.resource,
           quantity: event.quantity,
           address: event.address,
