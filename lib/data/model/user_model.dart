@@ -2,7 +2,7 @@ import 'package:dhap_flutter_project/data/model/resource_model.dart';
 import 'package:dhap_flutter_project/data/model/task_model.dart';
 
 class User {
-  static int Counter = 0;
+  static int Counter = 100;
   final int id;
   final String name;
   final String email;

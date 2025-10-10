@@ -1,3 +1,4 @@
+import 'package:dhap_flutter_project/data/model/task_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -21,6 +22,11 @@ class CreateTaskEvent extends CoordinatorEvent {
     required this.StartLocation,
     required this.EndLocation,
   });
+}
+
+class UpdateTaskEvent extends CoordinatorEvent {
+  final Task updatedTask;
+  UpdateTaskEvent({required this.updatedTask});
 }
 
 class FetchTasksEvent extends CoordinatorEvent {}
@@ -69,3 +75,8 @@ class FetchResourcesEvent extends CoordinatorEvent {}
 // class FetchResponsesEvent extends CoordinatorEvent {}
 
 class FetchRequestsAndResponsesEvent extends CoordinatorEvent {}
+
+class MarkResponseTaskAssignedEvent extends CoordinatorEvent {
+  final int responseId;
+  MarkResponseTaskAssignedEvent(this.responseId);
+}

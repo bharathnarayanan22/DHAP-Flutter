@@ -210,7 +210,7 @@ class _ResourceRequestPageState extends State<ResourceRequestPage> {
                             child: ElevatedButton.icon(
                               icon: const Icon(Icons.send),
                               label: Text(
-                                state is CoordinatorLoading ? "Creating Task..." : "Create Task",
+                                state is CoordinatorLoading ? "Requesting..." : "Send Request",
                                 style: const TextStyle(fontWeight: FontWeight.bold),
                               ),
                               style: ElevatedButton.styleFrom(

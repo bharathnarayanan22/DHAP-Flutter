@@ -29,7 +29,7 @@ class TaskdbHelper {
       }).toList(),
     });
 
-    await db!.saveDocument(doc);
+    await db.saveDocument(doc);
     debugPrint("Task saved in Couchbase: ${task.title}");
   }
 
@@ -140,7 +140,7 @@ class TaskdbHelper {
   Future<void> updateTask(Task updatedTask) async {
     final db = await _core.database;
     final doc = MutableDocument.withId(
-      updatedTask.id.toString(),
+        '${updatedTask.id}',
       {
         'type': 'task',
         'id': updatedTask.id,
@@ -150,8 +150,8 @@ class TaskdbHelper {
         'volunteersAccepted': updatedTask.volunteersAccepted,
         'StartAddress': updatedTask.StartAddress,
         'EndAddress': updatedTask.EndAddress,
-        'StartLocation': updatedTask.StartLocation,
-        'EndLocation': updatedTask.EndLocation,
+        'StartLocation': '${updatedTask.StartLocation.latitude},${updatedTask.StartLocation.longitude}',
+        'EndLocation': '${updatedTask.EndLocation.latitude},${updatedTask.EndLocation.longitude}',
         'Status': updatedTask.Status,
       }
     );

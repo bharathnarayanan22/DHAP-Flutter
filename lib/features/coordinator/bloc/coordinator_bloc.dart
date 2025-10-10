@@ -1,5 +1,6 @@
 import 'package:dhap_flutter_project/data/model/request_model.dart';
 import 'package:dhap_flutter_project/data/repository/response_repository.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repository/task_repository.dart';
 import '../../../data/repository/user_repository.dart';
@@ -34,6 +35,8 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
           EndLocation: event.EndLocation,
         );
 
+        debugPrint('${task.title}, ${task.description}, ${task.volunteer}, ${task.StartAddress}, ${task.EndAddress}, ${task.StartLocation}, ${task.EndLocation}');
+
         if (task.title.isEmpty ||
             task.description.isEmpty ||
             task.volunteer == 0 ||
@@ -42,6 +45,7 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
             task.StartLocation == null ||
             task.EndLocation == null) {
           emit(CoordinatorFailure(error: 'All fields are required'));
+          print('All fields are required');
           return;
         } else {
           await _taskRepository.addTask(task);
@@ -84,6 +88,17 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
             tasks: await _taskRepository.getAllTasks(),
           ),
         );
+      } catch (e) {
+        emit(CoordinatorFailure(error: e.toString()));
+      }
+    });
+
+    on<UpdateTaskEvent>((event, emit) async {
+      emit(CoordinatorLoading());
+      try {
+        await _taskRepository.updateTask(event.updatedTask);
+        final tasks = await _taskRepository.getAllTasks();
+        emit(CoordinatorSuccess(message: 'Task updated Successfully',tasks: tasks));
       } catch (e) {
         emit(CoordinatorFailure(error: e.toString()));
       }
@@ -222,8 +237,10 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
     on<FetchRequestsAndResponsesEvent>((event, emit) async {
       emit(CoordinatorLoading());
       try {
-        final allRequests = _requestRepository.getAllRequests();
-        final allResponses = _responseRepository.getAllResponses();
+        final allRequests = await _requestRepository.getAllRequests();
+        final allResponses = await _responseRepository.getAllResponses();
+        print('Responses: ${allResponses}');
+
 
         if (allRequests.isEmpty) {
           emit(const FetchRequestFailure(error: "No Requests found"));
@@ -238,6 +255,24 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
         }
       } catch (e) {
         emit(FetchRequestFailure(error: e.toString()));
+      }
+    });
+
+    on<MarkResponseTaskAssignedEvent>((event, emit) async {
+      emit(CoordinatorLoading());
+      try {
+        await _responseRepository.assignTaskFromResponse(event.responseId);
+        final allRequests = await _requestRepository.getAllRequests();
+        final allResponses = await _responseRepository.getAllResponses();
+        emit(
+          FetchRequestResponseSuccess(
+              message: "Fetched requests and responses successfully",
+              requests: allRequests,
+              responses: allResponses
+          ),
+        );
+      } catch (e) {
+        emit(CoordinatorFailure(error: e.toString()));
       }
     });
 

@@ -46,7 +46,7 @@ class TaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final volunteersNeeded = task.volunteer;
-    final volunteersAccepted = 2;
+    final volunteersAccepted = task.volunteersAccepted;
     final isFullyStaffed = volunteersAccepted >= volunteersNeeded;
 
     return Card(

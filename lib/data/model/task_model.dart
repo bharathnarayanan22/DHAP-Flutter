@@ -8,7 +8,7 @@ class Proof {
 
 
 class Task {
-  static int _counter = 0;
+  static int _counter = 200;
   final int id;
 
   final String title;

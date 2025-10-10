@@ -9,9 +9,10 @@ class RequestdbHelper {
 
   Future<void> addRequest(Request request) async {
     final db = await _core.database;
+    debugPrint('DB: ${db.name}');
 
-    final doc = MutableDocument(
-      // task.title,
+    final doc = MutableDocument.withId(
+      '${request.id}',
       {
         'type': 'request',
         'id': request.id,
@@ -25,8 +26,10 @@ class RequestdbHelper {
       },
     );
 
-    await db!.saveDocument(doc);
-    debugPrint("Task saved in Couchbase: ${request.resource}");
+    debugPrint("Request document: $doc");
+
+    await db.saveDocument(doc);
+    debugPrint("Request saved in Couchbase: ${request.resource}");
   }
 
   Future<List<Request>> getAllRequests() async {
@@ -47,11 +50,14 @@ class RequestdbHelper {
     await for (final row in result.asStream()) {
       final data = row.dictionary(dbName);
 
+      debugPrint('Data: $data');
+
       if (data != null) {
         final dataMap = Map<String, dynamic>.from(data.toPlainMap());
         final geoParts = (dataMap['location'] as String? ?? "0,0").split(',');
         requests.add(
           Request(
+            id: data.integer('id'),
             resource: data.string('resource') ?? '',
             quantity: data.integer('quantity'),
             address: data.string('address') ?? '',
@@ -69,4 +75,32 @@ class RequestdbHelper {
 
     return requests;
   }
+
+  Future<void> AddResponseID(int requestId, int responseId) async {
+    final db = await _core.database;
+    debugPrint('DB: ${db.name}');
+    debugPrint("Adding response ID $responseId to request $requestId");
+    final doc = await db.document('$requestId');
+    debugPrint("Request document: $doc");
+    if (doc == null) {
+      debugPrint("Request not found: $requestId");
+      return;
+    }
+
+    final mutableDoc = doc.toMutable();
+    final existingResponseIds = List<int>.from(
+      mutableDoc.array('responseIds')?.toList() ?? [],
+    );
+
+    if (!existingResponseIds.contains(responseId)) {
+      existingResponseIds.add(responseId);
+      mutableDoc.setArray(key: 'responseIds', MutableArray(existingResponseIds));
+      await db.saveDocument(mutableDoc);
+      debugPrint("Response ID $responseId added to request $requestId");
+    } else {
+      debugPrint("Response ID already exists for request $requestId");
+    }
+  }
+
+
 }

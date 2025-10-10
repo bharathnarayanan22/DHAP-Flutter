@@ -47,14 +47,17 @@ class MyApp extends StatelessWidget {
       // home: SafeArea(child: DashboardPage(userDetails:
       //     userDetails
       // ))
-      home: SafeArea(
-        child: isLoggedIn && userDetails != null
-            ? BlocProvider(
-          create: (context) => commonBloc(),
-          child: DashboardPage(userDetails: userDetails!),
-        )
-            : AuthPage(),
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => commonBloc()),
+        ],
+        child: SafeArea(
+          child: isLoggedIn && userDetails != null
+              ? DashboardPage(userDetails: userDetails!)
+              : AuthPage(),
+        ),
       ),
+
     );
   }
 }

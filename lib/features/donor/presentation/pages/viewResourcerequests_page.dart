@@ -1,3 +1,4 @@
+import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:dhap_flutter_project/features/donor/bloc/donor_bloc.dart';
 import 'package:dhap_flutter_project/features/donor/bloc/donor_event.dart';
 import 'package:dhap_flutter_project/features/donor/bloc/donor_state.dart';
@@ -9,7 +10,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 const Color primaryColor = Color(0xFF0A2744);
 
 class ViewResourceRequestsPage extends StatefulWidget {
-  const ViewResourceRequestsPage({super.key});
+  final User userDetails;
+  const ViewResourceRequestsPage({super.key, required this.userDetails});
 
   @override
   State<ViewResourceRequestsPage> createState() =>
@@ -73,7 +75,7 @@ class _ViewResourceRequestsPageState extends State<ViewResourceRequestsPage> {
                     itemCount: requests.length,
                     itemBuilder: (context, idx) {
                       final request = requests[idx];
-                      return RequestsCard(request: request);
+                      return RequestsCard(request: request, user: widget.userDetails.name);
                     },
                   ),
                 ),

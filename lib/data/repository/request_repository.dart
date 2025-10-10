@@ -1,3 +1,4 @@
+import 'package:dhap_flutter_project/data/db/requestdb_helper.dart';
 import 'package:dhap_flutter_project/data/model/request_model.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -52,12 +53,14 @@ class RequestRepository {
     // ),
   ];
 
-  void addRequest(Request request) {
-    _requests.add(request);
+  final RequestdbHelper _dbHelper =RequestdbHelper();
+
+  Future<void> addRequest(Request request) async {
+    await _dbHelper.addRequest(request);
   }
 
-  List<Request> getAllRequests() {
-    return List.unmodifiable(_requests);
+  Future<List<Request>> getAllRequests() async {
+    return await _dbHelper.getAllRequests();
   }
 
 }

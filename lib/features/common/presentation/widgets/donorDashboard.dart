@@ -123,7 +123,7 @@ class donorDashboard extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ViewResourceRequestsPage()),
+                MaterialPageRoute(builder: (context) => ViewResourceRequestsPage(userDetails: userDetails,)),
               );
             },
           ),

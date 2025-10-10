@@ -1,3 +1,4 @@
+import 'package:dhap_flutter_project/data/model/task_model.dart';
 import 'package:dhap_flutter_project/features/coordinator/presentation/widgets/LocationInputSection.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
@@ -12,7 +13,8 @@ const Color accentColor = Color(0xFF42A5F5);
 const Color inputFillColor = Colors.white;
 
 class CreateTasksPage extends StatefulWidget {
-  const CreateTasksPage({super.key});
+  final Task? existingTask;
+  const CreateTasksPage({super.key, this.existingTask});
 
   @override
   State<CreateTasksPage> createState() => _CreateTasksPageState();
@@ -38,6 +40,16 @@ class _CreateTasksPageState extends State<CreateTasksPage> {
   void initState() {
     super.initState();
     _coordinatorBloc = CoordinatorBloc();
+    final task = widget.existingTask;
+    if (task != null) {
+      _titleController.text = task.title;
+      _descriptionController.text = task.description;
+      _volunteerController.text = task.volunteer.toString();
+      _startAddressController.text = task.StartAddress;
+      _deliveryAddressController.text = task.EndAddress;
+      _startLocation = LatLng(task.StartLocation.latitude, task.StartLocation.longitude);
+      _deliveryLocation = LatLng(task.EndLocation.latitude, task.EndLocation.longitude);
+    }
   }
 
   @override
@@ -119,15 +131,21 @@ class _CreateTasksPageState extends State<CreateTasksPage> {
                   duration: const Duration(seconds: 3),
                 ),
               );
-              _formKey.currentState?.reset();
-              _titleController.clear();
-              _descriptionController.clear();
-              _volunteerController.clear();
-              _startAddressController.clear();
-              _deliveryAddressController.clear();
-              setState(() {
-                _startLocation = null;
-                _deliveryLocation = null;
+              Future.delayed(const Duration(milliseconds: 800), () {
+                if (widget.existingTask != null) {
+                  Navigator.pop(context, true);
+                } else {
+                  _formKey.currentState?.reset();
+                  _titleController.clear();
+                  _descriptionController.clear();
+                  _volunteerController.clear();
+                  _startAddressController.clear();
+                  _deliveryAddressController.clear();
+                  setState(() {
+                    _startLocation = null;
+                    _deliveryLocation = null;
+                  });
+                }
               });
             } else if (state is CoordinatorFailure) {
               _scaffoldMessengerKey.currentState?.showSnackBar(
@@ -142,14 +160,14 @@ class _CreateTasksPageState extends State<CreateTasksPage> {
             return Scaffold(
               backgroundColor: Colors.grey[200],
               appBar: AppBar(
-                title: const Row(
+                title: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.add_task, color: Colors.white, size: 24),
-                    SizedBox(width: 8),
+                    Icon(widget.existingTask != null ? Icons.edit : Icons.add_task, color: Colors.white),
+                    const SizedBox(width: 8),
                     Text(
-                      "Create New Task",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      widget.existingTask != null ? "Edit Task" : "Create New Task",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -232,9 +250,11 @@ class _CreateTasksPageState extends State<CreateTasksPage> {
 
                           Center(
                             child: ElevatedButton.icon(
-                              icon: const Icon(Icons.send),
+                              icon: Icon(widget.existingTask != null ? Icons.update : Icons.send),
                               label: Text(
-                                state is CoordinatorLoading ? "Creating Task..." : "Create Task",
+                                widget.existingTask != null
+                                    ? (state is CoordinatorLoading ? "Updating Task..." : "Update Task")
+                                    : (state is CoordinatorLoading ? "Creating Task..." : "Create Task"),
                                 style: const TextStyle(fontWeight: FontWeight.bold),
                               ),
                               style: ElevatedButton.styleFrom(
@@ -244,20 +264,43 @@ class _CreateTasksPageState extends State<CreateTasksPage> {
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                 elevation: 5,
                               ),
-                              onPressed: state is CoordinatorLoading ? null : () {
-                                if (_formKey.currentState!.validate() && _startLocation != null && _deliveryLocation != null) {
-                                  BlocProvider.of<CoordinatorBloc>(context).add(
-                                    CreateTaskEvent(
+                              onPressed: state is CoordinatorLoading
+                                  ? null
+                                  : () {
+                                if (_formKey.currentState!.validate() &&
+                                    _startLocation != null &&
+                                    _deliveryLocation != null) {
+                                  if (widget.existingTask != null) {
+                                    final updatedTask = Task(
+                                      id: widget.existingTask!.id,
                                       title: _titleController.text,
                                       description: _descriptionController.text,
                                       volunteer: int.parse(_volunteerController.text),
-                                      StartLocation: _startLocation!,
-                                      EndLocation: _deliveryLocation!,
+                                      volunteersAccepted: widget.existingTask!.volunteersAccepted,
                                       StartAddress: _startAddressController.text,
                                       EndAddress: _deliveryAddressController.text,
-                                    ),
-                                  );
-                                } else if (_startLocation == null || _deliveryLocation == null) {
+                                      StartLocation: _startLocation!,
+                                      EndLocation: _deliveryLocation!,
+                                      Status: widget.existingTask!.Status,
+                                    );
+                                    BlocProvider.of<CoordinatorBloc>(context).add(
+                                      UpdateTaskEvent(updatedTask: updatedTask),
+                                    );
+                                    // Navigator.pop(context, true);
+                                  } else {
+                                    BlocProvider.of<CoordinatorBloc>(context).add(
+                                      CreateTaskEvent(
+                                        title: _titleController.text,
+                                        description: _descriptionController.text,
+                                        volunteer: int.parse(_volunteerController.text),
+                                        StartLocation: _startLocation!,
+                                        EndLocation: _deliveryLocation!,
+                                        StartAddress: _startAddressController.text,
+                                        EndAddress: _deliveryAddressController.text,
+                                      ),
+                                    );
+                                  }
+                                } else {
                                   _scaffoldMessengerKey.currentState?.showSnackBar(
                                     const SnackBar(
                                       content: Text('Please set both Start and Delivery locations.'),

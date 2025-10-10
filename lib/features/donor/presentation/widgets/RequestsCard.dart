@@ -20,7 +20,8 @@ class DonorLocationData {
 
 class RequestsCard extends StatelessWidget {
   final Request request;
-  const RequestsCard({super.key, required this.request});
+  final String user;
+  const RequestsCard({super.key, required this.request, required this.user});
 
   Future<void> _openMap(double lat, double lng) async {
     final Uri url = Uri.parse(
@@ -35,7 +36,6 @@ class RequestsCard extends StatelessWidget {
 
   Future<DonorLocationData?> _getCurrentLocation(BuildContext context) async {
     try {
-      // 1. Check for service and permissions
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         throw Exception('Location services are disabled. Please enable them.');
@@ -48,8 +48,6 @@ class RequestsCard extends StatelessWidget {
           throw Exception('Location permissions are required.');
         }
       }
-
-      // 2. Get position
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
@@ -224,8 +222,9 @@ class RequestsCard extends StatelessWidget {
                           requestId: request.id,
                           message: messageController.text,
                           quantityProvided: int.parse(quantityController.text),
-                          location: locationData!.location,
-                          user: "Current Donor",
+                          address: "Address",
+                          location: locationData.location,
+                          user: user,
                         ),
                       );
                       Navigator.of(dialogContext).pop();

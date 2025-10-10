@@ -25,7 +25,10 @@ class RespondEvent extends DonorEvent {
   final String message;
   final int quantityProvided;
   final LatLng location;
+  final String address;
   final String user;
+  //final DateTime timestamp;
+
 
 
   RespondEvent({
@@ -33,10 +36,11 @@ class RespondEvent extends DonorEvent {
     required this.message,
     required this.quantityProvided,
     required this.location,
+    required this.address,
     required this.user,
   });
 
   @override
-  List<Object> get props => [requestId, message, quantityProvided, location, user];
+  List<Object> get props => [requestId, message, quantityProvided, location, user, address];
 }
 

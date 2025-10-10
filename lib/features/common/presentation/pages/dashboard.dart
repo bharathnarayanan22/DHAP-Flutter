@@ -128,7 +128,7 @@ class DashboardPage extends StatelessWidget {
         ),
         floatingActionButton: (role == 'Volunteer' || role == 'Donor')
             ? BlocProvider.value(
-          value: context.read<commonBloc>(), // reuse existing bloc
+          value: context.read<commonBloc>(),
           child: SwitchButton(
             userDetails: userDetails,
             onSwitch: () async {

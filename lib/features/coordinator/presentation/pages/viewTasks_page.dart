@@ -2,6 +2,7 @@ import 'package:dhap_flutter_project/data/model/task_model.dart';
 import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_bloc.dart';
 import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_event.dart';
 import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_state.dart';
+import 'package:dhap_flutter_project/features/coordinator/presentation/pages/createTask_page.dart';
 import 'package:dhap_flutter_project/features/coordinator/presentation/widgets/TaskCard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -54,11 +55,19 @@ class _ViewTasksPageState extends State<ViewTasksPage> {
     setState(() {});
   }
 
-  void _onEdit(Task task) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Editing Task: ${task.title}')),
+  void _onEdit(Task task) async {
+    final res = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CreateTasksPage(existingTask: task),
+      ),
     );
+
+    if (res == true && mounted) {
+      context.read<CoordinatorBloc>().add(FetchTasksEvent());
+    }
   }
+
 
   void _onDelete(BuildContext blocContext,Task task) {
     print('Deleting Task: ${task.id}');

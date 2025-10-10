@@ -1,4 +1,7 @@
+import 'package:dhap_flutter_project/data/db/requestdb_helper.dart';
+import 'package:dhap_flutter_project/data/db/responsedb_helper.dart';
 import 'package:dhap_flutter_project/data/model/response_model.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:latlong2/latlong.dart';
 
 class ResponseRepository {
@@ -40,15 +43,27 @@ class ResponseRepository {
     // ),
   ];
 
-  void addResponse(ResponseModel response) {
-    _responses.add(response);
+  final ResponsedbHelper _dbHelper = ResponsedbHelper();
+  final RequestdbHelper _requestdbHelper = RequestdbHelper();
+
+
+  Future<void> addResponse(ResponseModel response) async {
+    await _dbHelper.addResponse(response);
+    debugPrint("Response added: ${response.id}, ${response.requestId}");
+    await _requestdbHelper.AddResponseID(response.requestId, response.id);
+
   }
 
-  List<ResponseModel> getAllResponses() {
-    return List.unmodifiable(_responses);
+  Future<List<ResponseModel>> getAllResponses() async {
+    return await _dbHelper.getAllResponses();
   }
+
 
   List<ResponseModel> getResponsesForRequest(int requestId) {
     return _responses.where((res) => res.requestId == requestId).toList();
+  }
+
+  Future<void> assignTaskFromResponse(int responseId) async {
+    await _dbHelper.assignTaskFromResponse(responseId);
   }
 }

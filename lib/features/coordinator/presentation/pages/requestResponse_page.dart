@@ -13,11 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 const Color primaryColor = Color(0xFF0A2744);
 const Color accentColor = Color(0xFF42A5F5);
 
-const List<String> statusFilters = [
-  'All',
-  'Pending',
-  'Responded',
-];
+const List<String> statusFilters = ['All', 'Pending', 'Responded'];
 
 class ResourceResponsesPage extends StatefulWidget {
   const ResourceResponsesPage({super.key});
@@ -70,16 +66,21 @@ class _ResourceResponsesPageState extends State<ResourceResponsesPage> {
     }).toList();
   }
 
-  void _handleResponseTap(BuildContext context, Request request, List<ResponseModel> allResponses) {
+  void _handleResponseTap(
+    BuildContext context,
+    Request request,
+    List<ResponseModel> allResponses,
+  ) {
     final requestResponses = allResponses
         .where((response) => request.responseIds.contains(response.id))
         .toList();
 
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => ResponsesListScreen(
+        builder: (_) => ResponsesListScreen(
           request: request,
           responses: requestResponses,
+          bloc: context.read<CoordinatorBloc>(), // pass the parent bloc
         ),
       ),
     );
@@ -95,23 +96,23 @@ class _ResourceResponsesPageState extends State<ResourceResponsesPage> {
           children: [
             Icon(Icons.question_answer_rounded, color: Colors.white, size: 24),
             SizedBox(width: 8),
-            Text(
-              "Responses",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
+            Text("Responses", style: TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
       ),
-      body: BlocBuilder<CoordinatorBloc, CoordinatorState> (
+      body: BlocBuilder<CoordinatorBloc, CoordinatorState>(
         builder: (context, state) {
-          if(state is CoordinatorLoading) {
+          if (state is CoordinatorLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is FetchRequestResponseSuccess) {
             final allRequests = state.requests;
             final allResponses = state.responses;
-            final filteredRequests = _filterRequests(allRequests as List<Request>);
+            print(allResponses);
+            final filteredRequests = _filterRequests(
+              allRequests as List<Request>,
+            );
 
             return Center(
               child: ConstrainedBox(
@@ -127,18 +128,24 @@ class _ResourceResponsesPageState extends State<ResourceResponsesPage> {
                               controller: _searchController,
                               decoration: InputDecoration(
                                 hintText: 'Search by Resources...',
-                                prefixIcon: const Icon(Icons.search, color: primaryColor),
+                                prefixIcon: const Icon(
+                                  Icons.search,
+                                  color: primaryColor,
+                                ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide.none,
                                 ),
                                 filled: true,
                                 fillColor: Colors.white,
-                                contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 0,
+                                  horizontal: 10,
+                                ),
                               ),
                             ),
                           ),
-                         // const SizedBox(width: 12),
+                          // const SizedBox(width: 12),
 
                           // Container(
                           //   padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -172,21 +179,27 @@ class _ResourceResponsesPageState extends State<ResourceResponsesPage> {
                     ),
                     Expanded(
                       child: filteredRequests.isEmpty
-                          ? Center(child: Text('No requests found for the current filter/search criteria.', style: TextStyle(color: primaryColor)))
+                          ? Center(
+                              child: Text(
+                                'No requests found for the current filter/search criteria.',
+                                style: TextStyle(color: primaryColor),
+                              ),
+                            )
                           : ListView.builder(
-                        itemCount: filteredRequests.length,
-                        itemBuilder: (context, index) {
-                          final request = filteredRequests[index];
-                          return RequestCard(
-                            request: request,
-                            onResponseTap: (requestId) => _handleResponseTap(
-                              context,
-                              request,
-                              allResponses as List<ResponseModel>,
+                              itemCount: filteredRequests.length,
+                              itemBuilder: (context, index) {
+                                final request = filteredRequests[index];
+                                return RequestCard(
+                                  request: request,
+                                  onResponseTap: (requestId) =>
+                                      _handleResponseTap(
+                                        context,
+                                        request,
+                                        allResponses as List<ResponseModel>,
+                                      ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      ),
                     ),
                   ],
                 ),
@@ -194,11 +207,9 @@ class _ResourceResponsesPageState extends State<ResourceResponsesPage> {
             );
           }
 
-          return const Center(child: Text('Something gone wrong'),);
-        }
-      )
-
-
+          return const Center(child: Text('Something gone wrong'));
+        },
+      ),
     );
   }
 }

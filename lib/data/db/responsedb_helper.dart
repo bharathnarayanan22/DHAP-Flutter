@@ -9,8 +9,8 @@ class ResponsedbHelper {
 
   Future<void> addResponse(ResponseModel response) async {
     final db = await _core.database;
-    final doc = MutableDocument(
-      // task.title,
+    final doc = MutableDocument.withId(
+      '${response.id}',
       {
         'type': 'response',
         'id': response.id,
@@ -18,12 +18,13 @@ class ResponsedbHelper {
         'responderName': response.responderName,
         'message': response.message,
         'quantityProvided': response.quantityProvided,
-        'location': response.location,
+        'taskAssigned': response.taskAssigned,
+        'location': '${response.location.latitude},${response.location.longitude}',
       },
     );
 
     await db.saveDocument(doc);
-    debugPrint("Task saved in Couchbase: ${response.requestId}");
+    debugPrint("Response saved in Couchbase: ${response.id}, RequestId: ${response.requestId}");
   }
 
   Future<List<ResponseModel>> getAllResponses() async {
@@ -34,7 +35,7 @@ class ResponsedbHelper {
         .select(SelectResult.all())
         .from(DataSource.database(db))
         .where(
-      Expression.property('type').equalTo(Expression.string('resource')),
+      Expression.property('type').equalTo(Expression.string('response')),
     );
 
     final result = await query.execute();
@@ -49,10 +50,13 @@ class ResponsedbHelper {
         final geoParts = (dataMap['location'] as String? ?? "0,0").split(',');
         responses.add(
           ResponseModel(
+            id: data.integer('id'),
             requestId: data.integer('requestId'),
             responderName: data.string('responderName') ?? '',
             message: data.string('message') ?? '',
             quantityProvided: data.integer('quantityProvided'),
+            address: data.string('address') ?? '',
+            taskAssigned: data.boolean('taskAssigned'),
             location: LatLng(
               double.tryParse(geoParts[0]) ?? 0.0,
               double.tryParse(geoParts[1]) ?? 0.0
@@ -92,6 +96,8 @@ class ResponsedbHelper {
           responderName: dict.string('responderName') ?? '',
           message: dict.string('message') ?? '',
           quantityProvided: dict.integer('quantityProvided'),
+          taskAssigned: dict.boolean('taskAssigned'),
+          address: dict.string('address') ?? '',
           location: LatLng(
             double.tryParse(parts[0]) ?? 0.0,
             double.tryParse(parts[1]) ?? 0.0,
@@ -101,5 +107,21 @@ class ResponsedbHelper {
     }
 
     return responses;
+  }
+
+  Future<void> assignTaskFromResponse(int responseId) async {
+    final db = await _core.database;
+
+    final doc = await db.document('${responseId}');
+
+    if (doc == null) {
+      debugPrint("Response not found: $responseId");
+      return;
+    }
+
+    final mutableDoc = doc.toMutable();
+    mutableDoc.setBoolean(key: 'taskAssigned', true);
+    await db.saveDocument(mutableDoc);
+    debugPrint("Task assigned to response: $responseId");
   }
 }

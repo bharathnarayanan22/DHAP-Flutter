@@ -1,7 +1,7 @@
 import 'package:latlong2/latlong.dart';
 
 class Request {
-  static int _counter = 0;
+  static int _counter = 400;
   final int id;
   final String resource;
   final int quantity;
@@ -12,6 +12,7 @@ class Request {
   final List<int> responseIds;
 
   Request({
+    int? id,
     required this.resource,
     required this.quantity,
     required this.description,
@@ -19,6 +20,6 @@ class Request {
     required this.location,
     this.status = 'Pending',
     List<int>? responseIds,
-  }) : id = ++_counter,
+  }) : id = id ?? ++_counter,
         responseIds = responseIds ?? [];
 }

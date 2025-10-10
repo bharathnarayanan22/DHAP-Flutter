@@ -91,9 +91,6 @@ class TaskRepository {
 
 
   Future<void> updateTask(Task updatedTask) async {
-    final index = _tasks.indexWhere((t) => t.id == updatedTask.id);
-    if (index != -1) {
-      _tasks[index] = updatedTask;
-    }
+    await _dbHelper.updateTask(updatedTask);
   }
 }

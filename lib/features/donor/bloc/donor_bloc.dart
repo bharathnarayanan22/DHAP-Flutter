@@ -42,7 +42,7 @@ class DonorBloc extends Bloc<DonorEvent, DonorState> {
     on<FetchRequestsEvent>((event, emit) async {
       emit(DonorLoading());
       try {
-        final allRequests = _requestRepository.getAllRequests();
+        final allRequests = await _requestRepository.getAllRequests();
 
         final pendingRequests = allRequests
             .where((req) => req.status == "Pending")
@@ -71,6 +71,7 @@ class DonorBloc extends Bloc<DonorEvent, DonorState> {
           responderName: event.user,
           message: event.message,
           quantityProvided: event.quantityProvided,
+          address: event.address,
           location: event.location,
         );
         if (response.requestId == 0 ||
@@ -83,7 +84,7 @@ class DonorBloc extends Bloc<DonorEvent, DonorState> {
         } else {
           _responseRepository.addResponse(response);
           print('Response created successfully');
-          final allRequests = _requestRepository.getAllRequests();
+          final allRequests = await _requestRepository.getAllRequests();
 
           final pendingRequests = allRequests
               .where((req) => req.status == "Pending")
