@@ -10,7 +10,7 @@ class Userdb_helper {
     final db = await _core.database;
 
     final doc = MutableDocument.withId(
-      user.email,
+      '${user.id}',
       {
         'type': 'user',
         'id': user.id,
@@ -25,6 +25,7 @@ class Userdb_helper {
         'role': user.role,
         'taskIds': user.taskIds,
         'resourceIds': user.resourceIds,
+        'inTask': user.inTask,
       },
     );
 
@@ -60,6 +61,7 @@ class Userdb_helper {
           country: data.string('country') ?? '',
           pincode: data.string('pincode') ?? '',
           role: data.string('role') ?? '',
+          inTask: data.boolean('inTask'),
           taskIds: List<int>.from(data.array('taskIds')?.toList() ?? []),
           resourceIds: List<int>.from(data.array('resourceIds')?.toList() ?? []),
         ));
@@ -72,7 +74,7 @@ class Userdb_helper {
   Future<User?> getUserByEmail(String email) async {
     final db = await _core.database;
     //if (_db == null) await init();
-    final doc = await db!.document(email);
+    final doc = await db.document(email);
     if (doc == null) return null;
 
     return User(
@@ -85,6 +87,7 @@ class Userdb_helper {
       country: doc.string('country') ?? '',
       pincode: doc.string('pincode') ?? '',
       role: doc.string('role') ?? '',
+      inTask: doc.boolean('inTask'),
       taskIds: List<int>.from(doc.array('taskIds')?.toList() ?? []),
       resourceIds: List<int>.from(doc.array('resourceIds')?.toList() ?? []),
     );
@@ -96,7 +99,7 @@ class Userdb_helper {
     final doc = await db!.document(email);
     if (doc != null) {
       await db!.deleteDocument(doc);
-      debugPrint("🗑️ User deleted: $email");
+      debugPrint("User deleted: $email");
     }
   }
 
