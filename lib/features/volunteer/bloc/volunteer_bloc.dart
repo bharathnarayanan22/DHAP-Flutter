@@ -36,11 +36,14 @@ class volunteerBloc extends Bloc<volunteerEvent, volunteerState> {
       emit(volunteerLoading());
       try {
         final tasks = await _taskRepository.getAllTasks();
+        print("All tasks: $tasks");
+        print("Task ID: ${event.taskIds}");
         final myTasks = tasks
             .where(
               (task) => event.taskIds.contains(task.id),
             )
             .toList();
+        print("My tasks: $myTasks");
         emit(
           volunteerSuccess(
             message: 'Tasks fetched successfully',

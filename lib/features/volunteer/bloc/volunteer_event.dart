@@ -3,14 +3,14 @@ abstract class volunteerEvent {}
 class FetchPendingTasksEvent extends volunteerEvent{}
 
 class FetchMyTasksEvent extends volunteerEvent{
-  final List<int> taskIds;
+  final List<String> taskIds;
 
   FetchMyTasksEvent({required this.taskIds});
 
 }
 
 class SubmitProofEvent extends volunteerEvent {
-  final int taskId;
+  final String taskId;
   final String message;
   final List<String> files;
 
@@ -22,7 +22,7 @@ class SubmitProofEvent extends volunteerEvent {
 }
 
 class AcceptTaskEvent extends volunteerEvent {
-  final int taskId;
+  final String taskId;
   final String userEmail;
 
   AcceptTaskEvent({required this.taskId, required this.userEmail});

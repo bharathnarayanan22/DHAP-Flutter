@@ -9,9 +9,7 @@ class TaskdbHelper {
 
   Future<void> addTask(Task task) async {
     final db = await _core.database;
-    final doc = MutableDocument.withId(
-        '${task.id}',
-        {
+    final doc = MutableDocument.withId(task.id, {
       'type': 'task',
       'id': task.id,
       'title': task.title,
@@ -20,13 +18,14 @@ class TaskdbHelper {
       'volunteersAccepted': task.volunteersAccepted,
       'StartAddress': task.StartAddress,
       'EndAddress': task.EndAddress,
-      'StartLocation': '${task.StartLocation.latitude},${task.StartLocation.longitude}',
-      'EndLocation': '${task.EndLocation.latitude},${task.EndLocation.longitude}',
+      'StartLocation':
+          '${task.StartLocation.latitude},${task.StartLocation.longitude}',
+      'EndLocation':
+          '${task.EndLocation.latitude},${task.EndLocation.longitude}',
       'Status': task.Status,
-      'proofs': task.proofs.map((p) => {
-        'message': p.message,
-        'mediaPaths': p.mediaPaths,
-      }).toList(),
+      'proofs': task.proofs
+          .map((p) => {'message': p.message, 'mediaPaths': p.mediaPaths})
+          .toList(),
     });
 
     await db.saveDocument(doc);
@@ -51,12 +50,16 @@ class TaskdbHelper {
 
       if (data != null) {
         final dataMap = Map<String, dynamic>.from(data.toPlainMap());
-        final startParts = (dataMap['StartLocation'] as String? ?? "0,0").split(',');
-        final endParts = (dataMap['EndLocation'] as String? ?? "0,0").split(',');
+        final startParts = (dataMap['StartLocation'] as String? ?? "0,0").split(
+          ',',
+        );
+        final endParts = (dataMap['EndLocation'] as String? ?? "0,0").split(
+          ',',
+        );
 
         tasks.add(
           Task(
-            id: data.integer('id'),
+            id: data.string('id'),
             title: data.string('title') ?? '',
             description: data.string('description') ?? '',
             volunteer: data.integer('volunteer'),
@@ -88,7 +91,7 @@ class TaskdbHelper {
     return tasks;
   }
 
-  Future<void> deleteTask(int id) async {
+  Future<void> deleteTask(String id) async {
     debugPrint("Deleting task with id: $id");
     final db = await _core.database;
     final doc = await db.document(id.toString());
@@ -99,9 +102,9 @@ class TaskdbHelper {
     }
   }
 
-  Future<Task> getTaskById(int id) async {
+  Future<Task> getTaskById(String id) async {
     final db = await _core.database;
-    final doc = await db!.document(id.toString());
+    final doc = await db!.document(id);
     if (doc == null) {
       throw Exception('Task not found');
     }
@@ -110,7 +113,7 @@ class TaskdbHelper {
     final endParts = (data?['EndLocation'] as String? ?? "0,0").split(',');
 
     return Task(
-      id: data?.integer('id'),
+      id: data?.string('id'),
       title: data?.string('title') ?? '',
       description: data?.string('description') ?? '',
       volunteer: data?.integer('volunteer') ?? 0,
@@ -129,32 +132,31 @@ class TaskdbHelper {
       proofs: (data?['proofs'] as List<dynamic>? ?? [])
           .map(
             (e) => Proof(
-          message: e['message'] ?? '',
-          mediaPaths: List<String>.from(e['mediaPaths'] ?? []),
-        ),
-      )
+              message: e['message'] ?? '',
+              mediaPaths: List<String>.from(e['mediaPaths'] ?? []),
+            ),
+          )
           .toList(),
     );
   }
 
   Future<void> updateTask(Task updatedTask) async {
     final db = await _core.database;
-    final doc = MutableDocument.withId(
-        '${updatedTask.id}',
-      {
-        'type': 'task',
-        'id': updatedTask.id,
-        'title': updatedTask.title,
-        'description': updatedTask.description,
-        'volunteer': updatedTask.volunteer,
-        'volunteersAccepted': updatedTask.volunteersAccepted,
-        'StartAddress': updatedTask.StartAddress,
-        'EndAddress': updatedTask.EndAddress,
-        'StartLocation': '${updatedTask.StartLocation.latitude},${updatedTask.StartLocation.longitude}',
-        'EndLocation': '${updatedTask.EndLocation.latitude},${updatedTask.EndLocation.longitude}',
-        'Status': updatedTask.Status,
-      }
-    );
+    final doc = MutableDocument.withId(updatedTask.id, {
+      'type': 'task',
+      'id': updatedTask.id,
+      'title': updatedTask.title,
+      'description': updatedTask.description,
+      'volunteer': updatedTask.volunteer,
+      'volunteersAccepted': updatedTask.volunteersAccepted,
+      'StartAddress': updatedTask.StartAddress,
+      'EndAddress': updatedTask.EndAddress,
+      'StartLocation':
+          '${updatedTask.StartLocation.latitude},${updatedTask.StartLocation.longitude}',
+      'EndLocation':
+          '${updatedTask.EndLocation.latitude},${updatedTask.EndLocation.longitude}',
+      'Status': updatedTask.Status,
+    });
     await db.saveDocument(doc);
     debugPrint("Task updated in Couchbase: ${updatedTask.title}");
   }

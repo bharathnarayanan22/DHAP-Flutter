@@ -17,7 +17,7 @@ class UserRepository {
     return await _dbHelper.getUserByEmail(email);
   }
 
-  Future<void> acceptTask(int taskId, String userEmail) async {
+  Future<void> acceptTask(String taskId, String userEmail) async {
     await _dbHelper.acceptTask(taskId, userEmail);
   }
 

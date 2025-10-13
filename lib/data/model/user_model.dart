@@ -1,9 +1,11 @@
 import 'package:dhap_flutter_project/data/model/resource_model.dart';
 import 'package:dhap_flutter_project/data/model/task_model.dart';
+import 'package:uuid/uuid.dart';
 
+final uuid = Uuid();
 class User {
-  static int Counter = 100;
-  final int id;
+  //static int Counter = 100;
+  final String id;
   final String name;
   final String email;
   final String password;
@@ -14,10 +16,11 @@ class User {
   final String pincode;
   final String role;
   bool inTask;
-  final List<int> taskIds;
-  final List<int> resourceIds;
+  final List<String> taskIds;
+  final List<String> resourceIds;
 
   User({
+    String? id,
     required this.name,
     required this.email,
     required this.password,
@@ -28,9 +31,9 @@ class User {
     required this.pincode,
     required this.role,
     this.inTask = false,
-    List<int>? taskIds,
-    List<int>? resourceIds,
-  }) : id = ++Counter,
+    List<String>? taskIds,
+    List<String>? resourceIds,
+  }) : id = id ?? uuid.v4(),
      taskIds = taskIds ?? [],
      resourceIds = resourceIds ?? [];
 }

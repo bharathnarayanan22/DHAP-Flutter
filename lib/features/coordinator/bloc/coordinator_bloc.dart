@@ -242,9 +242,9 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
         print('Responses: ${allResponses}');
 
 
-        if (allRequests.isEmpty) {
-          emit(const FetchRequestFailure(error: "No Requests found"));
-        } else {
+        // if (allRequests.isEmpty) {
+        //   emit(const FetchRequestFailure(error: "No Requests found"));
+        // } else {
           emit(
             FetchRequestResponseSuccess(
               message: "Fetched requests and responses successfully",
@@ -252,7 +252,7 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
               responses: allResponses
             ),
           );
-        }
+       // }
       } catch (e) {
         emit(FetchRequestFailure(error: e.toString()));
       }

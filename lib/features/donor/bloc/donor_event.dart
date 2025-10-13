@@ -21,7 +21,7 @@ class AddResourceEvent extends DonorEvent {
 class FetchRequestsEvent extends DonorEvent {}
 
 class RespondEvent extends DonorEvent {
-  final int requestId;
+  final String requestId;
   final String message;
   final int quantityProvided;
   final LatLng location;

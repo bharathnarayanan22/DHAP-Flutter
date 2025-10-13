@@ -11,20 +11,17 @@ class RequestdbHelper {
     final db = await _core.database;
     debugPrint('DB: ${db.name}');
 
-    final doc = MutableDocument.withId(
-      '${request.id}',
-      {
-        'type': 'request',
-        'id': request.id,
-        'resource': request.resource,
-        'quantity': request.quantity,
-        'description': request.description,
-        'address': request.address,
-        'location': '${request.location.latitude},${request.location.longitude}',
-        'status': request.status,
-        'responseIds': request.responseIds,
-      },
-    );
+    final doc = MutableDocument.withId(request.id, {
+      'type': 'request',
+      'id': request.id,
+      'resource': request.resource,
+      'quantity': request.quantity,
+      'description': request.description,
+      'address': request.address,
+      'location': '${request.location.latitude},${request.location.longitude}',
+      'status': request.status,
+      'responseIds': request.responseIds,
+    });
 
     debugPrint("Request document: $doc");
 
@@ -38,10 +35,10 @@ class RequestdbHelper {
 
     final query = await QueryBuilder.createAsync()
         .select(SelectResult.all())
-        .from(DataSource.database(db!))
+        .from(DataSource.database(db))
         .where(
-      Expression.property('type').equalTo(Expression.string('request')),
-    );
+          Expression.property('type').equalTo(Expression.string('request')),
+        );
 
     final result = await query.execute();
 
@@ -57,7 +54,7 @@ class RequestdbHelper {
         final geoParts = (dataMap['location'] as String? ?? "0,0").split(',');
         requests.add(
           Request(
-            id: data.integer('id'),
+            id: data.string('id') ?? '',
             resource: data.string('resource') ?? '',
             quantity: data.integer('quantity'),
             address: data.string('address') ?? '',
@@ -67,7 +64,9 @@ class RequestdbHelper {
               double.tryParse(geoParts[1]) ?? 0.0,
             ),
             status: data.string('status') ?? '',
-            responseIds: List<int>.from(data.array('responseIds')?.toList() ?? []),
+            responseIds: List<String>.from(
+              data.array('responseIds')?.toList() ?? [],
+            ),
           ),
         );
       }
@@ -76,7 +75,7 @@ class RequestdbHelper {
     return requests;
   }
 
-  Future<void> AddResponseID(int requestId, int responseId) async {
+  Future<void> AddResponseID(String requestId, String responseId) async {
     final db = await _core.database;
     debugPrint('DB: ${db.name}');
     debugPrint("Adding response ID $responseId to request $requestId");
@@ -88,19 +87,20 @@ class RequestdbHelper {
     }
 
     final mutableDoc = doc.toMutable();
-    final existingResponseIds = List<int>.from(
+    final existingResponseIds = List<String>.from(
       mutableDoc.array('responseIds')?.toList() ?? [],
     );
 
     if (!existingResponseIds.contains(responseId)) {
       existingResponseIds.add(responseId);
-      mutableDoc.setArray(key: 'responseIds', MutableArray(existingResponseIds));
+      mutableDoc.setArray(
+        key: 'responseIds',
+        MutableArray(existingResponseIds),
+      );
       await db.saveDocument(mutableDoc);
       debugPrint("Response ID $responseId added to request $requestId");
     } else {
       debugPrint("Response ID already exists for request $requestId");
     }
   }
-
-
 }

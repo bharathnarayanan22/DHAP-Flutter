@@ -9,22 +9,22 @@ class ResponsedbHelper {
 
   Future<void> addResponse(ResponseModel response) async {
     final db = await _core.database;
-    final doc = MutableDocument.withId(
-      '${response.id}',
-      {
-        'type': 'response',
-        'id': response.id,
-        'requestId': response.requestId,
-        'responderName': response.responderName,
-        'message': response.message,
-        'quantityProvided': response.quantityProvided,
-        'taskAssigned': response.taskAssigned,
-        'location': '${response.location.latitude},${response.location.longitude}',
-      },
-    );
+    final doc = MutableDocument.withId(response.id, {
+      'type': 'response',
+      'id': response.id,
+      'requestId': response.requestId,
+      'responderName': response.responderName,
+      'message': response.message,
+      'quantityProvided': response.quantityProvided,
+      'taskAssigned': response.taskAssigned,
+      'location':
+          '${response.location.latitude},${response.location.longitude}',
+    });
 
     await db.saveDocument(doc);
-    debugPrint("Response saved in Couchbase: ${response.id}, RequestId: ${response.requestId}");
+    debugPrint(
+      "Response saved in Couchbase: ${response.id}, RequestId: ${response.requestId}",
+    );
   }
 
   Future<List<ResponseModel>> getAllResponses() async {
@@ -35,8 +35,8 @@ class ResponsedbHelper {
         .select(SelectResult.all())
         .from(DataSource.database(db))
         .where(
-      Expression.property('type').equalTo(Expression.string('response')),
-    );
+          Expression.property('type').equalTo(Expression.string('response')),
+        );
 
     final result = await query.execute();
 
@@ -50,8 +50,8 @@ class ResponsedbHelper {
         final geoParts = (dataMap['location'] as String? ?? "0,0").split(',');
         responses.add(
           ResponseModel(
-            id: data.integer('id'),
-            requestId: data.integer('requestId'),
+            id: data.string('id'),
+            requestId: data.string('requestId') ?? " ",
             responderName: data.string('responderName') ?? '',
             message: data.string('message') ?? '',
             quantityProvided: data.integer('quantityProvided'),
@@ -59,7 +59,7 @@ class ResponsedbHelper {
             taskAssigned: data.boolean('taskAssigned'),
             location: LatLng(
               double.tryParse(geoParts[0]) ?? 0.0,
-              double.tryParse(geoParts[1]) ?? 0.0
+              double.tryParse(geoParts[1]) ?? 0.0,
             ),
           ),
         );
@@ -69,16 +69,21 @@ class ResponsedbHelper {
     return responses;
   }
 
-  Future<List<ResponseModel>> getResponsesForRequest(int requestId) async {
+  Future<List<ResponseModel>> getResponsesForRequest(String requestId) async {
     final db = await _core.database;
 
     final query = await QueryBuilder.createAsync()
         .select(SelectResult.all())
         .from(DataSource.database(db))
         .where(
-      Expression.property('type').equalTo(Expression.string('response'))
-          .and(Expression.property('requestId').equalTo(Expression.integer(requestId))),
-    );
+          Expression.property('type')
+              .equalTo(Expression.string('response'))
+              .and(
+                Expression.property(
+                  'requestId',
+                ).equalTo(Expression.string(requestId)),
+              ),
+        );
 
     final result = await query.execute();
     final List<ResponseModel> responses = [];
@@ -86,13 +91,15 @@ class ResponsedbHelper {
     await for (final row in result.asStream()) {
       final dict = row.dictionary(db.name);
       if (dict == null) continue;
+      //debugPrint("dict: ${dict.string()}");
 
       final locationString = dict.string('location') ?? "0,0";
       final parts = locationString.split(',');
 
       responses.add(
         ResponseModel(
-          requestId: dict.integer('requestId'),
+          id: dict.string('id') ?? '',
+          requestId: dict.string('requestId') ?? '',
           responderName: dict.string('responderName') ?? '',
           message: dict.string('message') ?? '',
           quantityProvided: dict.integer('quantityProvided'),
@@ -109,15 +116,17 @@ class ResponsedbHelper {
     return responses;
   }
 
-  Future<void> assignTaskFromResponse(int responseId) async {
+  Future<void> assignTaskFromResponse(String responseId) async {
     final db = await _core.database;
 
-    final doc = await db.document('${responseId}');
+    final doc = await db.document(responseId);
 
     if (doc == null) {
       debugPrint("Response not found: $responseId");
       return;
     }
+
+    debugPrint("doc: $doc");
 
     final mutableDoc = doc.toMutable();
     mutableDoc.setBoolean(key: 'taskAssigned', true);

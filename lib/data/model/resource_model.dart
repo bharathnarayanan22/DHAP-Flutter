@@ -1,8 +1,10 @@
 import 'package:latlong2/latlong.dart';
+import 'package:uuid/uuid.dart';
 
+final uuid = Uuid();
 class ResourceModel {
-  static int _counter = 300;
-  final int id;
+ // static int _counter = 300;
+  final String id;
   final String resource;
   final int quantity;
   final String address;
@@ -10,11 +12,11 @@ class ResourceModel {
   final String DonorName;
 
   ResourceModel({
-    int? id,
+    String? id,
     required this.resource,
     required this.quantity,
     required this.address,
     required this.location,
     required this.DonorName,
-  }) : id = id ?? ++_counter;
+  }) : id = id ?? uuid.v4();
 }

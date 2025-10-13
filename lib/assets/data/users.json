@@ -1,6 +1,7 @@
 [
   {
     "type": "user",
+    "id": "1",
     "name": "Arun Kumar",
     "email": "arun@example.com",
     "password": "pass123",
@@ -15,6 +16,7 @@
   },
   {
     "type": "user",
+    "id": "2",
     "name": "Meera Sharma",
     "email": "meera@example.com",
     "password": "secure456",
@@ -29,6 +31,7 @@
   },
   {
     "type": "user",
+    "id": "3",
     "name": "Ravi Patel",
     "email": "ravi@example.com",
     "password": "pass123",
@@ -44,6 +47,7 @@
   },
   {
     "type": "user",
+    "id": "4",
     "name": "Anita Singh",
     "email": "anita@example.com",
     "password": "volunteer789",
@@ -58,6 +62,7 @@
   },
   {
     "type": "user",
+    "id": "5",
     "name": "Suresh Reddy",
     "email": "suresh@example.com",
     "password": "pass123",

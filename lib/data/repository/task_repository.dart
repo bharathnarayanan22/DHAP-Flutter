@@ -77,7 +77,7 @@ class TaskRepository {
     return tasks;
   }
 
-  Future<void> deleteTask(int id) async {
+  Future<void> deleteTask(String id) async {
     await _dbHelper.deleteTask(id);
   }
 
@@ -85,7 +85,7 @@ class TaskRepository {
     _tasks.clear();
   }
 
-  Task getTaskById(int id) {
+  Task getTaskById(String id) {
     return _tasks.firstWhere((task) => task.id == id);
   }
 

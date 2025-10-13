@@ -9,8 +9,8 @@ class ResourcedbHelper {
 
   Future<void> addResource(ResourceModel resource) async {
     final db = await _core.database;
-    final doc = MutableDocument(
-      // task.title,
+    final doc = MutableDocument.withId(
+      resource.id,
       {
         'type': 'resource',
         'id': resource.id,
@@ -22,9 +22,49 @@ class ResourcedbHelper {
       },
     );
 
-    await db!.saveDocument(doc);
+    await db.saveDocument(doc);
     debugPrint("Task saved in Couchbase: ${resource.resource}");
   }
+
+  // Future<List<ResourceModel>> getAllResources() async {
+  //   final db = await _core.database;
+  //   final dbName = 'dhap';
+  //
+  //   final query = await QueryBuilder.createAsync()
+  //       .select(SelectResult.all())
+  //       .from(DataSource.database(db))
+  //       .where(
+  //         Expression.property('type').equalTo(Expression.string('resource')),
+  //       );
+  //
+  //   final result = await query.execute();
+  //
+  //   final List<ResourceModel> resources = [];
+  //
+  //   await for (final row in result.asStream()) {
+  //     final data = row.dictionary(dbName);
+  //
+  //     if (data != null) {
+  //       final dataMap = Map<String, dynamic>.from(data.toPlainMap());
+  //       final geoParts = (dataMap['location'] as String? ?? "0,0").split(',');
+  //       resources.add(
+  //         ResourceModel(
+  //           id: data.string('id') ?? '',
+  //           resource: data.string('resource') ?? '',
+  //           quantity: data.integer('quantity'),
+  //           address: data.string('address') ?? '',
+  //           DonorName: data.string('DonorName') ?? '',
+  //           location: LatLng(
+  //             double.tryParse(geoParts[0]) ?? 0.0,
+  //             double.tryParse(geoParts[1]) ?? 0.0,
+  //           ),
+  //         ),
+  //       );
+  //     }
+  //   }
+  //
+  //   return resources;
+  // }
 
   Future<List<ResourceModel>> getAllResources() async {
     final db = await _core.database;
@@ -32,10 +72,10 @@ class ResourcedbHelper {
 
     final query = await QueryBuilder.createAsync()
         .select(SelectResult.all())
-        .from(DataSource.database(db!))
+        .from(DataSource.database(db))
         .where(
-          Expression.property('type').equalTo(Expression.string('resource')),
-        );
+      Expression.property('type').equalTo(Expression.string('resource')),
+    );
 
     final result = await query.execute();
 
@@ -43,31 +83,40 @@ class ResourcedbHelper {
 
     await for (final row in result.asStream()) {
       final data = row.dictionary(dbName);
+      if (data == null) continue;
 
-      if (data != null) {
-        final dataMap = Map<String, dynamic>.from(data.toPlainMap());
-        final geoParts = (dataMap['location'] as String? ?? "0,0").split(',');
-        resources.add(
-          ResourceModel(
-            resource: data.string('resource') ?? '',
-            quantity: data.integer('quantity'),
-            address: data.string('address') ?? '',
-            DonorName: data.string('DonorName') ?? '',
-            location: LatLng(
-              double.tryParse(geoParts[0]) ?? 0.0,
-              double.tryParse(geoParts[1]) ?? 0.0,
-            ),
-          ),
-        );
+      final dataMap = Map<String, dynamic>.from(data.toPlainMap());
+
+      double lat = 0.0, lng = 0.0;
+
+      final locationRaw = dataMap['location'];
+      if (locationRaw is String) {
+        final parts = locationRaw.split(',');
+        lat = double.tryParse(parts[0]) ?? 0.0;
+        lng = double.tryParse(parts[1]) ?? 0.0;
+      } else if (locationRaw is Map) {
+        lat = (locationRaw['latitude'] as num?)?.toDouble() ?? 0.0;
+        lng = (locationRaw['longitude'] as num?)?.toDouble() ?? 0.0;
       }
+
+      resources.add(
+        ResourceModel(
+          id: data.string('id') ?? '',
+          resource: data.string('resource') ?? '',
+          quantity: data.integer('quantity'),
+          address: data.string('address') ?? '',
+          DonorName: data.string('DonorName') ?? '',
+          location: LatLng(lat, lng),
+        ),
+      );
     }
 
     return resources;
   }
 
-  Future<void> deleteResource(int id) async {
+  Future<void> deleteResource(String id) async {
     final db = await _core.database;
-    final doc = await db.document(id.toString());
+    final doc = await db.document(id);
     if (doc != null) {
       await db.deleteDocument(doc);
       debugPrint("Task deleted: $id");

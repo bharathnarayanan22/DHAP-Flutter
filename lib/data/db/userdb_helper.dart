@@ -10,7 +10,7 @@ class Userdb_helper {
     final db = await _core.database;
 
     final doc = MutableDocument.withId(
-      '${user.id}',
+      user.id,
       {
         'type': 'user',
         'id': user.id,
@@ -52,6 +52,7 @@ class Userdb_helper {
 
       if (data != null) {
         users.add(User(
+          id: data.string('id'),
           name: data.string('name') ?? '',
           email: data.string('email') ?? '',
           password: data.string('password') ?? '',
@@ -62,8 +63,8 @@ class Userdb_helper {
           pincode: data.string('pincode') ?? '',
           role: data.string('role') ?? '',
           inTask: data.boolean('inTask'),
-          taskIds: List<int>.from(data.array('taskIds')?.toList() ?? []),
-          resourceIds: List<int>.from(data.array('resourceIds')?.toList() ?? []),
+          taskIds: List<String>.from(data.array('taskIds')?.toList() ?? []),
+          resourceIds: List<String>.from(data.array('resourceIds')?.toList() ?? []),
         ));
       }
     }
@@ -88,8 +89,8 @@ class Userdb_helper {
       pincode: doc.string('pincode') ?? '',
       role: doc.string('role') ?? '',
       inTask: doc.boolean('inTask'),
-      taskIds: List<int>.from(doc.array('taskIds')?.toList() ?? []),
-      resourceIds: List<int>.from(doc.array('resourceIds')?.toList() ?? []),
+      taskIds: List<String>.from(doc.array('taskIds')?.toList() ?? []),
+      resourceIds: List<String>.from(doc.array('resourceIds')?.toList() ?? []),
     );
   }
 
@@ -119,7 +120,7 @@ class Userdb_helper {
   }
 
 
-  Future<void> acceptTask(int taskId, String userEmail) async {
+  Future<void> acceptTask(String taskId, String userEmail) async {
     final db = await _core.database;
 
     final userDoc = await db.document(userEmail);
@@ -128,27 +129,31 @@ class Userdb_helper {
       return;
     }
 
+    debugPrint("userDoc: $userDoc");
+
     final mutableUser = userDoc.toMutable();
     final existingTaskIds =
-    List<int>.from(mutableUser.array('taskIds')?.toList() ?? []);
+    List<String>.from(mutableUser.array('taskIds')?.toList() ?? []);
 
     if (!existingTaskIds.contains(taskId) && !mutableUser.boolean('inTask')) {
       existingTaskIds.add(taskId);
       mutableUser.setBoolean(key: 'inTask', true);
       final mutableArray = MutableArray();
       for (var id in existingTaskIds) {
-        mutableArray.addInteger(id);
+        mutableArray.addString(id);
       }
 
       mutableUser.setArray(key: 'taskIds', mutableArray);
       await db.saveDocument(mutableUser);
       debugPrint("Task $taskId added to user $userEmail");
 
-      final taskDoc = await db.document(taskId.toString());
+      final taskDoc = await db.document(taskId);
       if (taskDoc == null) {
         debugPrint("Task not found for id: $taskId");
         return;
       }
+
+      debugPrint("taskDoc: $taskDoc");
 
       final mutableTask = taskDoc.toMutable();
 

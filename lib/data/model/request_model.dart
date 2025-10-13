@@ -1,25 +1,28 @@
 import 'package:latlong2/latlong.dart';
+import 'package:uuid/uuid.dart';
+
+final uuid = Uuid();
 
 class Request {
-  static int _counter = 400;
-  final int id;
+  //static int _counter = 400;
+  final String id;
   final String resource;
   final int quantity;
   final String description;
   final String address;
   final LatLng location;
   String status;
-  final List<int> responseIds;
+  final List<String> responseIds;
 
   Request({
-    int? id,
+    String? id,
     required this.resource,
     required this.quantity,
     required this.description,
     required this.address,
     required this.location,
     this.status = 'Pending',
-    List<int>? responseIds,
-  }) : id = id ?? ++_counter,
+    List<String>? responseIds,
+  }) : id = id ?? uuid.v4(),
         responseIds = responseIds ?? [];
 }

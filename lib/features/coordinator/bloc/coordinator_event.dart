@@ -32,7 +32,7 @@ class UpdateTaskEvent extends CoordinatorEvent {
 class FetchTasksEvent extends CoordinatorEvent {}
 
 class DeleteTaskEvent extends CoordinatorEvent {
-  final int taskId;
+  final String taskId;
   DeleteTaskEvent({required this.taskId});
 }
 
@@ -77,6 +77,6 @@ class FetchResourcesEvent extends CoordinatorEvent {}
 class FetchRequestsAndResponsesEvent extends CoordinatorEvent {}
 
 class MarkResponseTaskAssignedEvent extends CoordinatorEvent {
-  final int responseId;
+  final String responseId;
   MarkResponseTaskAssignedEvent(this.responseId);
 }

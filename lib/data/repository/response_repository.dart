@@ -59,11 +59,11 @@ class ResponseRepository {
   }
 
 
-  List<ResponseModel> getResponsesForRequest(int requestId) {
+  List<ResponseModel> getResponsesForRequest(String requestId) {
     return _responses.where((res) => res.requestId == requestId).toList();
   }
 
-  Future<void> assignTaskFromResponse(int responseId) async {
+  Future<void> assignTaskFromResponse(String responseId) async {
     await _dbHelper.assignTaskFromResponse(responseId);
   }
 }

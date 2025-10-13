@@ -1,16 +1,17 @@
 import 'package:latlong2/latlong.dart';
+import 'package:uuid/uuid.dart';
+
+final uuid = Uuid();
 
 class Proof {
   final String message;
   final List<String> mediaPaths;
+
   Proof({required this.message, this.mediaPaths = const []});
 }
 
-
 class Task {
-  static int _counter = 200;
-  final int id;
-
+  final String id;
   final String title;
   final String description;
   final int volunteer;
@@ -20,11 +21,10 @@ class Task {
   final LatLng StartLocation;
   final LatLng EndLocation;
   String Status;
-
   List<Proof> proofs;
 
   Task({
-    int? id,
+    String? id,
     required this.title,
     required this.description,
     required this.volunteer,
@@ -35,5 +35,5 @@ class Task {
     required this.EndLocation,
     this.Status = "In Progress",
     this.proofs = const [],
-  }) : id = id ?? ++_counter;
+  }) : id = id ?? uuid.v4(); // 🔹 auto-generate UUID if not provided
 }

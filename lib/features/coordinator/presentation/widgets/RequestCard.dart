@@ -7,7 +7,7 @@ const Color accentColor = Color(0xFF42A5F5);
 
 class RequestCard extends StatelessWidget {
   final Request request;
-  final Function(int) onResponseTap;
+  final Function(String) onResponseTap;
 
   const RequestCard({
     super.key,

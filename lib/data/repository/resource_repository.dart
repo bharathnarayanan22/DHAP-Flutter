@@ -93,7 +93,7 @@ class ResourceRepository {
   //   return List.unmodifiable(_resources);
   // }
 
-  void deleteResource(int id) {
+  void deleteResource(String id) {
     _resources.removeWhere((resource) => resource.id == id);
   }
 
