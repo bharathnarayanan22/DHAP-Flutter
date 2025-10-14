@@ -120,7 +120,9 @@ class AvailTaskCard extends StatelessWidget {
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: accentColor,
+                      //disabledBackgroundColor: Colors.grey.shade400,
                       foregroundColor: Colors.white,
+                      //disabledForegroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -129,16 +131,13 @@ class AvailTaskCard extends StatelessWidget {
                         vertical: 10,
                       ),
                     ),
-                    onPressed: () {
-                      debugPrint(user.inTask.toString());
-                      user.inTask
-                          ? null
-                          : (context.read<volunteerBloc>().add(
-                              AcceptTaskEvent(
-                                taskId: task.id,
-                                userEmail: user.email,
-                              ),
-                            ));
+                    onPressed: user.inTask
+                        ? null
+                        : () {
+                      user.inTask = true;
+                      context.read<volunteerBloc>().add(
+                        AcceptTaskEvent(taskId: task.id, userEmail: user.email),
+                      );
                     },
                     icon: const Icon(Icons.check_circle_outline, size: 20),
                     label: const Text(

@@ -53,6 +53,7 @@
     "password": "volunteer789",
     "mobile": "9871203456",
     "addressLine": "88 Lake View Road",
+    "inTask": false,
     "city": "Kolkata",
     "country": "India",
     "pincode": "700001",

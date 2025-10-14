@@ -276,5 +276,42 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
       }
     });
 
+
+    on<FetchVerificationTasksEvent>((event, emit) async {
+      emit(CoordinatorLoading());
+      try {
+        final tasks = await _taskRepository.getAllTasks();
+        final verifiedTasks = tasks
+            .where(
+              (task) => task.Status == 'In Verification',
+        )
+            .toList();
+        emit(
+          CoordinatorSuccess(
+            message: 'Tasks fetched successfully',
+            tasks: verifiedTasks,
+          ),
+        );
+      } catch (e) {
+        emit(CoordinatorFailure(error: e.toString()));
+      }
+    });
+
+    on<MarkTaskCompletedEvent>((event, emit) async {
+      emit(CoordinatorLoading());
+      try {
+       // await _taskRepository.markTaskCompleted(event.taskId);
+        final tasks = await _taskRepository.getAllTasks();
+        emit(
+          CoordinatorSuccess(
+            message: 'Task marked as completed successfully',
+            tasks: tasks,
+          ),
+        );
+      } catch (e) {
+        emit(CoordinatorFailure(error: e.toString()));
+      }
+    });
+
   }
 }

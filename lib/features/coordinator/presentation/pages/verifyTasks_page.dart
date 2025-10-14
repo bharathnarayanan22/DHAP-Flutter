@@ -1,4 +1,10 @@
+import 'dart:io';
+
+import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_bloc.dart';
+import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_event.dart';
+import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
 
 class VerifyTasksPage extends StatefulWidget {
@@ -10,53 +16,56 @@ class VerifyTasksPage extends StatefulWidget {
 
 class _VerifyTasksPageState extends State<VerifyTasksPage> {
 
-  final List<Map<String, dynamic>> tasks = [
-    {
-      'title': 'Distribute Food Packets',
-      'description': 'Distribute food packets to needy families in the city.',
-      'volunteers': 5,
-      'images': [
-        'https://picsum.photos/400/200?image=1',
-        'https://picsum.photos/400/200?image=2',
-      ],
-      'videos': [
-        'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-      ],
-    },
-    {
-      'title': 'Clean Up Park',
-      'description': 'Volunteer to clean up the local park this weekend.',
-      'volunteers': 3,
-      'images': ['https://picsum.photos/400/200?image=10'],
-      'videos': [],
-    },
-  ];
+  // final List<Map<String, dynamic>> tasks = [
+  //   {
+  //     'title': 'Distribute Food Packets',
+  //     'description': 'Distribute food packets to needy families in the city.',
+  //     'volunteers': 5,
+  //     'images': [
+  //       'https://picsum.photos/400/200?image=1',
+  //       'https://picsum.photos/400/200?image=2',
+  //     ],
+  //     'videos': [
+  //       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+  //     ],
+  //   },
+  //   {
+  //     'title': 'Clean Up Park',
+  //     'description': 'Volunteer to clean up the local park this weekend.',
+  //     'volunteers': 3,
+  //     'images': ['https://picsum.photos/400/200?image=10'],
+  //     'videos': [],
+  //   },
+  // ];
 
   final Map<int, Map<int, VideoPlayerController>> _videoControllers = {};
 
   @override
   void initState() {
     super.initState();
-    _initializeVideos();
+   // _initializeVideos();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CoordinatorBloc>().add(FetchVerificationTasksEvent());
+    });
   }
 
-  Future<void> _initializeVideos() async {
-    for (int i = 0; i < tasks.length; i++) {
-      final videos = (tasks[i]['videos'] as List<dynamic>)
-          .map((e) => e.toString())
-          .toList();
-      _videoControllers[i] = {};
-      for (int j = 0; j < videos.length; j++) {
-        final controller = VideoPlayerController.networkUrl(
-          Uri.parse(videos[j])
-        );
-        await controller.initialize();
-        controller.setLooping(true);
-        _videoControllers[i]![j] = controller;
-      }
-    }
-    setState(() {});
-  }
+  // Future<void> _initializeVideos() async {
+  //   for (int i = 0; i < tasks.length; i++) {
+  //     final videos = (tasks[i]['videos'] as List<dynamic>)
+  //         .map((e) => e.toString())
+  //         .toList();
+  //     _videoControllers[i] = {};
+  //     for (int j = 0; j < videos.length; j++) {
+  //       final controller = VideoPlayerController.networkUrl(
+  //           Uri.parse(videos[j])
+  //       );
+  //       await controller.initialize();
+  //       controller.setLooping(true);
+  //       _videoControllers[i]![j] = controller;
+  //     }
+  //   }
+  //   setState(() {});
+  // }
 
   @override
   void dispose() {
@@ -84,123 +93,115 @@ class _VerifyTasksPageState extends State<VerifyTasksPage> {
         backgroundColor: const Color(0xFF0A2744),
         foregroundColor: Colors.white,
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(12),
-        itemCount: tasks.length,
-        itemBuilder: (context, index) {
-          final task = tasks[index];
+      body: BlocBuilder<CoordinatorBloc, CoordinatorState>(
+        builder: (context, state) {
+          if (state is CoordinatorLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          else if (state is CoordinatorSuccess) {
+            final tasks = state.tasks;
 
-          final mediaItems = [
-            ...(task['images'] as List<dynamic>).map((e) => e.toString()),
-            ...(task['videos'] as List<dynamic>).map((e) => e.toString()),
-          ];
+            return ListView.builder(
+              padding: const EdgeInsets.all(12),
+              itemCount: tasks.length,
+              itemBuilder: (context, index) {
+                final task = tasks[index];
+                final proofs = task.proofs;
+                final mediaPaths = proofs.expand((p) => p.mediaPaths).toList();
 
-          return Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            elevation: 4,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(
-                  height: 200,
-                  child: PageView.builder(
-                    itemCount: mediaItems.length,
-                    itemBuilder: (context, mediaIndex) {
-                      final media = mediaItems[mediaIndex];
-                      final isVideo = (task['videos'] as List<dynamic>)
-                          .map((e) => e.toString())
-                          .contains(media);
-
-                      if (isVideo) {
-                        final videoIdx = task['videos'].indexOf(media);
-                        final controller = _videoControllers[index]?[videoIdx];
-
-                        if (controller == null ||
-                            !controller.value.isInitialized) {
-                          return Center(child: CircularProgressIndicator());
-                        }
-
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              controller.value.isPlaying
-                                  ? controller.pause()
-                                  : controller.play();
-                            });
-                          },
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(12),
-                            ),
-                            child: VideoPlayer(controller),
-                          ),
-                        );
-                      } else {
-                        return ClipRRect(
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(12),
-                          ),
-                          child: Image.network(media, fit: BoxFit.cover),
-                        );
-                      }
-                    },
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                ),
-                Container(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                  
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          task['title'],
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          task['description'],
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          "Volunteers: ${task['volunteers']}",
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        const SizedBox(height: 12),
+                  elevation: 4,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (mediaPaths.isNotEmpty)
                         SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF0A2744),
-                              foregroundColor: Colors.white,
-                            ),
-                  
-                            onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    "${task['title']} marked as completed!",
+                          height: 200,
+                          child: PageView.builder(
+                            itemCount: mediaPaths.length,
+                            itemBuilder: (context, mediaIndex) {
+                              final media = mediaPaths[mediaIndex];
+                              final isVideo = media.endsWith('.mp4') || media.endsWith('.mov');
+
+                              if (isVideo) {
+                                final controller = VideoPlayerController.file(File(media));
+                                return FutureBuilder(
+                                  future: controller.initialize(),
+                                  builder: (context, snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return const Center(child: CircularProgressIndicator());
+                                    }
+                                    return GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          controller.value.isPlaying
+                                              ? controller.pause()
+                                              : controller.play();
+                                        });
+                                      },
+                                      child: ClipRRect(
+                                        borderRadius: const BorderRadius.vertical(
+                                          top: Radius.circular(12),
+                                        ),
+                                        child: VideoPlayer(controller),
+                                      ),
+                                    );
+                                  },
+                                );
+                              } else {
+                                return ClipRRect(
+                                  borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(12),
                                   ),
-                                ),
-                              );
+                                  child: Image.file(
+                                    File(media),
+                                    fit: BoxFit.cover,
+                                  ),
+                                );
+                              }
                             },
-                            child: const Text("Mark as Completed"),
                           ),
                         ),
-                      ],
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(task.title,
+                                style: const TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 6),
+                            Text(task.description),
+                            const SizedBox(height: 6),
+                            Text("Volunteers: ${task.volunteer}"),
+                            const SizedBox(height: 12),
+                            ElevatedButton(
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("${task.title} verified!")),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF0A2744),
+                                foregroundColor: Colors.white,
+                              ),
+                              child: const Text("Mark as Completed"),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-          );
+                );
+              },
+            );
+          }
+
+          return const Center(child: Text('Something went Wrong'));
         },
       ),
     );

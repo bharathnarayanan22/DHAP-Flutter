@@ -35,5 +35,5 @@ class Task {
     required this.EndLocation,
     this.Status = "In Progress",
     this.proofs = const [],
-  }) : id = id ?? uuid.v4(); // 🔹 auto-generate UUID if not provided
+  }) : id = id ?? uuid.v4();
 }

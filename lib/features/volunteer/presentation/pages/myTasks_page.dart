@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_bloc.dart';
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_event.dart';
@@ -545,6 +547,8 @@ class _MyTasksPageState extends State<MyTasksPage> {
     context.read<volunteerBloc>().add(
       FetchMyTasksEvent(taskIds: widget.userDetails.taskIds),
     );
+    print("User Details: ${widget.userDetails.inTask}");
+    print("My Tasks: ${widget.userDetails.taskIds}");
   }
 
   @override
@@ -592,6 +596,7 @@ class _MyTasksPageState extends State<MyTasksPage> {
                           return task.Status == _selectedStatus;
                         }).toList();
 
+                        print("Filtered Tasks: $filteredTasks");
                         if (filteredTasks.isEmpty) {
                           return const Center(child: Text("No tasks found."));
                         }

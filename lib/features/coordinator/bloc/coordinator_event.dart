@@ -80,3 +80,11 @@ class MarkResponseTaskAssignedEvent extends CoordinatorEvent {
   final String responseId;
   MarkResponseTaskAssignedEvent(this.responseId);
 }
+
+class FetchVerificationTasksEvent extends CoordinatorEvent {}
+
+class MarkTaskCompletedEvent extends CoordinatorEvent {
+  final String taskId;
+  MarkTaskCompletedEvent(this.taskId);
+}
+

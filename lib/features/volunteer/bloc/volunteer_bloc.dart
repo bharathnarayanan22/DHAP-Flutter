@@ -3,6 +3,7 @@ import 'package:dhap_flutter_project/data/repository/task_repository.dart';
 import 'package:dhap_flutter_project/data/repository/user_repository.dart';
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_event.dart';
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_state.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 final TaskRepository _taskRepository = TaskRepository();
@@ -59,6 +60,8 @@ class volunteerBloc extends Bloc<volunteerEvent, volunteerState> {
       try {
         final tasks = await _taskRepository.getAllTasks();
 
+        debugPrint("Files: ${event.files}");
+
         final taskIndex = tasks.indexWhere((t) => t.id == event.taskId);
         if (taskIndex == -1) throw Exception("Task not found");
 
@@ -90,6 +93,8 @@ class volunteerBloc extends Bloc<volunteerEvent, volunteerState> {
       try {
         emit(volunteerLoading());
         await _userRepository.acceptTask(event.taskId, event.userEmail);
+        await _userRepository.getUserByEmail(event.userEmail);
+
         emit(AcceptSuccess(message: "Task accepted successfully"));
       } catch (e) {
         emit(volunteerFailure(error: e.toString()));

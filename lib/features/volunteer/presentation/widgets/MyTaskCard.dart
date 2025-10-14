@@ -157,7 +157,6 @@ class _MyTaskCardState extends State<MyTaskCard> {
         case "In Progress":
           return () {
             widget.onSubmitProof?.call();
-            updateStatus("In Verification");
           };
         case "In Verification":
           return widget.onUpdateProof;

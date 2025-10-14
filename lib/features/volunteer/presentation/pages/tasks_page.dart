@@ -54,7 +54,7 @@ class _TasksPageState extends State<tasksPage> {
           if (state is volunteerLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-          else if (state is volunteerSuccess) {
+          else if (state is volunteerSuccess ) {
             final tasks = state.tasks;
             if (tasks.isEmpty) {
               return const Center(child: Text("No tasks available"));
@@ -76,6 +76,10 @@ class _TasksPageState extends State<tasksPage> {
                 ),
               ),
             );
+          }
+          else if(state is AcceptSuccess) {
+            context.read<volunteerBloc>().add(FetchPendingTasksEvent());
+            return const Center(child: CircularProgressIndicator());
           }
           else {
             return const Center(child: Text("Something went wrong"));
