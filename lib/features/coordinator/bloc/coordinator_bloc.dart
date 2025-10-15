@@ -297,21 +297,53 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
       }
     });
 
+    // on<MarkTaskCompletedEvent>((event, emit) async {
+    //   emit(CoordinatorLoading());
+    //   try {
+    //     final tasks = await _taskRepository.getAllTasks();
+    //     final index = tasks.indexWhere((t) => t.id == event.taskId);
+    //     if (index == -1) throw Exception("Task not found");
+    //     tasks[index].Status = 'Completed';
+    //     await _taskRepository.updateTask(tasks[index]);
+    //
+    //     final updatedVerificationTasks = tasks
+    //         .where(
+    //           (task) => task.Status == 'In Verification',
+    //     )
+    //         .toList();
+    //
+    //     emit(
+    //         CoordinatorSuccess(
+    //           message: 'Task marked as completed successfully',
+    //           tasks: updatedVerificationTasks,
+    //         ),
+    //     );
+    //   } catch (e) {
+    //     emit(CoordinatorFailure(error: e.toString()));
+    //   }
+    // });
+
     on<MarkTaskCompletedEvent>((event, emit) async {
-      emit(CoordinatorLoading());
       try {
-       // await _taskRepository.markTaskCompleted(event.taskId);
         final tasks = await _taskRepository.getAllTasks();
-        emit(
-          CoordinatorSuccess(
-            message: 'Task marked as completed successfully',
-            tasks: tasks,
-          ),
-        );
+        final index = tasks.indexWhere((t) => t.id == event.taskId);
+        if (index == -1) throw Exception("Task not found");
+
+        tasks[index].Status = 'Completed';
+        await _taskRepository.updateTask(tasks[index]);
+
+        final updatedVerificationTasks =
+        tasks.where((task) => task.Status == 'In Verification').toList();
+
+        emit(CoordinatorSuccess(
+          message: 'Task marked as completed successfully',
+          tasks: updatedVerificationTasks,
+        ));
       } catch (e) {
         emit(CoordinatorFailure(error: e.toString()));
       }
     });
+
 
   }
 }

@@ -45,22 +45,7 @@
     "taskIds": [],
     "resourceIds": []
   },
-  {
-    "type": "user",
-    "id": "4",
-    "name": "Anita Singh",
-    "email": "anita@example.com",
-    "password": "volunteer789",
-    "mobile": "9871203456",
-    "addressLine": "88 Lake View Road",
-    "inTask": false,
-    "city": "Kolkata",
-    "country": "India",
-    "pincode": "700001",
-    "role": "Volunteer",
-    "taskIds": [],
-    "resourceIds": []
-  },
+
   {
     "type": "user",
     "id": "5",
@@ -73,6 +58,23 @@
     "country": "India",
     "pincode": "600002",
     "role": "Donor",
+    "taskIds": [],
+    "resourceIds": []
+  },
+
+  {
+    "type": "user",
+    "id": "8",
+    "name": "Anita Singh",
+    "email": "ani@example.com",
+    "password": "pass123",
+    "mobile": "9871203456",
+    "addressLine": "88 Lake View Road",
+    "inTask": false,
+    "city": "Kolkata",
+    "country": "India",
+    "pincode": "700001",
+    "role": "Volunteer",
     "taskIds": [],
     "resourceIds": []
   }

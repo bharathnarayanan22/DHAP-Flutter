@@ -1,4 +1,5 @@
 import 'package:dhap_flutter_project/features/auth/presentation/widgets/customTextField.dart';
+import 'package:dhap_flutter_project/features/common/bloc/commonBloc.dart';
 import 'package:dhap_flutter_project/features/common/presentation/pages/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -316,8 +317,9 @@ class _SignupFormState extends State<SignupForm> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => DashboardPage(
-                    userDetails: state.user,
+                  builder: (_) => BlocProvider(
+                    create: (_) => commonBloc(),
+                    child: DashboardPage(userDetails: state.user),
                   ),
                 ),
               );

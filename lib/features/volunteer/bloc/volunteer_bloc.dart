@@ -84,6 +84,12 @@ class volunteerBloc extends Bloc<volunteerEvent, volunteerState> {
           message: "Proof submitted successfully",
           tasks: tasks,
         ));
+
+        // final refreshedTasks = await _taskRepository.getAllTasks();
+        // emit(volunteerSuccess(
+        //   message: "Tasks updated",
+        //   tasks: refreshedTasks,
+        // ));
       } catch (e) {
         emit(volunteerFailure(error: e.toString()));
       }
@@ -93,9 +99,21 @@ class volunteerBloc extends Bloc<volunteerEvent, volunteerState> {
       try {
         emit(volunteerLoading());
         await _userRepository.acceptTask(event.taskId, event.userEmail);
-        await _userRepository.getUserByEmail(event.userEmail);
+        final updatedUser = await _userRepository.getUserByEmail(event.userEmail);
 
-        emit(AcceptSuccess(message: "Task accepted successfully"));
+        final allTasks = await _taskRepository.getAllTasks();
+        final myUpdatedTasks = allTasks
+            .where(
+              (task) => updatedUser!.taskIds.contains(task.id),
+        )
+            .toList();
+
+        emit(
+            volunteerSuccess(
+              message: "Task accepted successfully and tasks updated",
+              tasks: myUpdatedTasks,
+            )
+        );
       } catch (e) {
         emit(volunteerFailure(error: e.toString()));
       }

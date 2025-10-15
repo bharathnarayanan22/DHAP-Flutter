@@ -10,7 +10,7 @@ class Userdb_helper {
     final db = await _core.database;
 
     final doc = MutableDocument.withId(
-      user.id,
+      user.email,
       {
         'type': 'user',
         'id': user.id,
@@ -29,7 +29,7 @@ class Userdb_helper {
       },
     );
 
-    await db!.saveDocument(doc);
+    await db.saveDocument(doc);
     debugPrint("User saved in Couchbase: ${user.email}");
   }
 
@@ -97,7 +97,7 @@ class Userdb_helper {
   Future<void> deleteUser(String email) async {
     final db = await _core.database;
     //if (_db == null) await init();
-    final doc = await db!.document(email);
+    final doc = await db.document(email);
     if (doc != null) {
       await db!.deleteDocument(doc);
       debugPrint("User deleted: $email");

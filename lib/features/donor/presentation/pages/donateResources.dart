@@ -199,7 +199,7 @@ class _DonateResourcePageState extends State<DonateResourcesPage> {
                             child: ElevatedButton.icon(
                               icon: const Icon(Icons.send),
                               label: Text(
-                                state is DonorLoading ? "Creating Task..." : "Create Task",
+                                state is DonorLoading ? "Donating Resource..." : "Donate Resource",
                                 style: const TextStyle(fontWeight: FontWeight.bold),
                               ),
                               style: ElevatedButton.styleFrom(
@@ -220,6 +220,12 @@ class _DonateResourcePageState extends State<DonateResourcesPage> {
                                       DonorName: "Donor Name",
                                     ),
                                   );
+                                  // _scaffoldMessengerKey.currentState?.showSnackBar(
+                                  //   const SnackBar(
+                                  //     content: Text('Resource added successfully!'),
+                                  //     backgroundColor: Colors.green,
+                                  // )
+                                  // );
                                 } else if (_Location == null) {
                                   _scaffoldMessengerKey.currentState?.showSnackBar(
                                     const SnackBar(

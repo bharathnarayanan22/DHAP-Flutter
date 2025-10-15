@@ -31,8 +31,8 @@ class DonorBloc extends Bloc<DonorEvent, DonorState> {
           return;
         } else {
           _resourceRepository.addResource(resource);
-          print('Request created successfully');
-          emit(DonorSuccess(message: 'Request created successfully'));
+          print('Resource donated successfully');
+          emit(DonorSuccess(message: 'Resource Donated successfully'));
         }
       } catch (e) {
         emit(DonorFailure(error: e.toString()));
@@ -48,16 +48,12 @@ class DonorBloc extends Bloc<DonorEvent, DonorState> {
             .where((req) => req.status == "Pending")
             .toList();
 
-        if (pendingRequests.isEmpty) {
-          emit(const FetchRequestFailure(error: "No pending requests found"));
-        } else {
           emit(
             FetchRequestSuccess(
               msg: "Fetched pending requests successfully",
               requests: pendingRequests,
             ),
           );
-        }
       } catch (e) {
         emit(FetchRequestFailure(error: e.toString()));
       }

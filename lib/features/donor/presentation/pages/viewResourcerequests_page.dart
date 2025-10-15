@@ -66,6 +66,9 @@ class _ViewResourceRequestsPageState extends State<ViewResourceRequestsPage> {
           if (state is DonorLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is FetchRequestSuccess) {
+            if(state.requests.isEmpty) {
+              return const Center(child: Text("No Requests available"));
+            }
             final requests = state.requests;
             return Center(
               child: ConstrainedBox(

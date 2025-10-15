@@ -79,6 +79,9 @@ class _TasksPageState extends State<tasksPage> {
           }
           else if(state is AcceptSuccess) {
             context.read<volunteerBloc>().add(FetchPendingTasksEvent());
+            context.read<volunteerBloc>().add(FetchMyTasksEvent(
+              taskIds: widget.user.taskIds,
+            ));
             return const Center(child: CircularProgressIndicator());
           }
           else {

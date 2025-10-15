@@ -1,80 +1,64 @@
 import 'dart:io';
-
-import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_bloc.dart';
-import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_event.dart';
-import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_state.dart';
+import 'package:dhap_flutter_project/features/coordinator/presentation/widgets/VerificationCards.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
+import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_bloc.dart';
+import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_event.dart';
+import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_state.dart';
 
 class VerifyTasksPage extends StatefulWidget {
   const VerifyTasksPage({super.key});
+
 
   @override
   State<VerifyTasksPage> createState() => _VerifyTasksPageState();
 }
 
 class _VerifyTasksPageState extends State<VerifyTasksPage> {
-
-  // final List<Map<String, dynamic>> tasks = [
-  //   {
-  //     'title': 'Distribute Food Packets',
-  //     'description': 'Distribute food packets to needy families in the city.',
-  //     'volunteers': 5,
-  //     'images': [
-  //       'https://picsum.photos/400/200?image=1',
-  //       'https://picsum.photos/400/200?image=2',
-  //     ],
-  //     'videos': [
-  //       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-  //     ],
-  //   },
-  //   {
-  //     'title': 'Clean Up Park',
-  //     'description': 'Volunteer to clean up the local park this weekend.',
-  //     'volunteers': 3,
-  //     'images': ['https://picsum.photos/400/200?image=10'],
-  //     'videos': [],
-  //   },
-  // ];
-
-  final Map<int, Map<int, VideoPlayerController>> _videoControllers = {};
+  final Map<String, VideoPlayerController> _controllers = {};
+  final Map<int, PageController> _pageControllers = {};
+  final Map<int, int> _currentPages = {};
+  late Future<void> _initializationFuture;
 
   @override
   void initState() {
     super.initState();
-   // _initializeVideos();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<CoordinatorBloc>().add(FetchVerificationTasksEvent());
-    });
+    context.read<CoordinatorBloc>().add(FetchVerificationTasksEvent());
+    _initializationFuture = Future.value();
   }
 
-  // Future<void> _initializeVideos() async {
-  //   for (int i = 0; i < tasks.length; i++) {
-  //     final videos = (tasks[i]['videos'] as List<dynamic>)
-  //         .map((e) => e.toString())
-  //         .toList();
-  //     _videoControllers[i] = {};
-  //     for (int j = 0; j < videos.length; j++) {
-  //       final controller = VideoPlayerController.networkUrl(
-  //           Uri.parse(videos[j])
-  //       );
-  //       await controller.initialize();
-  //       controller.setLooping(true);
-  //       _videoControllers[i]![j] = controller;
-  //     }
-  //   }
-  //   setState(() {});
-  // }
+  Future<void> _initializeControllers(List tasks) async {
+    for (final task in tasks) {
+      for (final proof in task.proofs) {
+        for (final path in proof.mediaPaths) {
+          if ((path.endsWith('.mp4') || path.endsWith('.mov')) &&
+              !_controllers.containsKey(path)) {
+            final controller = VideoPlayerController.file(File(path));
+            await controller.initialize();
+            controller.setLooping(true);
+            _controllers[path] = controller;
+          }
+        }
+      }
+    }
+
+    for (int i = 0; i < tasks.length; i++) {
+      _pageControllers[i] = PageController();
+      _currentPages[i] = 0;
+    }
+  }
 
   @override
   void dispose() {
-    for (var taskControllers in _videoControllers.values) {
-      for (var controller in taskControllers.values) {
-        controller.dispose();
-      }
+    for (final controller in _controllers.values) {
+      controller.dispose();
+    }
+    for (final controller in _pageControllers.values) {
+      controller.dispose();
     }
     super.dispose();
+
   }
 
   @override
@@ -93,117 +77,51 @@ class _VerifyTasksPageState extends State<VerifyTasksPage> {
         backgroundColor: const Color(0xFF0A2744),
         foregroundColor: Colors.white,
       ),
-      body: BlocBuilder<CoordinatorBloc, CoordinatorState>(
+      body: BlocConsumer<CoordinatorBloc, CoordinatorState>(
+        listener: (context, state) {
+
+          if (state is CoordinatorSuccess) {
+            setState(() {
+              _initializationFuture = _initializeControllers(state.tasks);
+            });
+          }
+        },
         builder: (context, state) {
           if (state is CoordinatorLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-          else if (state is CoordinatorSuccess) {
+
+          if (state is CoordinatorSuccess) {
             final tasks = state.tasks;
 
-            return ListView.builder(
-              padding: const EdgeInsets.all(12),
-              itemCount: tasks.length,
-              itemBuilder: (context, index) {
-                final task = tasks[index];
-                final proofs = task.proofs;
-                final mediaPaths = proofs.expand((p) => p.mediaPaths).toList();
+            if (tasks.isEmpty) {
+              return const Center(child: Text('No Pending Verification'));
+            }
 
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 4,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (mediaPaths.isNotEmpty)
-                        SizedBox(
-                          height: 200,
-                          child: PageView.builder(
-                            itemCount: mediaPaths.length,
-                            itemBuilder: (context, mediaIndex) {
-                              final media = mediaPaths[mediaIndex];
-                              final isVideo = media.endsWith('.mp4') || media.endsWith('.mov');
+            return FutureBuilder(
+              future: _initializationFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-                              if (isVideo) {
-                                final controller = VideoPlayerController.file(File(media));
-                                return FutureBuilder(
-                                  future: controller.initialize(),
-                                  builder: (context, snapshot) {
-                                    if (!snapshot.hasData) {
-                                      return const Center(child: CircularProgressIndicator());
-                                    }
-                                    return GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          controller.value.isPlaying
-                                              ? controller.pause()
-                                              : controller.play();
-                                        });
-                                      },
-                                      child: ClipRRect(
-                                        borderRadius: const BorderRadius.vertical(
-                                          top: Radius.circular(12),
-                                        ),
-                                        child: VideoPlayer(controller),
-                                      ),
-                                    );
-                                  },
-                                );
-                              } else {
-                                return ClipRRect(
-                                  borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(12),
-                                  ),
-                                  child: Image.file(
-                                    File(media),
-                                    fit: BoxFit.cover,
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(task.title,
-                                style: const TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 6),
-                            Text(task.description),
-                            const SizedBox(height: 6),
-                            Text("Volunteers: ${task.volunteer}"),
-                            const SizedBox(height: 12),
-                            ElevatedButton(
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text("${task.title} verified!")),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF0A2744),
-                                foregroundColor: Colors.white,
-                              ),
-                              child: const Text("Mark as Completed"),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                return ListView.builder(
+                  padding: const EdgeInsets.all(12),
+                  itemCount: tasks.length,
+                  itemBuilder: (context, index) {
+                    return VerificationCard(index: index, task: tasks[index], controllers: _controllers);
+                  },
                 );
               },
             );
           }
 
-          return const Center(child: Text('Something went Wrong'));
+          return const Center(child: Text('Something went wrong'));
         },
       ),
     );
   }
 }
+
+
+

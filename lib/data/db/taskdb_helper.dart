@@ -1,8 +1,11 @@
 import 'package:cbl/cbl.dart';
+import 'package:cbl_flutter/cbl_flutter.dart';
 import 'package:dhap_flutter_project/data/db/CouchbaseCore_helper.dart';
 import 'package:dhap_flutter_project/data/model/task_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 class TaskdbHelper {
   final _core = CouchbaseCoreHelper();
@@ -140,8 +143,35 @@ class TaskdbHelper {
     );
   }
 
+  // Future<void> updateTask(Task updatedTask) async {
+  //   final db = await _core.database;
+  //   final doc = MutableDocument.withId(updatedTask.id, {
+  //     'type': 'task',
+  //     'id': updatedTask.id,
+  //     'title': updatedTask.title,
+  //     'description': updatedTask.description,
+  //     'volunteer': updatedTask.volunteer,
+  //     'volunteersAccepted': updatedTask.volunteersAccepted,
+  //     'StartAddress': updatedTask.StartAddress,
+  //     'EndAddress': updatedTask.EndAddress,
+  //     'StartLocation':
+  //         '${updatedTask.StartLocation.latitude},${updatedTask.StartLocation.longitude}',
+  //     'EndLocation':
+  //         '${updatedTask.EndLocation.latitude},${updatedTask.EndLocation.longitude}',
+  //     'Status': updatedTask.Status,
+  //     'proofs': updatedTask.proofs.map((proof) => {
+  //       'message': proof.message,
+  //       'mediaPaths': proof.mediaPaths,
+  //     }).toList(),
+  //   });
+  //   await db.saveDocument(doc);
+  //   debugPrint("Task updated in Couchbase: ${updatedTask.title}");
+  //
+  // }
+
   Future<void> updateTask(Task updatedTask) async {
     final db = await _core.database;
+
     final doc = MutableDocument.withId(updatedTask.id, {
       'type': 'task',
       'id': updatedTask.id,
@@ -156,8 +186,50 @@ class TaskdbHelper {
       'EndLocation':
           '${updatedTask.EndLocation.latitude},${updatedTask.EndLocation.longitude}',
       'Status': updatedTask.Status,
+      'proofs': updatedTask.proofs
+          .map(
+            (proof) => {
+              'message': proof.message,
+              'mediaPaths': proof.mediaPaths,
+            },
+          )
+          .toList(),
     });
+
     await db.saveDocument(doc);
     debugPrint("Task updated in Couchbase: ${updatedTask.title}");
+
+    if (updatedTask.Status == 'Completed') {
+      final query = QueryBuilder.createAsync()
+          .selectAllDistinct([SelectResult.expression(Meta.id)])
+          .from(DataSource.database(db))
+          .where(
+            Expression.property('type')
+                .equalTo(Expression.string('user'))
+                .and(
+                  ArrayFunction.contains(
+                    Expression.property('taskIds'),
+                    value: Expression.string(updatedTask.id),
+                  ),
+                ),
+          );
+
+      final resultSet = await query.execute();
+
+      final results = await resultSet.allResults();
+      for (final result in results) {
+        final userId = result.string('id');
+        if (userId == null) continue;
+        final userDoc = await db.document(userId);
+        if (userDoc != null) {
+          final mutableUser = userDoc.toMutable();
+
+          mutableUser.setBoolean(key: 'inTask', false);
+
+          await db.saveDocument(mutableUser);
+          debugPrint("👤 User $userId updated — inTask: false, task removed");
+        }
+      }
+    }
   }
 }

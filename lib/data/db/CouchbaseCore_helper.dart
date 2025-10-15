@@ -20,14 +20,6 @@ class CouchbaseCoreHelper {
     return _db!;
   }
 
-  // Future<void> init() async {
-  //   if (initialized) return;
-  //   await CouchbaseLiteFlutter.init();
-  //   initialized = true;
-  //   _db ??= await Database.openAsync(_dbName);
-  //   debugPrint("Couchbase DB opened: $_dbName");
-  //   await _loadInitialUsersIfEmpty();
-  // }
 
   Future<void> init() async {
     if (!initialized) {

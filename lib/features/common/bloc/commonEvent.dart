@@ -10,4 +10,6 @@ class SwitchRoleSubmitted extends commonEvent {
   SwitchRoleSubmitted({required this.email, required this.newRole});
 }
 
+class FetchDataEvent extends commonEvent {}
+
 
