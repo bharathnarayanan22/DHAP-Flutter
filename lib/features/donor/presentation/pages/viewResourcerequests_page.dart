@@ -78,7 +78,7 @@ class _ViewResourceRequestsPageState extends State<ViewResourceRequestsPage> {
                     itemCount: requests.length,
                     itemBuilder: (context, idx) {
                       final request = requests[idx];
-                      return RequestsCard(request: request, user: widget.userDetails.name);
+                      return RequestsCard(request: request, user: widget.userDetails.name, email: widget.userDetails.email);
                     },
                   ),
                 ),

@@ -21,6 +21,10 @@ class UserRepository {
     await _dbHelper.acceptTask(taskId, userEmail);
   }
 
+  Future<void> addResource(String resourceId, String userEmail) async {
+    await _dbHelper.addResource(resourceId, userEmail);
+  }
+
   Future<void> updateUserRole(String email, String newRole) async {
     await _dbHelper.updateUserRole(email, newRole);
   }

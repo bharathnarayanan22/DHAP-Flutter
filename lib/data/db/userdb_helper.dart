@@ -170,4 +170,36 @@ class Userdb_helper {
     }
 
   }
+
+  Future<void> addResource(String resourceId, String userEmail) async {
+    final db = await _core.database;
+
+    final userDoc = await db.document(userEmail);
+    if (userDoc == null) {
+      debugPrint("User not found: $userEmail");
+      return;
+    }
+
+    debugPrint("userDoc: $userDoc");
+
+    final mutableUser = userDoc.toMutable();
+    final existingResourceIds =
+    List<String>.from(mutableUser.array('resourceIds')?.toList() ?? []);
+
+    if (!existingResourceIds.contains(resourceId)) {
+      existingResourceIds.add(resourceId);
+      final mutableArray = MutableArray();
+      for (var id in existingResourceIds) {
+        mutableArray.addString(id);
+      }
+
+      mutableUser.setArray(key: 'resourceIds', mutableArray);
+      await db.saveDocument(mutableUser);
+      debugPrint("Task $resourceId added to user $userEmail");
+    } else {
+      debugPrint("Task already accepted by user: $resourceId");
+    }
+
+  }
+
 }

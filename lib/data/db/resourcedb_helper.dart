@@ -7,7 +7,7 @@ import 'package:latlong2/latlong.dart';
 class ResourcedbHelper {
   final _core = CouchbaseCoreHelper();
 
-  Future<void> addResource(ResourceModel resource) async {
+  Future<String> addResource(ResourceModel resource) async {
     final db = await _core.database;
     final doc = MutableDocument.withId(
       resource.id,
@@ -18,12 +18,14 @@ class ResourcedbHelper {
         'quantity': resource.quantity,
         'address': resource.address,
         'DonorName': resource.DonorName,
+        'ResourceType': resource.ResourceType,
         'location': '${resource.location.latitude},${resource.location.longitude}',
       },
     );
 
     await db.saveDocument(doc);
     debugPrint("Task saved in Couchbase: ${resource.resource}");
+    return resource.id;
   }
 
   // Future<List<ResourceModel>> getAllResources() async {
@@ -106,6 +108,7 @@ class ResourcedbHelper {
           quantity: data.integer('quantity'),
           address: data.string('address') ?? '',
           DonorName: data.string('DonorName') ?? '',
+          ResourceType: data.string('ResourceType') ?? '',
           location: LatLng(lat, lng),
         ),
       );

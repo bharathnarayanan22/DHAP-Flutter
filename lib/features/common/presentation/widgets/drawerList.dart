@@ -238,7 +238,7 @@ class RoleBasedDrawerItems extends StatelessWidget {
               MaterialPageRoute(
                 builder: (context) => BlocProvider(
                   create: (context) => DonorBloc(),
-                  child: DonateResourcesPage(),
+                  child: DonateResourcesPage(userDetails: userDetails),
                 ),
               ),
             );

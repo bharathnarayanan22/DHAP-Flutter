@@ -21,7 +21,8 @@ class DonorLocationData {
 class RequestsCard extends StatelessWidget {
   final Request request;
   final String user;
-  const RequestsCard({super.key, required this.request, required this.user});
+  final String email;
+  const RequestsCard({super.key, required this.request, required this.user, required this.email});
 
   Future<void> _openMap(double lat, double lng) async {
     final Uri url = Uri.parse(
@@ -225,6 +226,7 @@ class RequestsCard extends StatelessWidget {
                           address: "Address",
                           location: locationData.location,
                           user: user,
+                          userEmail: email,
                         ),
                       );
                       Navigator.of(dialogContext).pop();

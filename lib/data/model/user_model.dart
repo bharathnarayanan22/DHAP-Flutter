@@ -36,4 +36,39 @@ class User {
   }) : id = id ?? uuid.v4(),
      taskIds = taskIds ?? [],
      resourceIds = resourceIds ?? [];
+
+  User copyWith({
+    String? id,
+    String? name,
+    String? email,
+    String? password,
+    String? mobile,
+    String? addressLine,
+    String? city,
+    String? country,
+    String? pincode,
+    String? role,
+    List<String>? taskIds,
+    List<String>? resourceIds,
+    bool? inTask,
+  }) {
+    return User(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      password: password ?? this.password,
+      mobile: mobile ?? this.mobile,
+      addressLine: addressLine ?? this.addressLine,
+      city: city ?? this.city,
+      country: country ?? this.country,
+      pincode: pincode ?? this.pincode,
+      role: role ?? this.role,
+      taskIds: taskIds ?? this.taskIds,
+      resourceIds: resourceIds ?? this.resourceIds,
+      inTask: inTask ?? this.inTask,
+    );
+  }
+
 }
+
+

@@ -34,7 +34,8 @@ class LogoutSuccess extends commonState {
 
 class SwitchRoleSuccess extends commonState {
   final String message;
-  SwitchRoleSuccess({required this.message});
+  final String newRole;
+  SwitchRoleSuccess({required this.message, required this.newRole});
 }
 
 class FetchDataSuccess extends commonState {

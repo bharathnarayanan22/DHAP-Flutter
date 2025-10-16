@@ -10,6 +10,7 @@ class ResourceModel {
   final String address;
   final LatLng location;
   final String DonorName;
+  final String ResourceType;
 
   ResourceModel({
     String? id,
@@ -18,5 +19,6 @@ class ResourceModel {
     required this.address,
     required this.location,
     required this.DonorName,
+    required this.ResourceType,
   }) : id = id ?? uuid.v4();
 }

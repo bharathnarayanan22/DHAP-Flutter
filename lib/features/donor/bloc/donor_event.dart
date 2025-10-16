@@ -8,6 +8,9 @@ class AddResourceEvent extends DonorEvent {
   final String address;
   final LatLng location;
   final String DonorName;
+  final String userEmail;
+  final String ResourceType;
+
 
   AddResourceEvent({
     required this.resource,
@@ -15,6 +18,8 @@ class AddResourceEvent extends DonorEvent {
     required this.address,
     required this.location,
     required this.DonorName,
+    required this.userEmail,
+    required this.ResourceType,
   });
 }
 
@@ -27,6 +32,7 @@ class RespondEvent extends DonorEvent {
   final LatLng location;
   final String address;
   final String user;
+  final String userEmail;
   //final DateTime timestamp;
 
 
@@ -38,9 +44,10 @@ class RespondEvent extends DonorEvent {
     required this.location,
     required this.address,
     required this.user,
+    required this.userEmail,
   });
 
   @override
-  List<Object> get props => [requestId, message, quantityProvided, location, user, address];
+  List<Object> get props => [requestId, message, quantityProvided, location, user, address, userEmail];
 }
 

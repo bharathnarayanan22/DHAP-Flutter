@@ -227,6 +227,7 @@ import 'package:dhap_flutter_project/features/common/presentation/widgets/Resour
 import 'package:dhap_flutter_project/features/common/presentation/widgets/TaskStatusPieChart.dart';
 import 'package:dhap_flutter_project/features/common/presentation/widgets/builtMetricCard.dart';
 import 'package:dhap_flutter_project/features/common/presentation/widgets/dashboardCards.dart';
+import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_bloc.dart';
 import 'package:dhap_flutter_project/features/coordinator/presentation/pages/createTask_page.dart';
 import 'package:dhap_flutter_project/features/coordinator/presentation/pages/requestResponse_page.dart';
 import 'package:dhap_flutter_project/features/coordinator/presentation/pages/resourceRequest_page.dart';
@@ -252,24 +253,11 @@ const Color infoColor = Color(0xFF9E9E9E);
 const Color secondaryAccentColor = Color(0xFF1E88E5);
 
 class coordinatorDashboard extends StatelessWidget {
-  //  final Map<String, dynamic> userDetails;
   final User userDetails;
   const coordinatorDashboard({super.key, required this.userDetails});
 
   @override
   Widget build(BuildContext context) {
-    // int totalTasks = 85;
-    // int unverifiedTasks = 12;
-    // int activeVolunteers = 45;
-    // int pendingRequests = 7;
-
-    final taskStatusData = [
-      {'label': 'Completed', 'value': 50.0, 'color': successColor},
-      {'label': 'In Progress', 'value': 25.0, 'color': accentColor},
-      {'label': 'Pending Verif.', 'value': 10.0, 'color': warningColor},
-      {'label': 'Unassigned', 'value': 15.0, 'color': infoColor},
-    ];
-
     final resourceRequestData = [
       {'label': 'Food', 'value': 1500.0, 'color': warningColor},
       {'label': 'Water', 'value': 800.0, 'color': accentColor},
@@ -297,16 +285,68 @@ class coordinatorDashboard extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           } else if (state is FetchDataSuccess) {
             final totalTasks = state.tasks.length;
+            final completedTasks = state.tasks
+                .where((t) => t.Status == 'Completed')
+                .length;
+            final inProgressTasks = state.tasks
+                .where((t) => t.Status == 'In Progress')
+                .length;
+            final pendingTasks = state.tasks
+                .where((t) => t.Status == 'Pending')
+                .length;
             final unverifiedTasks = state.tasks
-                .where((t) => t.Status == 'Pending' || t.Status == 'InProgress')
+                .where((t) => t.Status == 'In Verification')
                 .length;
             final activeVolunteers = state.users
                 .where((u) => u.role == 'Volunteer' && u.inTask)
                 .length;
             final pendingRequests = state.requests
-                .where((r) => r.status == 'pending')
+                .where((r) => r.status == 'Pending')
                 .length;
 
+            final Fooditems = state.resources
+                .where((r) => r.ResourceType == 'Food')
+                .length;
+            final Wateritems = state.resources
+                .where((r) => r.ResourceType == 'Water')
+                .length;
+            final Medicalitems = state.resources
+                .where((r) => r.ResourceType == 'Medicine')
+                .length;
+            final Shelteritems = state.resources
+                .where((r) => r.ResourceType == 'Shelter')
+                .length;
+
+
+            final taskStatusData = [
+              {
+                'label': 'Completed',
+                'value': completedTasks.toDouble(),
+                'color': successColor,
+              },
+              {
+                'label': 'In Progress',
+                'value': inProgressTasks.toDouble(),
+                'color': accentColor,
+              },
+              {
+                'label': 'In Verification.',
+                'value': unverifiedTasks.toDouble(),
+                'color': warningColor,
+              },
+              {
+                'label': 'Pending',
+                'value': pendingTasks.toDouble(),
+                'color': infoColor,
+              },
+            ];
+
+            final resourceRequestData = [
+              {'label': 'Food', 'value': Fooditems.toDouble(), 'color': warningColor},
+              {'label': 'Water', 'value': Wateritems.toDouble(), 'color': accentColor},
+              {'label': 'Medicine', 'value': Medicalitems.toDouble(), 'color': secondaryAccentColor},
+              {'label': 'Shelter Kits', 'value': Shelteritems.toDouble(), 'color': successColor},
+            ];
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -440,7 +480,10 @@ class coordinatorDashboard extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => CreateTasksPage(),
+                          builder: (context) => BlocProvider(
+                            create: (context) => CoordinatorBloc(),
+                            child: CreateTasksPage(),
+                          ),
                         ),
                       );
                     },
@@ -454,7 +497,12 @@ class coordinatorDashboard extends StatelessWidget {
                         'See all active and completed tasks in your coordination list.',
                     onTap: () => Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ViewTasksPage()),
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider(
+                          create: (context) => CoordinatorBloc(),
+                          child: ViewTasksPage(),
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -467,7 +515,10 @@ class coordinatorDashboard extends StatelessWidget {
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ViewHelpersPage(),
+                        builder: (context) => BlocProvider(
+                          create: (context) => CoordinatorBloc(),
+                          child: ViewHelpersPage(),
+                        ),
                       ),
                     ),
                   ),
@@ -481,7 +532,10 @@ class coordinatorDashboard extends StatelessWidget {
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => VerifyTasksPage(),
+                        builder: (context) => BlocProvider(
+                          create: (context) => CoordinatorBloc(),
+                          child: VerifyTasksPage(),
+                        ),
                       ),
                     ),
                   ),
@@ -495,7 +549,10 @@ class coordinatorDashboard extends StatelessWidget {
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ResourceRequestPage(),
+                        builder: (context) => BlocProvider(
+                          create: (context) => CoordinatorBloc(),
+                          child: ResourceRequestPage(),
+                        ),
                       ),
                     ),
                   ),
@@ -509,7 +566,10 @@ class coordinatorDashboard extends StatelessWidget {
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ViewResourcesPage(),
+                        builder: (context) => BlocProvider(
+                          create: (context) => CoordinatorBloc(),
+                          child: ViewResourcesPage(),
+                        ),
                       ),
                     ),
                   ),
@@ -523,7 +583,10 @@ class coordinatorDashboard extends StatelessWidget {
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ResourceResponsesPage(),
+                        builder: (context) => BlocProvider(
+                          create: (context) => CoordinatorBloc(),
+                          child: ResourceResponsesPage(),
+                        ),
                       ),
                     ),
                   ),

@@ -47,11 +47,11 @@ class ResponseRepository {
   final RequestdbHelper _requestdbHelper = RequestdbHelper();
 
 
-  Future<void> addResponse(ResponseModel response) async {
-    await _dbHelper.addResponse(response);
+  Future<String> addResponse(ResponseModel response) async {
+    final String id = await _dbHelper.addResponse(response);
     debugPrint("Response added: ${response.id}, ${response.requestId}");
     await _requestdbHelper.AddResponseID(response.requestId, response.id);
-
+    return id;
   }
 
   Future<List<ResponseModel>> getAllResponses() async {

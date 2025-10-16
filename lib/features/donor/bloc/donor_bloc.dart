@@ -3,6 +3,7 @@ import 'package:dhap_flutter_project/data/model/response_model.dart';
 import 'package:dhap_flutter_project/data/repository/request_repository.dart';
 import 'package:dhap_flutter_project/data/repository/resource_repository.dart';
 import 'package:dhap_flutter_project/data/repository/response_repository.dart';
+import 'package:dhap_flutter_project/data/repository/user_repository.dart';
 import 'package:dhap_flutter_project/features/donor/bloc/donor_event.dart';
 import 'package:dhap_flutter_project/features/donor/bloc/donor_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 final ResourceRepository _resourceRepository = ResourceRepository();
 final RequestRepository _requestRepository = RequestRepository();
 final ResponseRepository _responseRepository = ResponseRepository();
+final UserRepository _userRepository = UserRepository();
 
 class DonorBloc extends Bloc<DonorEvent, DonorState> {
   DonorBloc() : super(DonorInitial()) {
@@ -22,6 +24,7 @@ class DonorBloc extends Bloc<DonorEvent, DonorState> {
           address: event.address,
           DonorName: event.DonorName,
           location: event.location,
+          ResourceType: event.ResourceType
         );
         if (resource.resource.isEmpty ||
             resource.quantity == 0 ||
@@ -30,9 +33,13 @@ class DonorBloc extends Bloc<DonorEvent, DonorState> {
           emit(DonorFailure(error: 'All fields are required'));
           return;
         } else {
-          _resourceRepository.addResource(resource);
+          final String resourceId = await _resourceRepository.addResource(resource);
           print('Resource donated successfully');
-          emit(DonorSuccess(message: 'Resource Donated successfully'));
+          await _userRepository.addResource(resourceId, event.userEmail);
+          final updatedUser = await _userRepository.getUserByEmail(event.userEmail);
+
+          print('Updated user after resource add: ${updatedUser?.resourceIds}');
+          emit(DonorSuccess(message: 'Resource Donated successfully', user: updatedUser!));
         }
       } catch (e) {
         emit(DonorFailure(error: e.toString()));
@@ -78,8 +85,9 @@ class DonorBloc extends Bloc<DonorEvent, DonorState> {
           emit(DonorFailure(error: 'All fields are required'));
           return;
         } else {
-          _responseRepository.addResponse(response);
+          final String responseId = await _responseRepository.addResponse(response);
           print('Response created successfully');
+          await _userRepository.addResource(responseId, event.userEmail);
           final allRequests = await _requestRepository.getAllRequests();
 
           final pendingRequests = allRequests

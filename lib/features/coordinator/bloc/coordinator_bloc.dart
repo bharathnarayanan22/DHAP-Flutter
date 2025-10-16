@@ -173,6 +173,7 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
           address: event.address,
           location: event.location,
           DonorName: 'Tester',
+          ResourceType: 'Test',
         );
         if (resource.resource.isEmpty ||
             resource.quantity == 0 ||

@@ -1,4 +1,5 @@
 import 'package:dhap_flutter_project/data/model/request_model.dart';
+import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class DonorState extends Equatable {
@@ -14,7 +15,8 @@ class DonorLoading extends DonorState {}
 
 class DonorSuccess extends DonorState {
   final String message;
-  const DonorSuccess({required this.message});
+  final User user;
+  const DonorSuccess({required this.message, required this.user});
 }
 
 class DonorFailure extends DonorState {

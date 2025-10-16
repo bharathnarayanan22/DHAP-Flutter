@@ -128,7 +128,8 @@ class TaskCard extends StatelessWidget {
                     Icon(Icons.pin_drop, color: Colors.white, size: 20),
                     const SizedBox(width: 8),
                     Text(
-                      'Start Location: Lat ${task.StartLocation.latitude.toStringAsFixed(3)}, Lng ${task.StartLocation.longitude.toStringAsFixed(3)}',
+                      //'Start Location: Lat ${task.StartLocation.latitude.toStringAsFixed(3)}, Lng ${task.StartLocation.longitude.toStringAsFixed(3)}',
+                      'Start Location: ${task.StartAddress} ',
                       style: const TextStyle(color: Colors.white, fontSize: 13),
                     ),
                   ],
@@ -139,7 +140,7 @@ class TaskCard extends StatelessWidget {
                     Icon(Icons.delivery_dining, color: Colors.white, size: 20),
                     const SizedBox(width: 8),
                     Text(
-                      'End Location: Lat ${task.EndLocation.latitude.toStringAsFixed(3)}, Lng ${task.EndLocation.longitude.toStringAsFixed(3)}',
+                      'End Location: ${task.EndAddress}',
                       style: const TextStyle(color: Colors.white, fontSize: 13),
                     ),
                   ],

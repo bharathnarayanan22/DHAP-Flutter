@@ -43,7 +43,7 @@ class commonBloc extends Bloc<commonEvent, commonState> {
       emit(commonLoading());
       await Future.delayed(const Duration(seconds: 1));
       await _userRepository.updateUserRole(event.email, event.newRole);
-      emit(SwitchRoleSuccess(message: "Switch role successful"));
+      emit(SwitchRoleSuccess(message: "Switch role successful", newRole: event.newRole));
     });
 
     on<FetchDataEvent>((event, emit) async {

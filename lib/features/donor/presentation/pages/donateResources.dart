@@ -1,3 +1,4 @@
+import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:dhap_flutter_project/features/coordinator/presentation/widgets/LocationInputSection.dart';
 import 'package:dhap_flutter_project/features/donor/bloc/donor_bloc.dart';
 import 'package:dhap_flutter_project/features/donor/bloc/donor_state.dart';
@@ -13,7 +14,8 @@ const Color accentColor = Color(0xFF42A5F5);
 const Color inputFillColor = Colors.white;
 
 class DonateResourcesPage extends StatefulWidget {
-  const DonateResourcesPage({super.key});
+  final User userDetails;
+  const DonateResourcesPage({super.key, required this.userDetails});
   @override
   State<DonateResourcesPage> createState() => _DonateResourcePageState();
 }
@@ -24,6 +26,15 @@ class _DonateResourcePageState extends State<DonateResourcesPage> {
   final TextEditingController _resourceController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
+  //final TextEditingController _resourceTypeController = TextEditingController();
+  final List<String> _resourceTypes = [
+    'Food',
+    'Water',
+    'Medicine',
+    'Shelter',
+  ];
+
+  String? _selectedResourceType;
 
   late DonorBloc _donorBloc;
 
@@ -40,6 +51,8 @@ class _DonateResourcePageState extends State<DonateResourcesPage> {
     _resourceController.dispose();
     _quantityController.dispose();
     _addressController.dispose();
+
+    _donorBloc.close();
     super.dispose();
   }
 
@@ -88,8 +101,10 @@ class _DonateResourcePageState extends State<DonateResourcesPage> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
+
     return BlocProvider.value(
       value: _donorBloc,
       child: ScaffoldMessenger(
@@ -109,8 +124,13 @@ class _DonateResourcePageState extends State<DonateResourcesPage> {
               _resourceController.clear();
               _quantityController.clear();
               _addressController.clear();
+              _selectedResourceType = null;
               setState(() {
                 _Location = null;
+              });
+
+              Future.delayed(const Duration(seconds: 1), () {
+                Navigator.pop(context, state.user);
               });
             } else if(state is DonorFailure){
               _scaffoldMessengerKey.currentState?.showSnackBar(
@@ -179,6 +199,37 @@ class _DonateResourcePageState extends State<DonateResourcesPage> {
                               return null;
                             },
                           ),
+                          const SizedBox(height: 16),
+                          DropdownButtonFormField<String>(
+                            value: _selectedResourceType,
+                            decoration: InputDecoration(
+                              labelText: 'Resource Type',
+                              labelStyle: const TextStyle(color: primaryColor, fontWeight: FontWeight.w500),
+                              filled: true,
+                              fillColor: inputFillColor,
+                              prefixIcon: const Icon(Icons.category, color: primaryColor, size: 20),
+                              contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+                              //border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
+                            items: _resourceTypes.map((type) {
+                              return DropdownMenuItem<String>(
+                                value: type,
+                                child: Text(type),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedResourceType = value;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select a resource type';
+                              }
+                              return null;
+                            },
+                          ),
+
 
                           const SizedBox(height: 24),
 
@@ -217,7 +268,9 @@ class _DonateResourcePageState extends State<DonateResourcesPage> {
                                       quantity: int.parse(_quantityController.text),
                                       location: _Location!,
                                       address: _addressController.text,
-                                      DonorName: "Donor Name",
+                                      ResourceType: _selectedResourceType!,
+                                      DonorName: widget.userDetails.name,
+                                      userEmail: widget.userDetails.email,
                                     ),
                                   );
                                   // _scaffoldMessengerKey.currentState?.showSnackBar(

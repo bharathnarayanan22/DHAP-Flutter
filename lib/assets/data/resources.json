@@ -6,7 +6,8 @@
     "quantity": 50,
     "address": "Relief Camp, Main Road, Chennai",
     "location": { "latitude": 13.0827, "longitude": 80.2707 },
-    "DonorName": "Red Cross"
+    "DonorName": "Red Cross",
+    "ResourceType": "Water"
   },
   {
     "type": "resource",
@@ -15,7 +16,8 @@
     "quantity": 30,
     "address": "Community Hall, Kochi",
     "location": { "latitude": 9.9312, "longitude": 76.2673 },
-    "DonorName": "Helping Hands NGO"
+    "DonorName": "Helping Hands NGO",
+    "ResourceType": "Shelter"
   },
   {
     "type": "resource",
@@ -24,7 +26,8 @@
     "quantity": 20,
     "address": "Relief Center, Hyderabad",
     "location": { "latitude": 17.3850, "longitude": 78.4867 },
-    "DonorName": "Local Volunteers"
+    "DonorName": "Local Volunteers",
+    "ResourceType": "Food"
   },
   {
     "type": "resource",
@@ -33,7 +36,8 @@
     "quantity": 15,
     "address": "Health Camp, Bengaluru",
     "location": { "latitude": 12.9716, "longitude": 77.5946 },
-    "DonorName": "Doctors Without Borders"
+    "DonorName": "Doctors Without Borders",
+    "ResourceType": "Medicine"
   },
   {
     "type": "resource",
@@ -42,6 +46,7 @@
     "quantity": 40,
     "address": "Distribution Point, Kolkata",
     "location": { "latitude": 22.5726, "longitude": 88.3639 },
-    "DonorName": "Relief Foundation"
+    "DonorName": "Relief Foundation",
+    "ResourceType": "Shelter"
   }
 ]

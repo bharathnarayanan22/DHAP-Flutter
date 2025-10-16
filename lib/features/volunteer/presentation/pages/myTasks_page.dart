@@ -1,10 +1,7 @@
-import 'dart:math';
-
 import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_bloc.dart';
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_event.dart';
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_state.dart';
-import 'package:dhap_flutter_project/features/volunteer/presentation/widgets/AvailTaskCard.dart';
 import 'package:dhap_flutter_project/features/volunteer/presentation/widgets/MyTaskCard.dart';
 import 'package:dhap_flutter_project/features/volunteer/presentation/widgets/StatusFilterSegment.dart';
 import 'package:flutter/cupertino.dart';
@@ -85,7 +82,7 @@ class _MyTasksPageState extends State<MyTasksPage> {
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         foregroundColor: primaryColor,
-                        backgroundColor: primaryColor.withOpacity(0.1),
+                        backgroundColor: primaryColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                           side: const BorderSide(color: primaryColor, width: 1),
@@ -186,12 +183,12 @@ class _MyTasksPageState extends State<MyTasksPage> {
                           },
                         );
                       },
-                      icon: const Icon(Icons.add_a_photo, color: primaryColor),
+                      icon: const Icon(Icons.add_a_photo, color: Colors.white),
                       label: Text(
                         selectedFiles.isEmpty
                             ? "Add Images/Videos"
                             : "Add More (${selectedFiles.length} currently)",
-                        style: const TextStyle(color: primaryColor),
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
 
@@ -256,12 +253,13 @@ class _MyTasksPageState extends State<MyTasksPage> {
                     ],
 
                     const SizedBox(height: 12),
-                    ElevatedButton(
+                    ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
+                        //maximumSize: const Size(double.infinity, 100),
                         backgroundColor: primaryColor,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 40,
-                          vertical: 12,
+                          //vertical: 12,
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -283,7 +281,8 @@ class _MyTasksPageState extends State<MyTasksPage> {
                           );
                         }
                       },
-                      child: const Text(
+                      icon: const Icon(Icons.send, color: Colors.white),
+                      label: const Text(
                         "Submit Proof",
                         style: TextStyle(
                           color: Colors.white,

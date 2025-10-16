@@ -7,7 +7,7 @@ import 'package:latlong2/latlong.dart';
 class ResponsedbHelper {
   final _core = CouchbaseCoreHelper();
 
-  Future<void> addResponse(ResponseModel response) async {
+  Future<String> addResponse(ResponseModel response) async {
     final db = await _core.database;
     final doc = MutableDocument.withId(response.id, {
       'type': 'response',
@@ -25,6 +25,7 @@ class ResponsedbHelper {
     debugPrint(
       "Response saved in Couchbase: ${response.id}, RequestId: ${response.requestId}",
     );
+    return response.id;
   }
 
   Future<List<ResponseModel>> getAllResponses() async {

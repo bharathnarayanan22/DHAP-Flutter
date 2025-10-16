@@ -1,4 +1,5 @@
 import 'package:dhap_flutter_project/data/model/user_model.dart';
+import 'package:dhap_flutter_project/features/common/presentation/pages/profile_page.dart';
 import 'package:dhap_flutter_project/features/common/presentation/widgets/builtMetricCard.dart';
 import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_bloc.dart';
 import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_event.dart';
@@ -207,7 +208,7 @@ class _ViewHelpersPageState extends State<ViewHelpersPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => UserProfilePage(user: user),
+                                builder: (_) => ProfilePage(user: user),
                               ),
                             );
                           },
@@ -279,34 +280,6 @@ class _ViewHelpersPageState extends State<ViewHelpersPage> {
 
           return const Center(child: Text('No users found.'));
         },
-      ),
-    );
-  }
-}
-
-// Simple profile page
-class UserProfilePage extends StatelessWidget {
-  final User user;
-
-  const UserProfilePage({super.key, required this.user});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("${user.name}'s Profile"),
-        backgroundColor: primaryColor,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Text("Name: ${user.name}", style: const TextStyle(fontSize: 18)),
-            const SizedBox(height: 8),
-            Text("Role: ${user.role}", style: const TextStyle(fontSize: 18)),
-            // Add more details from your User model here
-          ],
-        ),
       ),
     );
   }

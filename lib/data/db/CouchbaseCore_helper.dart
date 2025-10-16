@@ -128,10 +128,10 @@ class CouchbaseCoreHelper {
     final result = await query.execute();
     final hasResources = await result.asStream().isEmpty == false;
 
-    if (hasResources) {
-      debugPrint("Resources already exist in DB — skipping JSON load.");
-      return;
-    }
+    // if (hasResources) {
+    //   debugPrint("Resources already exist in DB — skipping JSON load.");
+    //   return;
+    // }
 
     debugPrint("Loading initial resources from JSON...");
 

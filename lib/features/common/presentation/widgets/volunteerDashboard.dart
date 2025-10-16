@@ -125,11 +125,16 @@
 // }
 
 import 'package:dhap_flutter_project/data/model/user_model.dart';
+import 'package:dhap_flutter_project/features/common/bloc/commonBloc.dart';
+import 'package:dhap_flutter_project/features/common/bloc/commonEvent.dart';
+import 'package:dhap_flutter_project/features/common/bloc/commonState.dart';
 import 'package:dhap_flutter_project/features/common/presentation/widgets/builtMetricCard.dart';
 import 'package:dhap_flutter_project/features/common/presentation/widgets/dashboardCards.dart';
+import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_bloc.dart';
 import 'package:dhap_flutter_project/features/volunteer/presentation/pages/myTasks_page.dart';
 import 'package:dhap_flutter_project/features/volunteer/presentation/pages/tasks_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 const Color primaryColor = Color(0xFF0A2744);
 const Color accentColor = Color(0xFF42A5F5);
@@ -143,99 +148,142 @@ class volunteerDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int availableTasks =  10;
-    int tasksDone = 3;
+    return BlocProvider(
+      create: (context) => commonBloc()..add(FetchDataEvent()),
+      child: BlocBuilder<commonBloc, commonState>(
+        builder: (context, state) {
+          if (state is commonLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is FetchDataSuccess) {
+            final availableTasks = state.tasks
+                .where(
+                  (task) =>
+                      task.Status == 'Pending' ||
+                      task.Status == 'In Progress' &&
+                          task.volunteer > task.volunteersAccepted,
+                )
+                .length;
+            final userTasks = state.tasks
+                .where((task) => userDetails.taskIds.contains(task.id))
+                .toList();
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.waving_hand, color: primaryColor, size: 24),
-              const SizedBox(width: 8),
-              Text(
-                'Welcome, ${userDetails.name}!',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: primaryColor,
-                ),
+            final completedTasks = userTasks
+                .where((task) => task.Status == 'Completed')
+                .toList();
+            final tasksDone = completedTasks.length;
+
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.waving_hand, color: primaryColor, size: 24),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Welcome, ${userDetails.name}!',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: primaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: MetricCard(
+                          title: 'Available Tasks',
+                          value: availableTasks,
+                          icon: Icons.list_alt,
+                          color: accentColor,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: MetricCard(
+                          title: 'Tasks Completed',
+                          value: tasksDone,
+                          icon: Icons.check_circle_outline,
+                          color: successColor,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  const Divider(color: Colors.grey),
+
+                  const SizedBox(height: 15),
+
+                  Row(
+                    children: [
+                      const Icon(Icons.flash_on, color: primaryColor),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Quick Actions',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: primaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  DashboardCard(
+                    icon: Icons.search,
+                    title: 'Available Tasks',
+                    imageAsset: 'images/c2.svg',
+                    description:
+                        'Browse and accept tasks that are open for you to work on.',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BlocProvider(
+                            create: (context) => volunteerBloc(),
+                            child: tasksPage(user: userDetails),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  DashboardCard(
+                    icon: Icons.assignment_turned_in,
+                    title: 'My Tasks',
+                    imageAsset: 'images/Task.png',
+                    description:
+                        'View the tasks you are currently assigned to and track progress.',
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider(
+                          create: (context) => volunteerBloc(),
+                          child: MyTasksPage(userDetails: userDetails),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                ],
               ),
-            ],
-          ),
-          const SizedBox(height: 20),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: MetricCard(
-                  title: 'Available Tasks',
-                  value: availableTasks,
-                  icon: Icons.list_alt,
-                  color: accentColor,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: MetricCard(
-                  title: 'Tasks Completed',
-                  value: tasksDone,
-                  icon: Icons.check_circle_outline,
-                  color: successColor,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 20),
-
-          const Divider(color: Colors.grey),
-
-          const SizedBox(height: 15),
-
-          Row(
-            children: [
-              const Icon(Icons.flash_on, color: primaryColor),
-              const SizedBox(width: 8),
-              Text(
-                'Quick Actions',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: primaryColor,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          DashboardCard(
-            icon: Icons.search,
-            title: 'Available Tasks',
-            imageAsset: 'images/c2.svg',
-            description: 'Browse and accept tasks that are open for you to work on.',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) =>  tasksPage(user: userDetails,)),
-              );
-            },
-          ),
-          const SizedBox(height: 12),
-          DashboardCard(
-            icon: Icons.assignment_turned_in,
-            title: 'My Tasks',
-            imageAsset: 'images/Task.png',
-            description: 'View the tasks you are currently assigned to and track progress.',
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) =>  MyTasksPage(userDetails: userDetails,))),
-          ),
-          const SizedBox(height: 12),
-        ],
+            );
+          } else if (state is commonFailure) {
+            return Center(child: Text("Error: ${state.error}"));
+          }
+          return const SizedBox();
+        },
       ),
     );
   }

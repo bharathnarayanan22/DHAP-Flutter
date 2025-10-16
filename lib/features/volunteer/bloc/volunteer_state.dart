@@ -1,4 +1,5 @@
 import 'package:dhap_flutter_project/data/model/task_model.dart';
+import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class volunteerState extends Equatable {
@@ -14,6 +15,7 @@ class volunteerLoading extends volunteerState {}
 class volunteerSuccess extends volunteerState {
   final String message;
   final List<Task> tasks;
+  //final User user;
   const volunteerSuccess({required this.message, required this.tasks});
 }
 
