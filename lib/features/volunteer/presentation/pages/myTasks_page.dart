@@ -1,3 +1,4 @@
+import 'package:dhap_flutter_project/data/model/task_model.dart';
 import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_bloc.dart';
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_event.dart';
@@ -9,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+
+import '../widgets/videoProofPlayer.dart';
 
 const Color primaryColor = Color(0xFF0A2744);
 const Color accentColor = Color(0xFF42A5F5);
@@ -301,6 +304,116 @@ class _MyTasksPageState extends State<MyTasksPage> {
     );
   }
 
+
+  void showProofViewer(BuildContext context, List<Proof> proofs) {
+    if (proofs.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("No proofs available.")),
+      );
+      return;
+    }
+
+    final allMedia = proofs.expand((p) => p.mediaPaths).toList();
+   // final allMessages = proofs.expand((p) => List.filled(p.mediaPaths.length, p.message)).toList();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        PageController controller = PageController();
+       // ValueNotifier<int> indexNotifier = ValueNotifier<int>(0);
+
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          backgroundColor: Colors.black38,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 60),
+          child: SizedBox(
+            width: double.infinity,
+            height: 500,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                PageView.builder(
+                  controller: controller,
+                  itemCount: allMedia.length,
+                  //onPageChanged: (index) => indexNotifier.value = index,
+                  itemBuilder: (context, index) {
+                    final path = allMedia[index];
+                   // final msg = allMessages[index];
+
+                    return Column(
+                      children: [
+                        Expanded(
+                          child: Center(
+                            child: path.endsWith('.mp4')
+                                ? VideoProofPlayer(path: path)
+                                : Image.file(File(path), fit: BoxFit.contain),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+
+                Positioned(
+                  left: 8,
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 28),
+                    onPressed: () {
+                      if (controller.page! > 0) {
+                        controller.previousPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      }
+                    },
+                  ),
+                ),
+
+                Positioned(
+                  right: 8,
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 28),
+                    onPressed: () {
+                      if (controller.page! < allMedia.length - 1) {
+                        controller.nextPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      }
+                    },
+                  ),
+                ),
+
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+
+                // Positioned(
+                //   bottom: 10,
+                //   child: ValueListenableBuilder<int>(
+                //     valueListenable: indexNotifier,
+                //     builder: (_, i, __) => Text(
+                //       "${i + 1}/${allMedia.length}",
+                //       style: const TextStyle(color: Colors.white, fontSize: 16),
+                //     ),
+                //   ),
+                // ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+  }
+
+
+
   @override
   void initState() {
     super.initState();
@@ -346,7 +459,23 @@ class _MyTasksPageState extends State<MyTasksPage> {
                 ),
 
                 Expanded(
-                  child: BlocBuilder<volunteerBloc, volunteerState>(
+                  child: BlocConsumer<volunteerBloc, volunteerState>(
+                    listener: (context, state) {
+                      if (state is SubmissionSuccess) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Proof submitted successfully!"),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+
+                        context.read<volunteerBloc>().add(
+                          FetchMyTasksEvent(
+                            taskIds: widget.userDetails.taskIds,
+                          ),
+                        );
+                      }
+                    },
                     builder: (context, state) {
                       if (state is volunteerLoading) {
                         return const Center(child: CircularProgressIndicator());
@@ -383,7 +512,7 @@ class _MyTasksPageState extends State<MyTasksPage> {
                                 debugPrint("Update");
                               },
                               onViewSubmission: () {
-                                debugPrint("View");
+                                showProofViewer(context, task.proofs);
                               },
                             );
                           },

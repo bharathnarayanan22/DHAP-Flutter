@@ -144,7 +144,7 @@ class _MyTaskCardState extends State<MyTaskCard> {
         case "In Progress":
           return "Submit Proof";
         case "In Verification":
-          return "Update Proof";
+          return "View Proof";
         default:
           return "Submit";
       }
@@ -159,7 +159,7 @@ class _MyTaskCardState extends State<MyTaskCard> {
             widget.onSubmitProof?.call();
           };
         case "In Verification":
-          return widget.onUpdateProof;
+          return widget.onViewSubmission;
         default:
           return null;
       }

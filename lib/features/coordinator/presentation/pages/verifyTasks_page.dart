@@ -10,7 +10,6 @@ import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_state
 class VerifyTasksPage extends StatefulWidget {
   const VerifyTasksPage({super.key});
 
-
   @override
   State<VerifyTasksPage> createState() => _VerifyTasksPageState();
 }
@@ -58,70 +57,85 @@ class _VerifyTasksPageState extends State<VerifyTasksPage> {
       controller.dispose();
     }
     super.dispose();
-
   }
+
+  bool _shouldRefreshOnPop = false;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[200],
-      appBar: AppBar(
-        title: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.verified, color: Colors.white, size: 24),
-            SizedBox(width: 8),
-            Text("Verify Tasks", style: TextStyle(fontWeight: FontWeight.bold)),
-          ],
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pop(_shouldRefreshOnPop);
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.grey[200],
+        appBar: AppBar(
+          title: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.verified, color: Colors.white, size: 24),
+              SizedBox(width: 8),
+              Text(
+                "Verify Tasks",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          backgroundColor: const Color(0xFF0A2744),
+          foregroundColor: Colors.white,
         ),
-        backgroundColor: const Color(0xFF0A2744),
-        foregroundColor: Colors.white,
-      ),
-      body: BlocConsumer<CoordinatorBloc, CoordinatorState>(
-        listener: (context, state) {
-
-          if (state is CoordinatorSuccess) {
-            setState(() {
-              _initializationFuture = _initializeControllers(state.tasks);
-            });
-          }
-        },
-        builder: (context, state) {
-          if (state is CoordinatorLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (state is CoordinatorSuccess) {
-            final tasks = state.tasks;
-
-            if (tasks.isEmpty) {
-              return const Center(child: Text('No Pending Verification'));
+        body: BlocConsumer<CoordinatorBloc, CoordinatorState>(
+          listener: (context, state) {
+            if (state is CoordinatorSuccess) {
+              setState(() {
+                _initializationFuture = _initializeControllers(state.tasks);
+              });
+            }
+          },
+          builder: (context, state) {
+            if (state is CoordinatorLoading) {
+              return const Center(child: CircularProgressIndicator());
             }
 
-            return FutureBuilder(
-              future: _initializationFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState != ConnectionState.done) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+            if (state is CoordinatorSuccess) {
+              final tasks = state.tasks;
 
-                return ListView.builder(
-                  padding: const EdgeInsets.all(12),
-                  itemCount: tasks.length,
-                  itemBuilder: (context, index) {
-                    return VerificationCard(index: index, task: tasks[index], controllers: _controllers);
-                  },
-                );
-              },
-            );
-          }
+              if (tasks.isEmpty) {
+                return const Center(child: Text('No Pending Verification'));
+              }
 
-          return const Center(child: Text('Something went wrong'));
-        },
+              return FutureBuilder(
+                future: _initializationFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState != ConnectionState.done) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(12),
+                    itemCount: tasks.length,
+                    itemBuilder: (context, index) {
+                      return VerificationCard(
+                        index: index,
+                        task: tasks[index],
+                        controllers: _controllers,
+                        shouldRefreshOnPop: () {
+                          setState(() {
+                            _shouldRefreshOnPop = true;
+                          });
+                        },
+                      );
+                    },
+                  );
+                },
+              );
+            }
+
+            return const Center(child: Text('Something went wrong'));
+          },
+        ),
       ),
     );
   }
 }
-
-
-

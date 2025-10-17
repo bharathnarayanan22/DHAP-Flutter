@@ -130,7 +130,7 @@ class _ViewHelpersPageState extends State<ViewHelpersPage> {
                                 prefixIcon: const Icon(Icons.search, color: primaryColor),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(color: primaryColor, width: 2),
+                                  borderSide: BorderSide.none,
                                 ),
                                 filled: true,
                                 fillColor: Colors.white,
@@ -145,7 +145,7 @@ class _ViewHelpersPageState extends State<ViewHelpersPage> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: primaryColor, width: 2),
+                              //border: Border.all(color: primaryColor, width: 2),
                             ),
                             child: DropdownButtonHideUnderline(
                               child: DropdownButton<String>(

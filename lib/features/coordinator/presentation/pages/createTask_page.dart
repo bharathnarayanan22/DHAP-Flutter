@@ -114,6 +114,8 @@ class _CreateTasksPageState extends State<CreateTasksPage> {
     }
   }
 
+ // bool _shouldRefreshOnPop = true;
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -132,9 +134,11 @@ class _CreateTasksPageState extends State<CreateTasksPage> {
                 ),
               );
               Future.delayed(const Duration(milliseconds: 800), () {
-                if (widget.existingTask != null) {
-                  Navigator.pop(context, true);
-                } else {
+                if (!mounted) return;
+
+                Navigator.pop(context, true);
+
+                if (widget.existingTask == null) {
                   _formKey.currentState?.reset();
                   _titleController.clear();
                   _descriptionController.clear();
@@ -147,6 +151,7 @@ class _CreateTasksPageState extends State<CreateTasksPage> {
                   });
                 }
               });
+              //Navigator.pop(context, true);
             } else if (state is CoordinatorFailure) {
               _scaffoldMessengerKey.currentState?.showSnackBar(
                 SnackBar(

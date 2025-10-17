@@ -54,6 +54,8 @@ class commonBloc extends Bloc<commonEvent, commonState> {
         final resources = await _resourceRepository.getAllResources();
         final requests = await _requestRepository.getAllRequests();
         final responses = await _responseRepository.getAllResponses();
+        print('Fetching');
+        print('task: ${tasks.length}');
         emit(FetchDataSuccess(
           message: "Data fetched successfully",
           users: users,

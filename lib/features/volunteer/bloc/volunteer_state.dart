@@ -26,5 +26,12 @@ class volunteerFailure extends volunteerState {
 
 class AcceptSuccess extends volunteerState {
   final String message;
-  const AcceptSuccess({required this.message});
+  final User user;
+  const AcceptSuccess({required this.message, required this.user});
+}
+
+class SubmissionSuccess extends volunteerState {
+  final String message;
+  final List<Task> tasks;
+  const SubmissionSuccess({required this.message, required this.tasks});
 }

@@ -33,7 +33,7 @@ class Task {
     required this.EndAddress,
     required this.StartLocation,
     required this.EndLocation,
-    this.Status = "In Progress",
+    this.Status = "Pending",
     this.proofs = const [],
   }) : id = id ?? uuid.v4();
 }

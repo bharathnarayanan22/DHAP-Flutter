@@ -1,4 +1,6 @@
 import 'package:dhap_flutter_project/data/model/user_model.dart';
+import 'package:dhap_flutter_project/features/common/bloc/commonBloc.dart';
+import 'package:dhap_flutter_project/features/common/bloc/commonEvent.dart';
 import 'package:dhap_flutter_project/features/common/presentation/pages/Co-Application.dart';
 import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_bloc.dart';
 import 'package:dhap_flutter_project/features/donor/bloc/donor_bloc.dart';
@@ -24,16 +26,19 @@ class RoleBasedDrawerItems extends StatelessWidget {
   final String role;
   //final Map<String, dynamic> userDetails;
   final User userDetails;
+  final VoidCallback onRefresh;
 
 
   const RoleBasedDrawerItems({
     super.key,
     required this.role,
     required this.userDetails,
+    required this.onRefresh,
   });
   static const Color drawerTextColor = Color(0xFF0A2744);
   @override
   Widget build(BuildContext context) {
+
     List<Widget> items = [
       ListTile(
         leading: const Icon(Icons.home, color: drawerTextColor),
@@ -49,31 +54,38 @@ class RoleBasedDrawerItems extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.add_task, color: drawerTextColor),
           title: const Text('Create Tasks'),
-          onTap: () {
+          onTap: () async {
             Navigator.pop(context);
-            Navigator.of(context).push(
+            final bool? res = await Navigator.push(
+              context,
               MaterialPageRoute(
                 builder: (context) => BlocProvider(
-                  create: (_) => CoordinatorBloc(),
-                  child: const CreateTasksPage(),
+                  create: (context) => CoordinatorBloc(),
+                  child: CreateTasksPage(),
                 ),
               ),
             );
+            print('res: $res');
+            if (res == true) {
+              onRefresh();
+            }
           },
         ),
         ListTile(
           leading: const Icon(Icons.task, color: drawerTextColor),
           title: const Text('View Tasks'),
-          onTap: () {
+          onTap: () async {
             Navigator.pop(context);
-            Navigator.of(context).push(
+            final bool? res = await Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => BlocProvider(
-                  create: (_) => CoordinatorBloc(),
-                  child: const ViewTasksPage(),
-                ),
+                    create: (context) => CoordinatorBloc(),
+                    child: ViewTasksPage()),
               ),
             );
+            if (res == true) {
+              onRefresh();
+            }
           },
         ),
         ListTile(
@@ -94,9 +106,9 @@ class RoleBasedDrawerItems extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.verified, color: drawerTextColor),
           title: const Text('Verify Tasks'),
-          onTap: () {
+          onTap: () async {
             Navigator.pop(context);
-            Navigator.of(context).push(
+            final bool? res = await Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => BlocProvider(
                   create: (context) => CoordinatorBloc(),
@@ -104,14 +116,17 @@ class RoleBasedDrawerItems extends StatelessWidget {
                 ),
               ),
             );
+            if (res == true) {
+              onRefresh();
+            }
           },
         ),
         ListTile(
           leading: const Icon(Icons.request_page, color: drawerTextColor),
           title: const Text('Resource Request'),
-          onTap: () {
+          onTap: () async {
             Navigator.pop(context);
-            Navigator.of(context).push(
+            final bool? res = await Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => BlocProvider(
                   create: (context) => CoordinatorBloc(),
@@ -119,14 +134,17 @@ class RoleBasedDrawerItems extends StatelessWidget {
                 ),
               ),
             );
+            if (res == true) {
+              onRefresh();
+            }
           },
         ),
         ListTile(
           leading: const Icon(Icons.food_bank_rounded, color: drawerTextColor),
           title: const Text('View Resources'),
-          onTap: () {
+          onTap: () async {
             Navigator.pop(context);
-            Navigator.of(context).push(
+            final bool? res = await Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => BlocProvider(
                   create: (context) => CoordinatorBloc(),
@@ -134,6 +152,10 @@ class RoleBasedDrawerItems extends StatelessWidget {
                 ),
               ),
             );
+
+            if(res == true) {
+              onRefresh();
+            }
           },
         ),
         ListTile(
@@ -173,9 +195,9 @@ class RoleBasedDrawerItems extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.task_alt, color: drawerTextColor),
           title: const Text('Available Tasks'),
-          onTap: () {
+          onTap: () async {
             Navigator.pop(context);
-            Navigator.of(context).push(
+            final res = await Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => BlocProvider(
                   create: (context) => volunteerBloc(),
@@ -183,6 +205,11 @@ class RoleBasedDrawerItems extends StatelessWidget {
                 ),
               ),
             );
+            if (res != null && res is User) {
+              userDetails.taskIds.clear();
+              userDetails.taskIds.addAll(res.taskIds);
+              onRefresh();
+            }
           },
         ),
         ListTile(
@@ -241,7 +268,11 @@ class RoleBasedDrawerItems extends StatelessWidget {
                   child: DonateResourcesPage(userDetails: userDetails),
                 ),
               ),
-            );
+            ).then((result) {
+              if (result is User) {
+                onRefresh();
+              }
+            });
           },
         ),
         ListTile(

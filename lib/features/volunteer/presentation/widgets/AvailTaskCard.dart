@@ -13,8 +13,9 @@ const Color accentColor = Color(0xFF4CAF50);
 class AvailTaskCard extends StatelessWidget {
   final Task task;
   final User user;
+  final VoidCallback? onTaskAccepted;
 
-  const AvailTaskCard({super.key, required this.task, required this.user});
+  const AvailTaskCard({super.key, required this.task, required this.user, this.onTaskAccepted});
 
   Future<void> _openMap(BuildContext context, LatLng start, LatLng end) async {
     final url = Uri.parse(
@@ -133,11 +134,12 @@ class AvailTaskCard extends StatelessWidget {
                     ),
                     onPressed: user.inTask
                         ? null
-                        : () {
+                        : (){
                       user.inTask = true;
-                      context.read<volunteerBloc>().add(
+                       context.read<volunteerBloc>().add(
                         AcceptTaskEvent(taskId: task.id, userEmail: user.email),
                       );
+                      onTaskAccepted?.call();
                     },
                     icon: const Icon(Icons.check_circle_outline, size: 20),
                     label: const Text(

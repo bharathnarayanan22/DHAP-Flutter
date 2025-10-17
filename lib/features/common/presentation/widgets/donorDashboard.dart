@@ -153,7 +153,7 @@ class _DonorDashboardState extends State<donorDashboard> {
                     ).then((result) {
                       if (result is User) {
                         setState(() {
-                          _userDetails = result; // ✅ Now allowed
+                          _userDetails = result;
                         });
                         context.read<commonBloc>().add(FetchDataEvent());
                       }

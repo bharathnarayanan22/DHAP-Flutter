@@ -1,225 +1,3 @@
-// import 'package:dhap_flutter_project/features/common/presentation/widgets/builtMetricCard.dart';
-// import 'package:dhap_flutter_project/features/common/presentation/widgets/dashboardCards.dart';
-// import 'package:dhap_flutter_project/features/coordinator/presentation/pages/createTask_page.dart';
-// import 'package:dhap_flutter_project/features/coordinator/presentation/pages/viewTasks_page.dart';
-// import 'package:flutter/material.dart';
-//
-// const Color primaryColor = Color(0xFF0A2744);
-// const Color accentColor = Color(0xFF42A5F5);
-// const Color successColor = Color(0xFF66BB6A);
-//
-// class coordinatorDashboard extends StatelessWidget {
-//   final Map<String, dynamic> userDetails;
-//   const coordinatorDashboard({super.key, required this.userDetails});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     int totalTasks = userDetails['totalTasks'] ?? 85;
-//     int unverifiedTasks = userDetails['unverifiedTasks'] ?? 12;
-//     int activeVolunteers = userDetails['activeVolunteers'] ?? 45;
-//     int pendingRequests = userDetails['pendingRequests'] ?? 7;
-//
-//     // final screenWidth = MediaQuery.of(context).size.width;
-//     // final cardWidth = (screenWidth - 32.0 - 16.0) / 2;
-//
-//     final screenWidth = MediaQuery.of(context).size.width;
-//     const padding = 16.0;
-//     const spacing = 16.0;
-//     const minCardWidth = 150.0;
-//     final availableWidth = screenWidth - 2 * padding;
-//     final cardsPerRow = (availableWidth / (minCardWidth + spacing)).floor();
-//     final cardWidth = (availableWidth - (spacing * (cardsPerRow - 1))) / cardsPerRow;
-//
-//     return SingleChildScrollView(
-//       padding: const EdgeInsets.all(16.0),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Row(
-//             mainAxisAlignment: MainAxisAlignment.center,
-//             children: [
-//               Icon(Icons.waving_hand, color: primaryColor, size: 24),
-//               const SizedBox(width: 8),
-//               Text(
-//                 'Welcome, ${userDetails['name'] ?? 'Coordinator'}!',
-//                 style: TextStyle(
-//                   fontSize: 24,
-//                   fontWeight: FontWeight.bold,
-//                   color: primaryColor,
-//                 ),
-//               ),
-//             ],
-//           ),
-//           const SizedBox(height: 20),
-//
-//           Wrap(
-//             spacing: spacing,
-//             runSpacing: 16.0,
-//             alignment: WrapAlignment.spaceBetween,
-//             children: [
-//               SizedBox(
-//                 width: cardWidth,
-//                 child: MetricCard(
-//                   title: 'Total Tasks',
-//                   value: totalTasks,
-//                   icon: Icons.list_alt,
-//                   color: accentColor,
-//                 ),
-//               ),
-//               SizedBox(
-//                 width: cardWidth,
-//                 child: MetricCard(
-//                   title: 'Unverified Tasks',
-//                   value: unverifiedTasks,
-//                   icon: Icons.search,
-//                   color: accentColor,
-//                 ),
-//               ),
-//               SizedBox(
-//                 width: cardWidth,
-//                 child: MetricCard(
-//                   title: 'Active Volunteers',
-//                   value: activeVolunteers,
-//                   icon: Icons.people,
-//                   color: successColor,
-//                 ),
-//               ),
-//               SizedBox(
-//                 width: cardWidth,
-//                 child: MetricCard(
-//                   title: 'Pending Requests',
-//                   value: pendingRequests,
-//                   icon: Icons.inventory_2_outlined,
-//                   color: successColor,
-//                 ),
-//               ),
-//             ],
-//           ),
-//
-//           const SizedBox(height: 20),
-//
-//           const Divider(color: Colors.grey),
-//
-//           const SizedBox(height: 15),
-//
-//           Padding(
-//             padding: const EdgeInsets.symmetric(horizontal: 4.0),
-//             child: Text(
-//               'Operational Overview',
-//               style: TextStyle(
-//                 fontSize: 20,
-//                 fontWeight: FontWeight.bold,
-//                 color: primaryColor,
-//               ),
-//             ),
-//           ),
-//           const SizedBox(height: 10),
-//           Container(
-//             height: 300,
-//             width: double.infinity,
-//             color: Colors.grey[200],
-//             alignment: Alignment.center,
-//             child: const Text('Task Status Donut Chart Placeholder'),
-//           ),
-//           const SizedBox(height: 16),
-//           Container(
-//             height: 300,
-//             width: double.infinity,
-//             color: Colors.grey[200],
-//             alignment: Alignment.center,
-//             child: const Text('Resource Request Bar Chart Placeholder'),
-//           ),
-//
-//           const SizedBox(height: 16),
-//
-//
-//           const Divider(color: Colors.grey),
-//
-//           const SizedBox(height: 15),
-//
-//           Row(
-//             children: [
-//               const Icon(Icons.flash_on, color: primaryColor),
-//               const SizedBox(width: 8),
-//               Text(
-//                 'Quick Actions',
-//                 style: TextStyle(
-//                   fontSize: 20,
-//                   fontWeight: FontWeight.bold,
-//                   color: primaryColor,
-//                 ),
-//               ),
-//             ],
-//           ),
-//           const SizedBox(height: 16),
-//
-//           DashboardCard(
-//             icon: Icons.add_task,
-//             title: 'Create Tasks',
-//             imageAsset: 'images/c1.svg',
-//             description: 'Create and assign new tasks for volunteers to work on.',
-//             onTap: () {
-//               Navigator.push(
-//                 context,
-//                 MaterialPageRoute(builder: (context) =>  CreateTasksPage()),
-//               );
-//             },
-//           ),
-//           const SizedBox(height: 12),
-//           DashboardCard(
-//             icon: Icons.task,
-//             title: 'View Tasks',
-//             imageAsset: 'images/c8.svg',
-//             description: 'See all active and completed tasks in your coordination list.',
-//             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) =>  ViewTasksPage())),
-//           ),
-//           const SizedBox(height: 12),
-//           DashboardCard(
-//             icon: Icons.people,
-//             title: 'View Helpers',
-//             imageAsset: 'images/c4.svg',
-//             description: 'Check the list of volunteers available to assist with tasks.',
-//             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) =>  ViewTasksPage())),
-//           ),
-//           const SizedBox(height: 12),
-//           DashboardCard(
-//             icon: Icons.verified,
-//             title: 'Verify Tasks',
-//             imageAsset: 'images/c3.svg',
-//             description: 'Review and approve tasks once they are completed by volunteers.',
-//             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) =>  ViewTasksPage())),
-//           ),
-//           const SizedBox(height: 12),
-//           DashboardCard(
-//             icon: Icons.request_page,
-//             title: 'Resource Request',
-//             imageAsset: 'images/c5.svg',
-//             description: 'Submit or manage requests for essential relief resources.',
-//             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) =>  ViewTasksPage())),
-//           ),
-//           const SizedBox(height: 12),
-//           DashboardCard(
-//             icon: Icons.food_bank_rounded,
-//             title: 'View Resources',
-//             imageAsset: 'images/c6.svg',
-//             description: 'Browse available resources and track their distribution.',
-//             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) =>  ViewTasksPage())),
-//           ),
-//           const SizedBox(height: 12),
-//           DashboardCard(
-//             icon: Icons.question_answer_rounded,
-//             title: 'Resource Responses',
-//             imageAsset: 'images/c7.svg',
-//             description: 'Monitor and manage responses from donors and volunteers to resource requests.',
-//             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) =>  ViewTasksPage())),
-//           ),
-//
-//         ],
-//       ),
-//     );
-//   }
-// }
-
 import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:dhap_flutter_project/features/common/bloc/commonBloc.dart';
 import 'package:dhap_flutter_project/features/common/bloc/commonState.dart';
@@ -258,13 +36,6 @@ class coordinatorDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final resourceRequestData = [
-      {'label': 'Food', 'value': 1500.0, 'color': warningColor},
-      {'label': 'Water', 'value': 800.0, 'color': accentColor},
-      {'label': 'Medical', 'value': 400.0, 'color': secondaryAccentColor},
-      {'label': 'Shelter Kits', 'value': 250.0, 'color': successColor},
-    ];
-
     final screenWidth = MediaQuery.of(context).size.width;
     const padding = 16.0;
     const spacing = 16.0;
@@ -281,6 +52,7 @@ class coordinatorDashboard extends StatelessWidget {
       create: (context) => commonBloc()..add(FetchDataEvent()),
       child: BlocBuilder<commonBloc, commonState>(
         builder: (context, state) {
+          final commonBloc dashboardBloc = context.read<commonBloc>();
           if (state is commonLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is FetchDataSuccess) {
@@ -317,7 +89,6 @@ class coordinatorDashboard extends StatelessWidget {
                 .where((r) => r.ResourceType == 'Shelter')
                 .length;
 
-
             final taskStatusData = [
               {
                 'label': 'Completed',
@@ -342,10 +113,26 @@ class coordinatorDashboard extends StatelessWidget {
             ];
 
             final resourceRequestData = [
-              {'label': 'Food', 'value': Fooditems.toDouble(), 'color': warningColor},
-              {'label': 'Water', 'value': Wateritems.toDouble(), 'color': accentColor},
-              {'label': 'Medicine', 'value': Medicalitems.toDouble(), 'color': secondaryAccentColor},
-              {'label': 'Shelter Kits', 'value': Shelteritems.toDouble(), 'color': successColor},
+              {
+                'label': 'Food',
+                'value': Fooditems.toDouble(),
+                'color': warningColor,
+              },
+              {
+                'label': 'Water',
+                'value': Wateritems.toDouble(),
+                'color': accentColor,
+              },
+              {
+                'label': 'Medicine',
+                'value': Medicalitems.toDouble(),
+                'color': secondaryAccentColor,
+              },
+              {
+                'label': 'Shelter Kits',
+                'value': Shelteritems.toDouble(),
+                'color': successColor,
+              },
             ];
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
@@ -358,7 +145,7 @@ class coordinatorDashboard extends StatelessWidget {
                       Icon(Icons.waving_hand, color: primaryColor, size: 24),
                       const SizedBox(width: 8),
                       Text(
-                        'Welcome, ${userDetails.name ?? 'Coordinator'}!',
+                        'Welcome, ${userDetails.name}!',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -476,8 +263,8 @@ class coordinatorDashboard extends StatelessWidget {
                     imageAsset: 'images/c1.svg',
                     description:
                         'Create and assign new tasks for volunteers to work on.',
-                    onTap: () {
-                      Navigator.push(
+                    onTap: () async {
+                      final bool? res = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => BlocProvider(
@@ -486,6 +273,10 @@ class coordinatorDashboard extends StatelessWidget {
                           ),
                         ),
                       );
+
+                      if (res == true) {
+                        dashboardBloc.add(FetchDataEvent());
+                      }
                     },
                   ),
                   const SizedBox(height: 12),
@@ -495,15 +286,21 @@ class coordinatorDashboard extends StatelessWidget {
                     imageAsset: 'images/c8.svg',
                     description:
                         'See all active and completed tasks in your coordination list.',
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BlocProvider(
-                          create: (context) => CoordinatorBloc(),
-                          child: ViewTasksPage(),
+                    onTap: () async {
+                      final bool res = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BlocProvider(
+                            create: (context) => CoordinatorBloc(),
+                            child: ViewTasksPage(),
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                      //print('res: ${res}');
+                      if (res == true) {
+                        dashboardBloc.add(FetchDataEvent());
+                      }
+                    },
                   ),
                   const SizedBox(height: 12),
                   DashboardCard(
@@ -529,15 +326,20 @@ class coordinatorDashboard extends StatelessWidget {
                     imageAsset: 'images/c3.svg',
                     description:
                         'Review and approve tasks once they are completed by volunteers.',
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BlocProvider(
-                          create: (context) => CoordinatorBloc(),
-                          child: VerifyTasksPage(),
+                    onTap: () async {
+                      final bool res = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BlocProvider(
+                            create: (context) => CoordinatorBloc(),
+                            child: VerifyTasksPage(),
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                     if (res == true) {
+                        dashboardBloc.add(FetchDataEvent());
+                      }
+                    },
                   ),
                   const SizedBox(height: 12),
                   DashboardCard(
@@ -546,15 +348,20 @@ class coordinatorDashboard extends StatelessWidget {
                     imageAsset: 'images/c5.svg',
                     description:
                         'Submit or manage requests for essential relief resources.',
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BlocProvider(
-                          create: (context) => CoordinatorBloc(),
-                          child: ResourceRequestPage(),
+                    onTap: () async {
+                      final bool res = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BlocProvider(
+                            create: (context) => CoordinatorBloc(),
+                            child: ResourceRequestPage(),
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                      if (res == true) {
+                        dashboardBloc.add(FetchDataEvent());
+                      }
+                    },
                   ),
                   const SizedBox(height: 12),
                   DashboardCard(

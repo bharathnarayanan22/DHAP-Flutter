@@ -109,13 +109,18 @@ class _ResourceRequestPageState extends State<ResourceRequestPage> {
                   duration: const Duration(seconds: 3),
                 ),
               );
-              _formKey.currentState?.reset();
-              _resourceController.clear();
-              _quantityController.clear();
-              _descriptionController.clear();
-              _addressController.clear();
-              setState(() {
-                _Location = null;
+              Future.delayed(const Duration(seconds: 2), () {
+                if (!mounted) return;
+
+                Navigator.pop(context, true);
+                _formKey.currentState?.reset();
+                _resourceController.clear();
+                _quantityController.clear();
+                _descriptionController.clear();
+                _addressController.clear();
+                setState(() {
+                  _Location = null;
+                });
               });
             } else if(state is RequestFailure){
               _scaffoldMessengerKey.currentState?.showSnackBar(

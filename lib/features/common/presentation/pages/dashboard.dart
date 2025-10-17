@@ -1,4 +1,5 @@
 import 'package:dhap_flutter_project/data/db/sessiondb_helper.dart';
+import 'package:dhap_flutter_project/data/model/task_model.dart';
 import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:dhap_flutter_project/features/auth/presentation/pages/auth_page.dart';
 import 'package:dhap_flutter_project/features/common/bloc/commonBloc.dart';
@@ -39,12 +40,18 @@ class _DashboardPageState extends State<DashboardPage> {
       child: BlocConsumer<commonBloc, commonState>(
         listener: (context, state) {
           if (state is SwitchRoleSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
             setState(() {
               currentUser = currentUser.copyWith(role: state.newRole);
             });
+          } else if (state is FetchDataSuccess) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (_) => DashboardPage(userDetails: currentUser),
+              ),
+            );
           } else if (state is commonFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.error), backgroundColor: Colors.red),
@@ -52,7 +59,6 @@ class _DashboardPageState extends State<DashboardPage> {
           }
         },
         builder: (context, state) {
-
           final role = currentUser.role;
 
           return SafeArea(
@@ -73,11 +79,10 @@ class _DashboardPageState extends State<DashboardPage> {
                         Navigator.of(context).pop();
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) =>
-                                BlocProvider(
-                                  create: (context) => commonBloc(),
-                                  child: ProfilePage(user: currentUser),
-                                ),
+                            builder: (context) => BlocProvider(
+                              create: (context) => commonBloc(),
+                              child: ProfilePage(user: currentUser),
+                            ),
                           ),
                         );
                       },
@@ -88,20 +93,16 @@ class _DashboardPageState extends State<DashboardPage> {
                           left: 16,
                           right: 16,
                         ),
-                        decoration: const BoxDecoration(color: Color(
-                            0xFF0A2744)),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF0A2744),
+                        ),
                         child: Row(
                           children: [
                             CircleAvatar(
                               radius: 30,
                               backgroundColor: Colors.grey[300],
                               child: Text(
-                                "${(currentUser.name as String?)?.isNotEmpty ==
-                                    true
-                                    ? (currentUser.name as String)
-                                    .substring(0, 1)
-                                    .toUpperCase()
-                                    : 'U'}",
+                                "${(currentUser.name as String?)?.isNotEmpty == true ? (currentUser.name as String).substring(0, 1).toUpperCase() : 'U'}",
                                 style: const TextStyle(
                                   fontSize: 30,
                                   fontWeight: FontWeight.bold,
@@ -142,7 +143,10 @@ class _DashboardPageState extends State<DashboardPage> {
                         padding: EdgeInsets.zero,
                         children: [
                           RoleBasedDrawerItems(
-                              role: role, userDetails: currentUser),
+                            role: role,
+                            userDetails: currentUser,
+                            onRefresh: () => context.read<commonBloc>()..add(FetchDataEvent()),
+                          ),
                         ],
                       ),
                     ),
@@ -158,7 +162,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         await sessionHelper.clearSession();
                         Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(builder: (context) => AuthPage()),
-                              (route) => false,
+                          (route) => false,
                         );
                       },
                     ),
@@ -167,50 +171,51 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
               floatingActionButton: (role == 'Volunteer' || role == 'Donor')
                   ? BlocProvider.value(
-                value: context.read<commonBloc>(),
-                child: SwitchButton(
-                  userDetails: currentUser,
-                  onSwitch: () async {
-                    final newRole =
-                    currentUser.role == "Volunteer" ? "Donor" : "Volunteer";
-            
-                    context.read<commonBloc>().add(
-                      SwitchRoleSubmitted(
-                        email: currentUser.email,
-                        newRole: newRole,
+                      value: context.read<commonBloc>(),
+                      child: SwitchButton(
+                        userDetails: currentUser,
+                        onSwitch: () async {
+                          final newRole = currentUser.role == "Volunteer"
+                              ? "Donor"
+                              : "Volunteer";
+
+                          context.read<commonBloc>().add(
+                            SwitchRoleSubmitted(
+                              email: currentUser.email,
+                              newRole: newRole,
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
-              )
+                    )
                   : null,
-            
+
               body: Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 1000),
                   child: switch (role) {
-                    'Coordinator' =>
-                        coordinatorDashboard(userDetails: currentUser),
+                    'Coordinator' => coordinatorDashboard(
+                      userDetails: currentUser,
+                    ),
                     'Volunteer' => volunteerDashboard(userDetails: currentUser),
                     'Donor' => donorDashboard(userDetails: currentUser),
-                    _ =>
-                        Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Welcome, ${currentUser.name}!',
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              Text('Email: ${currentUser.email}'),
-                              Text('Role: $role'),
-                            ],
+                    _ => Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Welcome, ${currentUser.name}!',
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: 10),
+                          Text('Email: ${currentUser.email}'),
+                          Text('Role: $role'),
+                        ],
+                      ),
+                    ),
                   },
                 ),
               ),
@@ -220,5 +225,4 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
-
 }

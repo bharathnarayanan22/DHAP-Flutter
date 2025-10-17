@@ -11,11 +11,13 @@ class VerificationCard extends StatefulWidget {
   final int index;
   final Task task;
   final Map<String, VideoPlayerController> controllers;
+  final VoidCallback? shouldRefreshOnPop;
 
   const VerificationCard({
     required this.index,
     required this.task,
     required this.controllers,
+    this.shouldRefreshOnPop,
     super.key,
   });
 
@@ -61,22 +63,29 @@ class _VerificationCardState extends State<VerificationCard> {
                   PageView.builder(
                     controller: _pageController,
                     itemCount: mediaPaths.length,
-                    onPageChanged: (index) => setState(() => _currentPage = index),
+                    onPageChanged: (index) =>
+                        setState(() => _currentPage = index),
                     itemBuilder: (context, mediaIndex) {
                       final media = mediaPaths[mediaIndex];
-                      final isVideo = media.endsWith('.mp4') || media.endsWith('.mov');
+                      final isVideo =
+                          media.endsWith('.mp4') || media.endsWith('.mov');
 
                       if (isVideo) {
                         final controller = widget.controllers[media];
-                        if (controller == null || !controller.value.isInitialized) {
-                          return const Center(child: CircularProgressIndicator());
+                        if (controller == null ||
+                            !controller.value.isInitialized) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         }
 
                         return Stack(
                           children: [
                             Positioned.fill(
                               child: ClipRRect(
-                                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                                borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(12),
+                                ),
                                 child: AspectRatio(
                                   aspectRatio: controller.value.aspectRatio,
                                   child: VideoPlayer(controller),
@@ -108,7 +117,9 @@ class _VerificationCardState extends State<VerificationCard> {
                         );
                       } else {
                         return ClipRRect(
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(12),
+                          ),
                           child: Image.file(File(media), fit: BoxFit.cover),
                         );
                       }
@@ -128,7 +139,11 @@ class _VerificationCardState extends State<VerificationCard> {
                             color: Colors.black12,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.arrow_back_ios, color: Colors.white70, size: 20),
+                          child: const Icon(
+                            Icons.arrow_back_ios,
+                            color: Colors.white70,
+                            size: 20,
+                          ),
                         ),
                       ),
                     ),
@@ -146,7 +161,11 @@ class _VerificationCardState extends State<VerificationCard> {
                             color: Colors.black12,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.arrow_forward_ios, color: Colors.white70, size: 20),
+                          child: const Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.white70,
+                            size: 20,
+                          ),
                         ),
                       ),
                     ),
@@ -158,7 +177,13 @@ class _VerificationCardState extends State<VerificationCard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.task.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(
+                  widget.task.title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 Text(widget.task.description),
                 const SizedBox(height: 6),
@@ -166,10 +191,13 @@ class _VerificationCardState extends State<VerificationCard> {
                 const SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () {
-                    context.read<CoordinatorBloc>().add(MarkTaskCompletedEvent(widget.task.id));
+                    context.read<CoordinatorBloc>().add(
+                      MarkTaskCompletedEvent(widget.task.id),
+                    );
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text("${widget.task.title} verified!")),
                     );
+                    widget.shouldRefreshOnPop!();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF0A2744),

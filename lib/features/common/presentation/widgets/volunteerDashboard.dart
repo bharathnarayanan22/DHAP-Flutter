@@ -146,12 +146,15 @@ class volunteerDashboard extends StatelessWidget {
 
   const volunteerDashboard({super.key, required this.userDetails});
 
+
   @override
   Widget build(BuildContext context) {
+
     return BlocProvider(
       create: (context) => commonBloc()..add(FetchDataEvent()),
       child: BlocBuilder<commonBloc, commonState>(
         builder: (context, state) {
+          final commonBloc dashboardBloc = context.read<commonBloc>();
           if (state is commonLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is FetchDataSuccess) {
@@ -167,6 +170,7 @@ class volunteerDashboard extends StatelessWidget {
                 .where((task) => userDetails.taskIds.contains(task.id))
                 .toList();
 
+            print('userTasks: $userTasks');
             final completedTasks = userTasks
                 .where((task) => task.Status == 'Completed')
                 .toList();
@@ -246,8 +250,8 @@ class volunteerDashboard extends StatelessWidget {
                     imageAsset: 'images/c2.svg',
                     description:
                         'Browse and accept tasks that are open for you to work on.',
-                    onTap: () {
-                      Navigator.push(
+                    onTap: () async {
+                      final res = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => BlocProvider(
@@ -256,6 +260,13 @@ class volunteerDashboard extends StatelessWidget {
                           ),
                         ),
                       );
+                      print('=> res: ${res}');
+                      if (res != null && res is User) {
+                        userDetails.taskIds.clear();
+                        userDetails.taskIds.addAll(res.taskIds);
+                        print('=> user tasks: ${userDetails.taskIds.length}');
+                        dashboardBloc.add(FetchDataEvent());
+                      }
                     },
                   ),
                   const SizedBox(height: 12),
