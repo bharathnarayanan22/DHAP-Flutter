@@ -14,6 +14,8 @@ class SwitchButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: 125,
+      height: 40,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Color(0xFF0A2744), Color(0xFF4A90E2)],
@@ -21,6 +23,7 @@ class SwitchButton extends StatelessWidget {
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
       child: FloatingActionButton.extended(
+        heroTag: 'switchRoleFab',
         backgroundColor: Colors.transparent,
         onPressed: onSwitch, // just call the callback
         icon: const Icon(Icons.swap_horiz, color: Colors.white),

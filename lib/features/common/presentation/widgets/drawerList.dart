@@ -28,7 +28,6 @@ class RoleBasedDrawerItems extends StatelessWidget {
   final User userDetails;
   final VoidCallback onRefresh;
 
-
   const RoleBasedDrawerItems({
     super.key,
     required this.role,
@@ -38,7 +37,6 @@ class RoleBasedDrawerItems extends StatelessWidget {
   static const Color drawerTextColor = Color(0xFF0A2744);
   @override
   Widget build(BuildContext context) {
-
     List<Widget> items = [
       ListTile(
         leading: const Icon(Icons.home, color: drawerTextColor),
@@ -79,8 +77,9 @@ class RoleBasedDrawerItems extends StatelessWidget {
             final bool? res = await Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => BlocProvider(
-                    create: (context) => CoordinatorBloc(),
-                    child: ViewTasksPage()),
+                  create: (context) => CoordinatorBloc(),
+                  child: ViewTasksPage(),
+                ),
               ),
             );
             if (res == true) {
@@ -153,7 +152,7 @@ class RoleBasedDrawerItems extends StatelessWidget {
               ),
             );
 
-            if(res == true) {
+            if (res == true) {
               onRefresh();
             }
           },
@@ -183,14 +182,16 @@ class RoleBasedDrawerItems extends StatelessWidget {
             Navigator.pop(context);
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => CoordinatorApplicationsPage(),
+                builder: (context) => BlocProvider(
+                  create: (context) => CoordinatorBloc(),
+                  child: CoordinatorApplicationsPage(),
+                ),
               ),
             );
           },
         ),
       ]);
-    }
-    else if (role == 'Volunteer') {
+    } else if (role == 'Volunteer') {
       items.addAll([
         ListTile(
           leading: const Icon(Icons.task_alt, color: drawerTextColor),
@@ -201,7 +202,7 @@ class RoleBasedDrawerItems extends StatelessWidget {
               MaterialPageRoute(
                 builder: (context) => BlocProvider(
                   create: (context) => volunteerBloc(),
-                  child: tasksPage(user: userDetails,),
+                  child: tasksPage(user: userDetails),
                 ),
               ),
             );
@@ -227,19 +228,9 @@ class RoleBasedDrawerItems extends StatelessWidget {
             );
           },
         ),
-        ListTile(
-          leading: const Icon(Icons.swap_horiz, color: drawerTextColor),
-          title: const Text('Become A Co'),
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (context) => CoApplication()));
-          },
-        ),
+
       ]);
-    }
-    else if (role == 'Donor') {
+    } else if (role == 'Donor') {
       items.addAll([
         ListTile(
           leading: const Icon(Icons.request_page, color: drawerTextColor),
@@ -261,40 +252,42 @@ class RoleBasedDrawerItems extends StatelessWidget {
           title: const Text('Donate Resources'),
           onTap: () {
             Navigator.pop(context);
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => BlocProvider(
-                  create: (context) => DonorBloc(),
-                  child: DonateResourcesPage(userDetails: userDetails),
-                ),
-              ),
-            ).then((result) {
-              if (result is User) {
-                onRefresh();
-              }
-            });
+            Navigator.of(context)
+                .push(
+                  MaterialPageRoute(
+                    builder: (context) => BlocProvider(
+                      create: (context) => DonorBloc(),
+                      child: DonateResourcesPage(userDetails: userDetails),
+                    ),
+                  ),
+                )
+                .then((result) {
+                  if (result is User) {
+                    onRefresh();
+                  }
+                });
           },
         ),
-        ListTile(
-          leading: const Icon(Icons.history, color: drawerTextColor),
-          title: const Text('My Contributions'),
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => MyContributionsPage()),
-            );
-          },
-        ),
-        ListTile(
-          leading: const Icon(Icons.swap_horiz, color: drawerTextColor),
-          title: const Text('Become A Co'),
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (context) => CoApplication()));
-          },
-        ),
+        // ListTile(
+        //   leading: const Icon(Icons.history, color: drawerTextColor),
+        //   title: const Text('My Contributions'),
+        //   onTap: () {
+        //     Navigator.pop(context);
+        //     Navigator.of(context).push(
+        //       MaterialPageRoute(builder: (context) => MyContributionsPage()),
+        //     );
+        //   },
+        // ),
+        // ListTile(
+        //   leading: const Icon(Icons.swap_horiz, color: drawerTextColor),
+        //   title: const Text('Become A Co'),
+        //   onTap: () {
+        //     Navigator.pop(context);
+        //     Navigator.of(
+        //       context,
+        //     ).push(MaterialPageRoute(builder: (context) => CoApplication()));
+        //   },
+        // ),
       ]);
     }
 

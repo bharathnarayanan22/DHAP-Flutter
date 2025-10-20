@@ -88,3 +88,14 @@ class MarkTaskCompletedEvent extends CoordinatorEvent {
   MarkTaskCompletedEvent(this.taskId);
 }
 
+class FetchApplicationsWithUsers extends CoordinatorEvent {}
+
+class AcceptApplication extends CoordinatorEvent {
+  final String applicationId;
+  AcceptApplication(this.applicationId);
+}
+
+class RejectApplication extends CoordinatorEvent {
+  final String applicationId;
+  RejectApplication(this.applicationId);
+}

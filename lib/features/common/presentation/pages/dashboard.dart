@@ -145,7 +145,9 @@ class _DashboardPageState extends State<DashboardPage> {
                           RoleBasedDrawerItems(
                             role: role,
                             userDetails: currentUser,
-                            onRefresh: () => context.read<commonBloc>()..add(FetchDataEvent()),
+                            onRefresh: () =>
+                                context.read<commonBloc>()
+                                  ..add(FetchDataEvent()),
                           ),
                         ],
                       ),
@@ -169,8 +171,15 @@ class _DashboardPageState extends State<DashboardPage> {
                   ],
                 ),
               ),
-              floatingActionButton: (role == 'Volunteer' || role == 'Donor')
-                  ? BlocProvider.value(
+
+              floatingActionButton: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  // Always show the Switch Role button for Volunteer/Donor
+                  if (role == 'Volunteer' || role == 'Donor')
+                    BlocProvider.value(
                       value: context.read<commonBloc>(),
                       child: SwitchButton(
                         userDetails: currentUser,
@@ -187,8 +196,93 @@ class _DashboardPageState extends State<DashboardPage> {
                           );
                         },
                       ),
-                    )
-                  : null,
+                    ),
+
+                  const SizedBox(height: 12),
+
+                  // Show "Become Co" FAB only if the user is not a Coordinator
+                  if (!currentUser.isCoordinator)
+                    Container(
+                      width: 125,
+                      height: 40,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFF0A2744), Color(0xFF4A90E2)],
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                      ),
+                      child: FloatingActionButton.extended(
+                        heroTag: 'applyCoordinatorFab',
+                        backgroundColor: Colors.transparent,
+                        onPressed: () {
+                          final TextEditingController msgController = TextEditingController();
+
+                          showDialog(
+                            context: context,
+                            builder: (dialogCtx) => BlocProvider.value(
+                              value: context.read<commonBloc>(),
+                              child: AlertDialog(
+                                title: const Text('Apply for Coordinator Role'),
+                                content: currentUser.isSubmitted == true
+                                    ? const Text(
+                                  'Your application has already been submitted and is under review.',
+                                  style: TextStyle(fontSize: 16),
+                                )
+                                    : TextField(
+                                  controller: msgController,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Message',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  maxLines: 3,
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(dialogCtx).pop(),
+                                    style: TextButton.styleFrom(foregroundColor: Colors.red),
+                                    child: const Text('Close'),
+                                  ),
+                                  if (currentUser.isSubmitted != true)
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        final message = msgController.text.trim();
+                                        if (message.isNotEmpty) {
+                                          context.read<commonBloc>().add(
+                                            BecomeCoSubmitted(
+                                              email: currentUser.email,
+                                              message: message,
+                                            ),
+                                          );
+                                          Navigator.of(dialogCtx).pop();
+                                          setState(() {
+                                            currentUser = currentUser.copyWith(isSubmitted: true);
+                                          });
+                                        }
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color(0xFF0A2744),
+                                        foregroundColor: Colors.white,
+                                      ),
+                                      child: const Text('Submit'),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.how_to_reg, color: Colors.white),
+                        label: const Text(
+                          'Become Co',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+
 
               body: Center(
                 child: ConstrainedBox(

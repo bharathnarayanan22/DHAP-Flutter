@@ -1,7 +1,7 @@
 [
   {
     "type": "user",
-    "id": "1",
+    "id": "101",
     "name": "Arun Kumar",
     "email": "arun@example.com",
     "password": "pass123",
@@ -11,12 +11,15 @@
     "country": "India",
     "pincode": "600001",
     "role": "Coordinator",
+    "isCoordinator": true,
+    "inTask": false,
+    "isSubmitted": false,
     "taskIds": [],
     "resourceIds": []
   },
   {
     "type": "user",
-    "id": "2",
+    "id": "102",
     "name": "Meera Sharma",
     "email": "meera@example.com",
     "password": "secure456",
@@ -26,12 +29,15 @@
     "country": "India",
     "pincode": "560001",
     "role": "Donor",
+    "isCoordinator": false,
+    "inTask": false,
+    "isSubmitted": false,
     "taskIds": [],
     "resourceIds": []
   },
   {
     "type": "user",
-    "id": "3",
+    "id": "103",
     "name": "Ravi Patel",
     "email": "ravi@example.com",
     "password": "pass123",
@@ -42,13 +48,15 @@
     "pincode": "500001",
     "inTask": false,
     "role": "Volunteer",
+    "isCoordinator": false,
+    "isSubmitted": false,
     "taskIds": [],
     "resourceIds": []
   },
 
   {
     "type": "user",
-    "id": "5",
+    "id": "105",
     "name": "Suresh Reddy",
     "email": "suresh@example.com",
     "password": "pass123",
@@ -58,13 +66,16 @@
     "country": "India",
     "pincode": "600002",
     "role": "Donor",
+    "isCoordinator": false,
+    "inTask": false,
+    "isSubmitted": false,
     "taskIds": [],
     "resourceIds": []
   },
 
   {
     "type": "user",
-    "id": "8",
+    "id": "108",
     "name": "Anita",
     "email": "ani@example.com",
     "password": "pass123",
@@ -75,6 +86,26 @@
     "country": "India",
     "pincode": "700001",
     "role": "Volunteer",
+    "isCoordinator": false,
+    "isSubmitted": false,
+    "taskIds": [],
+    "resourceIds": []
+  },
+  {
+    "type": "user",
+    "id": "122",
+    "name": "Bharath",
+    "email": "bharath@example.com",
+    "password": "pass123",
+    "mobile": "9871203456",
+    "addressLine": "88 Lake View Road",
+    "inTask": false,
+    "isCoordinator": true,
+    "isSubmitted": false,
+    "city": "Kolkata",
+    "country": "India",
+    "pincode": "700001",
+    "role": "Coordinator",
     "taskIds": [],
     "resourceIds": []
   }

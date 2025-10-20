@@ -190,7 +190,7 @@ class _DonateResourcePageState extends State<DonateResourcesPage> {
                           const SizedBox(height: 16),
                           TextFormField(
                             controller: _quantityController,
-                            decoration: _getInputDecoration(label: 'Qunatity', icon: Icons.description),
+                            decoration: _getInputDecoration(label: 'Qunatity', icon: Icons.numbers),
                             keyboardType: TextInputType.number,
                             validator: (value) {
                               if (value == null || value.isEmpty || int.tryParse(value) == null || int.parse(value) <= 0) {

@@ -159,20 +159,20 @@ class _DonorDashboardState extends State<donorDashboard> {
                       }
                     }),
                   ),
-                  const SizedBox(height: 12),
-                  DashboardCard(
-                    icon: Icons.handshake,
-                    title: 'My Contributions',
-                    imageAsset: 'images/r4.svg',
-                    description:
-                    'Review your past donations and see the difference you’ve made.',
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MyContributionsPage(),
-                      ),
-                    ),
-                  ),
+                  // const SizedBox(height: 12),
+                  // DashboardCard(
+                  //   icon: Icons.handshake,
+                  //   title: 'My Contributions',
+                  //   imageAsset: 'images/r4.svg',
+                  //   description:
+                  //   'Review your past donations and see the difference you’ve made.',
+                  //   onTap: () => Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //       builder: (context) => MyContributionsPage(),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             );

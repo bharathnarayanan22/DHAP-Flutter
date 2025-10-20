@@ -54,3 +54,10 @@ class FetchDataSuccess extends commonState {
     required this.responses,
   });
 }
+
+class BecomeCoSuccess extends commonState {
+  final String message;
+  BecomeCoSuccess({required this.message});
+}
+
+

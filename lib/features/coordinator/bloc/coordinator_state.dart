@@ -1,3 +1,4 @@
+import 'package:dhap_flutter_project/data/model/application_model.dart';
 import 'package:dhap_flutter_project/data/model/request_model.dart';
 import 'package:dhap_flutter_project/data/model/resource_model.dart';
 import 'package:dhap_flutter_project/data/model/response_model.dart';
@@ -91,4 +92,16 @@ class FetchRequestResponseSuccess extends CoordinatorState {
   final List<Request> requests;
   final List<ResponseModel> responses;
   const FetchRequestResponseSuccess({required this.message, required this.requests, required this.responses});
+}
+
+class FetchApplicationWithUserSuccess extends CoordinatorState {
+  final List<CoordinatorApplication> applications;
+  final List<User> users;
+  final String message;
+
+  FetchApplicationWithUserSuccess({
+    required this.applications,
+    required this.users,
+    required this.message,
+  });
 }

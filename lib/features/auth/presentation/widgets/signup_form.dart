@@ -9,7 +9,7 @@ import '../../bloc/auth_event.dart';
 import '../../bloc/auth_state.dart';
 
 class SignupForm extends StatefulWidget {
-  const SignupForm({super.key});
+  SignupForm({super.key});
 
   @override
   _SignupFormState createState() => _SignupFormState();
@@ -19,7 +19,6 @@ class _SignupFormState extends State<SignupForm> {
   final _formKey = GlobalKey<FormState>();
   int _currentStep = 1;
 
-  // Controllers
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -160,7 +159,7 @@ class _SignupFormState extends State<SignupForm> {
             ),
           ),
           value: _selectedRole,
-          items: ["Coordinator", "Volunteer", "Donor"]
+          items: ["Volunteer", "Donor"]
               .map((role) => DropdownMenuItem(
             value: role,
             child: Text(

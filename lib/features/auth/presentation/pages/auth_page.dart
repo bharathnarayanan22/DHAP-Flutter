@@ -12,47 +12,73 @@ class AuthPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => AuthBloc(),
+      child: const AuthView(),
+    );
+  }
+}
+
+class AuthView extends StatelessWidget {
+  const AuthView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0A2744),
-      body: BlocProvider(
-        create: (_) => AuthBloc(),
-        child: BlocBuilder<AuthBloc, AuthState>(
-          buildWhen: (previous, current) => current is AuthModeState,
-          builder: (context, state) {
-            bool isLogin = true;
-            if (state is AuthModeState) {
-              debugPrint("AuthModeState: ${state.isLogin}");
-              isLogin = state.isLogin;
-            }
+      body: BlocConsumer<AuthBloc, AuthState>(
+        listenWhen: (previous, current) =>
+        current is AuthSuccess || current is AuthFailure,
+        listener: (context, state) {
+          if (state is AuthSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
+          } else if (state is AuthFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.error)),
+            );
+          }
+        },
+        buildWhen: (previous, current) {
+          print('previous: $previous, current: $current');
+          if (current is AuthModeState && previous is AuthModeState) {
+            return current.isLogin != previous.isLogin;
+          }
+          return current is AuthModeState;
+        },
+        builder: (context, state) {
+          bool isLogin = state is AuthModeState ? state.isLogin : true;
 
-            return Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  transitionBuilder: (Widget child, Animation<double> animation) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: SlideTransition(
-                        position: Tween<Offset>(
-                          begin: Offset(0, 0.1),
-                          end: Offset.zero,
-                        ).animate(animation),
-                        child: child,
-                      ),
-                    );
-                  },
+          return Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 400),
+                switchInCurve: Curves.easeIn,
+                switchOutCurve: Curves.easeOut,
+                transitionBuilder: (child, animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0, 0.1),
+                        end: Offset.zero,
+                      ).animate(animation),
+                      child: child,
+                    ),
+                  );
+                },
+                child: Container(
+                  key: ValueKey(isLogin ? 'loginMode' : 'signupMode'),
                   child: Card(
-                    key: ValueKey<bool>(isLogin),
                     elevation: 8,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Container(
                       padding: const EdgeInsets.all(24),
-                      constraints: BoxConstraints(
-                        maxWidth: 400,
-                      ),
+                      constraints: const BoxConstraints(maxWidth: 400),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -69,13 +95,13 @@ class AuthPage extends StatelessWidget {
                               ),
                               const SizedBox(width: 10),
                               Icon(
-                                isLogin ? Icons.waving_hand: Icons.handshake,
+                                isLogin ? Icons.waving_hand : Icons.handshake,
                                 color: const Color(0xFF0A2744),
                                 size: 40,
                               ),
                             ],
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           Text(
                             isLogin
                                 ? 'Login to your account'
@@ -86,11 +112,12 @@ class AuthPage extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          isLogin ?  LoginForm() :  SignupForm(),
+                          isLogin
+                              ? LoginForm(key: const ValueKey('loginForm'))
+                              : SignupForm(key: const ValueKey('signupForm')),
                           const SizedBox(height: 16),
                           TextButton(
                             onPressed: () {
-
                               debugPrint("Toggle Auth Mode");
                               context.read<AuthBloc>().add(ToggleAuthMode());
                             },
@@ -110,9 +137,10 @@ class AuthPage extends StatelessWidget {
                   ),
                 ),
               ),
-            );
-          },
-        ),
+
+            ),
+          );
+        },
       ),
     );
   }

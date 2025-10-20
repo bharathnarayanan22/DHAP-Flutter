@@ -9,25 +9,24 @@ class Userdb_helper {
   Future<void> saveUser(User user) async {
     final db = await _core.database;
 
-    final doc = MutableDocument.withId(
-      user.email,
-      {
-        'type': 'user',
-        'id': user.id,
-        'name': user.name,
-        'email': user.email,
-        'password': user.password,
-        'mobile': user.mobile,
-        'addressLine': user.addressLine,
-        'city': user.city,
-        'country': user.country,
-        'pincode': user.pincode,
-        'role': user.role,
-        'taskIds': user.taskIds,
-        'resourceIds': user.resourceIds,
-        'inTask': user.inTask,
-      },
-    );
+    final doc = MutableDocument.withId(user.email, {
+      'type': 'user',
+      'id': user.id,
+      'name': user.name,
+      'email': user.email,
+      'password': user.password,
+      'mobile': user.mobile,
+      'addressLine': user.addressLine,
+      'city': user.city,
+      'country': user.country,
+      'pincode': user.pincode,
+      'role': user.role,
+      'taskIds': user.taskIds,
+      'resourceIds': user.resourceIds,
+      'inTask': user.inTask,
+      'isCoordinator': user.isCoordinator,
+      'isSubmitted': user.isSubmitted,
+    });
 
     await db.saveDocument(doc);
     debugPrint("User saved in Couchbase: ${user.email}");
@@ -36,7 +35,7 @@ class Userdb_helper {
   Future<List<User>> getAllUsers() async {
     final db = await _core.database;
     final dbName = 'dhap';
-   // if (db == null) await init();
+    // if (db == null) await init();
 
     final query = await QueryBuilder.createAsync()
         .select(SelectResult.all())
@@ -51,21 +50,27 @@ class Userdb_helper {
       final data = row.dictionary(dbName);
 
       if (data != null) {
-        users.add(User(
-          id: data.string('id'),
-          name: data.string('name') ?? '',
-          email: data.string('email') ?? '',
-          password: data.string('password') ?? '',
-          mobile: data.string('mobile') ?? '',
-          addressLine: data.string('addressLine') ?? '',
-          city: data.string('city') ?? '',
-          country: data.string('country') ?? '',
-          pincode: data.string('pincode') ?? '',
-          role: data.string('role') ?? '',
-          inTask: data.boolean('inTask'),
-          taskIds: List<String>.from(data.array('taskIds')?.toList() ?? []),
-          resourceIds: List<String>.from(data.array('resourceIds')?.toList() ?? []),
-        ));
+        users.add(
+          User(
+            id: data.string('id'),
+            name: data.string('name') ?? '',
+            email: data.string('email') ?? '',
+            password: data.string('password') ?? '',
+            mobile: data.string('mobile') ?? '',
+            addressLine: data.string('addressLine') ?? '',
+            city: data.string('city') ?? '',
+            country: data.string('country') ?? '',
+            pincode: data.string('pincode') ?? '',
+            role: data.string('role') ?? '',
+            inTask: data.boolean('inTask'),
+            isCoordinator: data.boolean('isCoordinator'),
+            isSubmitted: data.boolean('isSubmitted'),
+            taskIds: List<String>.from(data.array('taskIds')?.toList() ?? []),
+            resourceIds: List<String>.from(
+              data.array('resourceIds')?.toList() ?? [],
+            ),
+          ),
+        );
       }
     }
 
@@ -89,6 +94,8 @@ class Userdb_helper {
       pincode: doc.string('pincode') ?? '',
       role: doc.string('role') ?? '',
       inTask: doc.boolean('inTask'),
+      isCoordinator: doc.boolean('isCoordinator'),
+      isSubmitted: doc.boolean('isSubmitted'),
       taskIds: List<String>.from(doc.array('taskIds')?.toList() ?? []),
       resourceIds: List<String>.from(doc.array('resourceIds')?.toList() ?? []),
     );
@@ -119,7 +126,6 @@ class Userdb_helper {
     debugPrint("User role updated to: $newRole for $email");
   }
 
-
   Future<void> acceptTask(String taskId, String userEmail) async {
     final db = await _core.database;
 
@@ -132,8 +138,9 @@ class Userdb_helper {
     debugPrint("userDoc: $userDoc");
 
     final mutableUser = userDoc.toMutable();
-    final existingTaskIds =
-    List<String>.from(mutableUser.array('taskIds')?.toList() ?? []);
+    final existingTaskIds = List<String>.from(
+      mutableUser.array('taskIds')?.toList() ?? [],
+    );
 
     if (!existingTaskIds.contains(taskId) && !mutableUser.boolean('inTask')) {
       existingTaskIds.add(taskId);
@@ -159,16 +166,17 @@ class Userdb_helper {
 
       final currentVolunteers = mutableTask.integer('volunteersAccepted');
       mutableTask.setInteger(key: 'volunteersAccepted', currentVolunteers + 1);
-      if(mutableTask.string('Status') == 'Pending'){
+      if (mutableTask.string('Status') == 'Pending') {
         mutableTask.setString(key: 'Status', 'In Progress');
       }
 
       await db.saveDocument(mutableTask);
-      debugPrint("Task $taskId volunteersAccepted incremented to ${currentVolunteers + 1}");
+      debugPrint(
+        "Task $taskId volunteersAccepted incremented to ${currentVolunteers + 1}",
+      );
     } else {
       debugPrint("Task already accepted by user: $taskId");
     }
-
   }
 
   Future<void> addResource(String resourceId, String userEmail) async {
@@ -183,8 +191,9 @@ class Userdb_helper {
     debugPrint("userDoc: $userDoc");
 
     final mutableUser = userDoc.toMutable();
-    final existingResourceIds =
-    List<String>.from(mutableUser.array('resourceIds')?.toList() ?? []);
+    final existingResourceIds = List<String>.from(
+      mutableUser.array('resourceIds')?.toList() ?? [],
+    );
 
     if (!existingResourceIds.contains(resourceId)) {
       existingResourceIds.add(resourceId);
@@ -199,7 +208,23 @@ class Userdb_helper {
     } else {
       debugPrint("Task already accepted by user: $resourceId");
     }
-
   }
+
+  Future<void> updateUserSubmissionStatus(String email, bool isSubmitted) async {
+    final db = await _core.database;
+
+    final userDoc = await db.document(email);
+    if (userDoc == null) {
+      debugPrint("User not found: $email");
+      return;
+    }
+
+    final mutableUser = userDoc.toMutable();
+    mutableUser.setBoolean(key: 'isSubmitted', isSubmitted);
+
+    await db.saveDocument(mutableUser);
+    debugPrint("User $email submission status updated to: $isSubmitted");
+  }
+
 
 }

@@ -1,8 +1,10 @@
 import 'package:dhap_flutter_project/data/db/sessiondb_helper.dart';
+import 'package:dhap_flutter_project/data/repository/application_repository.dart';
 import 'package:dhap_flutter_project/data/repository/task_repository.dart';
 import 'package:dhap_flutter_project/data/repository/user_repository.dart';
 import 'package:dhap_flutter_project/features/common/bloc/commonEvent.dart';
 import 'package:dhap_flutter_project/features/common/bloc/commonState.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repository/request_repository.dart';
@@ -14,7 +16,7 @@ final TaskRepository _taskRepository = TaskRepository();
 final ResourceRepository _resourceRepository = ResourceRepository();
 final RequestRepository _requestRepository = RequestRepository();
 final ResponseRepository _responseRepository = ResponseRepository();
-
+final ApplicationRepository _applicationRepository = ApplicationRepository();
 
 class commonBloc extends Bloc<commonEvent, commonState> {
   commonBloc() : super(commonInitial()) {
@@ -69,7 +71,25 @@ class commonBloc extends Bloc<commonEvent, commonState> {
       }
     });
 
+    on<BecomeCoSubmitted>((event, emit) async {
+      emit(commonLoading());
+      await Future.delayed(const Duration(seconds: 1));
+
+      try {
+        debugPrint('=> Bloc: email: ${event.email}, message: ${event.message}');
+        await _applicationRepository.addApplication(event.email, event.message);
+        await _userRepository.updateUserSubmissionStatus(event.email, true);
+
+        emit(BecomeCoSuccess(message: "Application submitted successfully"));
+      } catch (e, st) {
+        debugPrint('Error submitting coordinator application: $e');
+        debugPrintStack(stackTrace: st);
+        emit(commonFailure(error: "Failed to submit application. Please try again."));
+      }
+    });
+
+
+
 
   }
-
 }

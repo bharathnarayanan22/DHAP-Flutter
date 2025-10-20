@@ -16,6 +16,8 @@ class User {
   final String pincode;
   final String role;
   bool inTask;
+  bool isCoordinator;
+  bool isSubmitted;
   final List<String> taskIds;
   final List<String> resourceIds;
 
@@ -31,6 +33,8 @@ class User {
     required this.pincode,
     required this.role,
     this.inTask = false,
+    this.isCoordinator = false,
+    this.isSubmitted = false,
     List<String>? taskIds,
     List<String>? resourceIds,
   }) : id = id ?? uuid.v4(),
@@ -51,6 +55,8 @@ class User {
     List<String>? taskIds,
     List<String>? resourceIds,
     bool? inTask,
+    bool? isCoordinator,
+    bool? isSubmitted,
   }) {
     return User(
       id: id ?? this.id,
@@ -66,6 +72,8 @@ class User {
       taskIds: taskIds ?? this.taskIds,
       resourceIds: resourceIds ?? this.resourceIds,
       inTask: inTask ?? this.inTask,
+      isCoordinator: isCoordinator ?? this.isCoordinator,
+      isSubmitted: isSubmitted ?? this.isSubmitted,
     );
   }
 

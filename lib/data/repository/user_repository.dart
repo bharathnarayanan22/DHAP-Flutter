@@ -28,4 +28,8 @@ class UserRepository {
   Future<void> updateUserRole(String email, String newRole) async {
     await _dbHelper.updateUserRole(email, newRole);
   }
+
+  Future<void> updateUserSubmissionStatus(String email, bool isSubmitted) async {
+    await _dbHelper.updateUserSubmissionStatus(email, isSubmitted);
+  }
 }

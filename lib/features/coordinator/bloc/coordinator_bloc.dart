@@ -1,4 +1,5 @@
 import 'package:dhap_flutter_project/data/model/request_model.dart';
+import 'package:dhap_flutter_project/data/repository/application_repository.dart';
 import 'package:dhap_flutter_project/data/repository/response_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,7 +19,7 @@ final UserRepository _userRepository = UserRepository();
 final RequestRepository _requestRepository = RequestRepository();
 final ResourceRepository _resourceRepository = ResourceRepository();
 final ResponseRepository _responseRepository = ResponseRepository();
-
+final ApplicationRepository _applicationRepository = ApplicationRepository();
 
 class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
   CoordinatorBloc() : super(CoordinatorInitial()) {
@@ -195,46 +196,6 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
       }
     });
 
-    // on<FetchRequestsEvent>((event, emit) async {
-    //   emit(CoordinatorLoading());
-    //   try {
-    //     final allRequests = _requestRepository.getAllRequests();
-    //
-    //     if (allRequests.isEmpty) {
-    //       emit(const FetchRequestFailure(error: "No Requests found"));
-    //     } else {
-    //       emit(
-    //         FetchRequestSuccess(
-    //           msg: "Fetched requests successfully",
-    //           requests: allRequests,
-    //         ),
-    //       );
-    //     }
-    //   } catch (e) {
-    //     emit(FetchRequestFailure(error: e.toString()));
-    //   }
-    // });
-    //
-    // on<FetchResponsesEvent>((event, emit) async {
-    //   emit(CoordinatorLoading());
-    //   try {
-    //     final allResponses = _responseRepository.getAllResponses();
-    //
-    //     if (allResponses.isEmpty) {
-    //       emit(const FetchRequestFailure(error: "No Responses found"));
-    //     } else {
-    //       emit(
-    //         FetchResponseSuccess(
-    //           msg: "Fetched responses successfully",
-    //           responses: allResponses,
-    //         ),
-    //       );
-    //     }
-    //   } catch (e) {
-    //     emit(FetchRequestFailure(error: e.toString()));
-    //   }
-    // });
-
     on<FetchRequestsAndResponsesEvent>((event, emit) async {
       emit(CoordinatorLoading());
       try {
@@ -277,7 +238,6 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
       }
     });
 
-
     on<FetchVerificationTasksEvent>((event, emit) async {
       emit(CoordinatorLoading());
       try {
@@ -298,31 +258,6 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
       }
     });
 
-    // on<MarkTaskCompletedEvent>((event, emit) async {
-    //   emit(CoordinatorLoading());
-    //   try {
-    //     final tasks = await _taskRepository.getAllTasks();
-    //     final index = tasks.indexWhere((t) => t.id == event.taskId);
-    //     if (index == -1) throw Exception("Task not found");
-    //     tasks[index].Status = 'Completed';
-    //     await _taskRepository.updateTask(tasks[index]);
-    //
-    //     final updatedVerificationTasks = tasks
-    //         .where(
-    //           (task) => task.Status == 'In Verification',
-    //     )
-    //         .toList();
-    //
-    //     emit(
-    //         CoordinatorSuccess(
-    //           message: 'Task marked as completed successfully',
-    //           tasks: updatedVerificationTasks,
-    //         ),
-    //     );
-    //   } catch (e) {
-    //     emit(CoordinatorFailure(error: e.toString()));
-    //   }
-    // });
 
     on<MarkTaskCompletedEvent>((event, emit) async {
       try {
@@ -345,6 +280,59 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
       }
     });
 
+    on<FetchApplicationsWithUsers>((event, emit) async {
+      emit(CoordinatorLoading());
+      try {
+        final applications = await _applicationRepository.getAllApplications();
+        final users = await _userRepository.getAllUsers();
+
+        emit(
+          FetchApplicationWithUserSuccess(
+            message: "Applications and users fetched successfully",
+            applications: applications,
+            users: users,
+          ),
+        );
+      } catch (e) {
+        emit(CoordinatorFailure(error: e.toString()));
+      }
+    });
+
+    on<AcceptApplication>((event, emit) async {
+      emit(CoordinatorLoading());
+      try {
+        await _applicationRepository.acceptApplication(event.applicationId);
+        final applications = await _applicationRepository.getAllApplications();
+        final users = await _userRepository.getAllUsers();
+        emit(
+          FetchApplicationWithUserSuccess(
+            message: "Application accepted successfully",
+            applications: applications,
+            users: users,
+          ),
+        );
+      } catch (e) {
+        emit(CoordinatorFailure(error: e.toString()));
+      }
+    });
+
+    on<RejectApplication>((event, emit) async {
+      emit(CoordinatorLoading());
+      try {
+        await _applicationRepository.rejectApplication(event.applicationId);
+        final applications = await _applicationRepository.getAllApplications();
+        final users = await _userRepository.getAllUsers();
+        emit(
+          FetchApplicationWithUserSuccess(
+            message: "Application rejected successfully",
+            applications: applications,
+            users: users,
+          ),
+        );
+      } catch (e) {
+        emit(CoordinatorFailure(error: e.toString()));
+      }
+    });
 
   }
 }

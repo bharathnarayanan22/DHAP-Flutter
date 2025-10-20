@@ -29,6 +29,8 @@ class AuthFailure extends AuthState {
 class AuthModeState extends AuthState {
   final bool isLogin;
   AuthModeState({required this.isLogin});
+  @override
+  List<Object> get props => [isLogin];
 }
 
 // class LogoutSuccess extends AuthState {

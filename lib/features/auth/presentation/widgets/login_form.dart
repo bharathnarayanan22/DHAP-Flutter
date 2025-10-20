@@ -9,7 +9,7 @@ import '../../bloc/auth_event.dart';
 import '../../bloc/auth_state.dart';
 
 class LoginForm extends StatefulWidget {
-  const LoginForm({super.key});
+  LoginForm({super.key});
 
   @override
   _LoginFormState createState() => _LoginFormState();
@@ -63,26 +63,127 @@ class _LoginFormState extends State<LoginForm> {
           ),
           const SizedBox(height: 24),
           BlocConsumer<AuthBloc, AuthState>(
-            listener: (context, state) {
+            // listener: (context, state) {
+            //   if (state is AuthSuccess) {
+            //     // ScaffoldMessenger.of(context).showSnackBar(
+            //     //   SnackBar(
+            //     //     content: Text(
+            //     //       state.message,
+            //     //       style: GoogleFonts.poppins(),
+            //     //     ),
+            //     //     backgroundColor: const Color(0xFF4A90E2),
+            //     //   ),
+            //     // );
+            //     Navigator.pushReplacement(
+            //       context,
+            //       MaterialPageRoute(
+            //         builder: (_) => BlocProvider(
+            //           create: (_) => commonBloc(),
+            //           child: DashboardPage(userDetails: state.user),
+            //         ),
+            //       ),
+            //     );
+            //   } else if (state is AuthFailure) {
+            //     ScaffoldMessenger.of(context).showSnackBar(
+            //       SnackBar(
+            //         content: Text(
+            //           state.error,
+            //           style: GoogleFonts.poppins(),
+            //         ),
+            //         backgroundColor: Colors.redAccent,
+            //       ),
+            //     );
+            //   }
+            // },
+
+            listener: (context, state) async {
               if (state is AuthSuccess) {
-                // ScaffoldMessenger.of(context).showSnackBar(
-                //   SnackBar(
-                //     content: Text(
-                //       state.message,
-                //       style: GoogleFonts.poppins(),
-                //     ),
-                //     backgroundColor: const Color(0xFF4A90E2),
-                //   ),
-                // );
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => BlocProvider(
-                      create: (_) => commonBloc(),
-                      child: DashboardPage(userDetails: state.user),
+                final user = state.user;
+                print("user Role: ${user.isCoordinator}");
+                if (user.isCoordinator) {
+                  final selectedRole = await showDialog<String>(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Choose Dashboard'),
+                      content: const Text('Select which dashboard you want to access:'),
+                      actions: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () => Navigator.of(context).pop('Coordinator'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF0A2744),
+                                ),
+                                child: const Text(
+                                  'Coordinator',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () => Navigator.of(context).pop('Employee'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF0A2744),
+                                ),
+                                child: const Text(
+                                  'Participant',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ),
-                );
+                  );
+
+                  if (selectedRole == 'Coordinator') {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => BlocProvider(
+                          create: (_) => commonBloc(),
+                          child: DashboardPage(userDetails: user.copyWith(role: 'Coordinator')),
+                        ),
+                      ),
+                    );
+                  } else if (selectedRole == 'Employee' && user.role == 'Coordinator') {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => BlocProvider(
+                          create: (_) => commonBloc(),
+                          child: DashboardPage(userDetails: user.copyWith(role:'Volunteer')),
+                        ),
+                      ),
+                    );
+                  } else {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => BlocProvider(
+                          create: (_) => commonBloc(),
+                          child: DashboardPage(userDetails: user),
+                        ),
+                      ),
+                    );
+                  }
+                } else {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider(
+                        create: (_) => commonBloc(),
+                        child: DashboardPage(userDetails: user),
+                      ),
+                    ),
+                  );
+                }
               } else if (state is AuthFailure) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(

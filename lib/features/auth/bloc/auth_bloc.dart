@@ -10,19 +10,14 @@ final UserRepository _userRepository = UserRepository();
 
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  bool isLoginMode = true;
-
-  //static final List<Map<String, dynamic>> _users = [];
+  bool _isLoginMode = true;
 
   AuthBloc() : super(AuthModeState(isLogin: true)) {
 
     on<ToggleAuthMode>((event, emit) {
-      if (state is AuthModeState) {
-        final currentState = state as AuthModeState;
-        emit(AuthModeState(isLogin: !currentState.isLogin));
-      } else {
-        emit(AuthModeState(isLogin: false));
-      }
+      _isLoginMode = !_isLoginMode;
+      emit(AuthModeState(isLogin: _isLoginMode));
+      debugPrint("Auth Mode: $_isLoginMode");
     });
 
     // on<LoginSubmitted>((event, emit) async {

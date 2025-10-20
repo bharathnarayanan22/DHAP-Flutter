@@ -12,4 +12,12 @@ class SwitchRoleSubmitted extends commonEvent {
 
 class FetchDataEvent extends commonEvent {}
 
+class BecomeCoSubmitted extends commonEvent {
+  final String message;
+  final String email;
+  BecomeCoSubmitted({required this.message, required this.email});
+}
+
+
+
 
