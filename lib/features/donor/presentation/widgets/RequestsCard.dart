@@ -1,5 +1,4 @@
 import 'package:dhap_flutter_project/data/model/request_model.dart';
-import 'package:dhap_flutter_project/data/model/response_model.dart';
 import 'package:dhap_flutter_project/features/donor/bloc/donor_bloc.dart';
 import 'package:dhap_flutter_project/features/donor/bloc/donor_event.dart';
 import 'package:flutter/cupertino.dart';
@@ -136,7 +135,7 @@ class RequestsCard extends StatelessWidget {
                       return Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: locationData != null ? primaryColor.withOpacity(0.05) : Colors.red.withOpacity(0.05),
+                          color: locationData != null ? primaryColor.withAlpha((0.05 * 255).round()) : Colors.red.withAlpha((0.05 * 255).round()),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
                             color: locationData != null ? primaryColor : Colors.red,
@@ -250,7 +249,7 @@ class RequestsCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: primaryColor.withOpacity(0.2),
+            color: primaryColor.withAlpha((0.2 * 255).round()),
             blurRadius: 10,
             spreadRadius: 2,
             offset: const Offset(0, 5),

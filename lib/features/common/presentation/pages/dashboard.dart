@@ -1,5 +1,4 @@
 import 'package:dhap_flutter_project/data/db/sessiondb_helper.dart';
-import 'package:dhap_flutter_project/data/model/task_model.dart';
 import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:dhap_flutter_project/features/auth/presentation/pages/auth_page.dart';
 import 'package:dhap_flutter_project/features/common/bloc/commonBloc.dart';
@@ -102,7 +101,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               radius: 30,
                               backgroundColor: Colors.grey[300],
                               child: Text(
-                                "${(currentUser.name as String?)?.isNotEmpty == true ? (currentUser.name as String).substring(0, 1).toUpperCase() : 'U'}",
+                                "${(currentUser.name).isNotEmpty == true ? (currentUser.name).substring(0, 1).toUpperCase() : 'U'}",
                                 style: const TextStyle(
                                   fontSize: 30,
                                   fontWeight: FontWeight.bold,
@@ -177,7 +176,6 @@ class _DashboardPageState extends State<DashboardPage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  // Always show the Switch Role button for Volunteer/Donor
                   if (role == 'Volunteer' || role == 'Donor')
                     BlocProvider.value(
                       value: context.read<commonBloc>(),
@@ -200,7 +198,6 @@ class _DashboardPageState extends State<DashboardPage> {
 
                   const SizedBox(height: 12),
 
-                  // Show "Become Co" FAB only if the user is not a Coordinator
                   if (!currentUser.isCoordinator)
                     Container(
                       width: 125,

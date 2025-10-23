@@ -15,12 +15,6 @@ import 'package:dhap_flutter_project/features/coordinator/presentation/pages/vie
 import 'package:dhap_flutter_project/features/coordinator/presentation/pages/viewTasks_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../../data/repository/request_repository.dart';
-import '../../../../data/repository/resource_repository.dart';
-import '../../../../data/repository/response_repository.dart';
-import '../../../../data/repository/task_repository.dart';
-import '../../../../data/repository/user_repository.dart';
 import '../../bloc/commonEvent.dart';
 
 const Color primaryColor = Color(0xFF0A2744);
@@ -70,7 +64,7 @@ class coordinatorDashboard extends StatelessWidget {
                 .where((t) => t.Status == 'In Verification')
                 .length;
             final activeVolunteers = state.users
-                .where((u) => u.role == 'Volunteer' && u.inTask)
+                .where((u) => u.inTask)
                 .length;
             final pendingRequests = state.requests
                 .where((r) => r.status == 'Pending')

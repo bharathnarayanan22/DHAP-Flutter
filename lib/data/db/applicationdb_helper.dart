@@ -8,6 +8,7 @@ class ApplicationDbHelper {
 
   Future<void> addApplication(String email, String message) async {
     final db = await _core.database;
+    final collection = await db.defaultCollection;
 
     final application = CoordinatorApplication(
       email: email,
@@ -26,14 +27,15 @@ class ApplicationDbHelper {
     debugPrint("Coordinator application document: $doc");
     debugPrint("Coordinator application email: ${application.email}");
 
-    await db.saveDocument(doc);
+    await collection.saveDocument(doc);
     debugPrint("Coordinator application saved: ${application.email} id: ${application.id}");
   }
 
   Future<void> acceptApplication(String applicationId, {bool promoteUser = true}) async {
     final db = await _core.database;
+    final collection = await db.defaultCollection;
 
-    final appDoc = await db.document(applicationId);
+    final appDoc = await collection.document(applicationId);
     if (appDoc == null) {
       debugPrint("Application not found: $applicationId");
       return;
@@ -41,18 +43,18 @@ class ApplicationDbHelper {
 
     final mutableApp = appDoc.toMutable();
     mutableApp.setString(key: 'status', 'accepted');
-    await db.saveDocument(mutableApp);
+    await collection.saveDocument(mutableApp);
     debugPrint("Application accepted: $applicationId");
 
     if (promoteUser) {
       final userEmail = mutableApp.string('email');
       if (userEmail != null) {
-        final userDoc = await db.document(userEmail);
+        final userDoc = await collection.document(userEmail);
         if (userDoc != null) {
           final mutableUser = userDoc.toMutable();
           mutableUser.setBoolean(key: 'isCoordinator', true);
           mutableUser.setString(key: 'role', 'Coordinator');
-          await db.saveDocument(mutableUser);
+          await collection.saveDocument(mutableUser);
           debugPrint("User promoted to Coordinator: $userEmail");
         }
       }
@@ -61,8 +63,9 @@ class ApplicationDbHelper {
 
   Future<void> rejectApplication(String applicationId) async {
     final db = await _core.database;
+    final collection = await db.defaultCollection;
 
-    final appDoc = await db.document(applicationId);
+    final appDoc = await collection.document(applicationId);
     if (appDoc == null) {
       debugPrint("Application not found: $applicationId");
       return;
@@ -70,16 +73,17 @@ class ApplicationDbHelper {
 
     final mutableApp = appDoc.toMutable();
     mutableApp.setString(key: 'status', 'rejected');
-    await db.saveDocument(mutableApp);
+    await collection.saveDocument(mutableApp);
     debugPrint("Application rejected: $applicationId");
   }
 
   Future<List<CoordinatorApplication>> getAllApplications() async {
     final db = await _core.database;
+    final collection = await db.defaultCollection;
 
     final query = await QueryBuilder.createAsync()
         .select(SelectResult.all())
-        .from(DataSource.database(db))
+        .from(DataSource.collection(collection))
         .where(Expression.property('type')
         .equalTo(Expression.string('coordinatorApplication')));
 
@@ -87,7 +91,7 @@ class ApplicationDbHelper {
     final List<CoordinatorApplication> applications = [];
 
     await for (final row in result.asStream()) {
-      final data = row.dictionary(db.name);
+      final data = row.dictionary(collection.name);
       if (data != null) {
         applications.add(CoordinatorApplication(
           id: data.string('id') ?? uuid.v4(),

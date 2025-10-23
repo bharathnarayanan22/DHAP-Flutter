@@ -158,7 +158,7 @@ class _SignupFormState extends State<SignupForm> {
               borderSide: BorderSide(color: Colors.red, width: 2),
             ),
           ),
-          value: _selectedRole,
+          initialValue: _selectedRole,
           items: ["Volunteer", "Donor"]
               .map((role) => DropdownMenuItem(
             value: role,

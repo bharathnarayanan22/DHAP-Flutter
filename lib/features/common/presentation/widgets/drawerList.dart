@@ -1,7 +1,4 @@
 import 'package:dhap_flutter_project/data/model/user_model.dart';
-import 'package:dhap_flutter_project/features/common/bloc/commonBloc.dart';
-import 'package:dhap_flutter_project/features/common/bloc/commonEvent.dart';
-import 'package:dhap_flutter_project/features/common/presentation/pages/Co-Application.dart';
 import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_bloc.dart';
 import 'package:dhap_flutter_project/features/donor/bloc/donor_bloc.dart';
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_bloc.dart';
@@ -14,7 +11,6 @@ import 'package:dhap_flutter_project/features/coordinator/presentation/pages/vie
 import 'package:dhap_flutter_project/features/coordinator/presentation/pages/viewTasks_page.dart';
 import 'package:dhap_flutter_project/features/coordinator/presentation/pages/verifyTasks_page.dart';
 import 'package:dhap_flutter_project/features/donor/presentation/pages/donateResources.dart';
-import 'package:dhap_flutter_project/features/donor/presentation/pages/myContributions_page.dart';
 import 'package:dhap_flutter_project/features/coordinator/presentation/pages/requestResponse_page.dart';
 import 'package:dhap_flutter_project/features/coordinator/presentation/pages/resourceRequest_page.dart';
 import 'package:dhap_flutter_project/features/donor/presentation/pages/viewResourcerequests_page.dart';
@@ -250,9 +246,9 @@ class RoleBasedDrawerItems extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.volunteer_activism, color: drawerTextColor),
           title: const Text('Donate Resources'),
-          onTap: () {
+          onTap: () async {
             Navigator.pop(context);
-            Navigator.of(context)
+            final res = await Navigator.of(context)
                 .push(
                   MaterialPageRoute(
                     builder: (context) => BlocProvider(
@@ -266,6 +262,11 @@ class RoleBasedDrawerItems extends StatelessWidget {
                     onRefresh();
                   }
                 });
+            if (res != null && res is User) {
+              userDetails.resourceIds.clear();
+              userDetails.resourceIds.addAll(res.resourceIds);
+              onRefresh();
+            }
           },
         ),
         // ListTile(

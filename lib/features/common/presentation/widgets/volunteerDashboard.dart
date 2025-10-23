@@ -141,7 +141,6 @@ const Color accentColor = Color(0xFF42A5F5);
 const Color successColor = Color(0xFF66BB6A);
 
 class volunteerDashboard extends StatelessWidget {
-  //final Map<String, dynamic> userDetails;
   final User userDetails;
 
   const volunteerDashboard({super.key, required this.userDetails});

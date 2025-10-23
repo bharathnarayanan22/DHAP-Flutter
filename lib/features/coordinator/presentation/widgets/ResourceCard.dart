@@ -44,7 +44,7 @@ class ResourceCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: primaryColor.withOpacity(0.25),
+                  color: primaryColor.withAlpha((0.25 * 255).round()),
                   blurRadius: 8,
                   spreadRadius: 2,
                   offset: const Offset(0, 4),

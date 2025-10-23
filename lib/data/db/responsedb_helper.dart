@@ -9,6 +9,8 @@ class ResponsedbHelper {
 
   Future<String> addResponse(ResponseModel response) async {
     final db = await _core.database;
+    final collection = await db.defaultCollection;
+
     final doc = MutableDocument.withId(response.id, {
       'type': 'response',
       'id': response.id,
@@ -21,7 +23,7 @@ class ResponsedbHelper {
           '${response.location.latitude},${response.location.longitude}',
     });
 
-    await db.saveDocument(doc);
+    await collection.saveDocument(doc);
     debugPrint(
       "Response saved in Couchbase: ${response.id}, RequestId: ${response.requestId}",
     );
@@ -30,11 +32,13 @@ class ResponsedbHelper {
 
   Future<List<ResponseModel>> getAllResponses() async {
     final db = await _core.database;
+    final collection = await db.defaultCollection;
+
     final dbName = 'dhap';
 
     final query = await QueryBuilder.createAsync()
         .select(SelectResult.all())
-        .from(DataSource.database(db))
+        .from(DataSource.collection(collection))
         .where(
           Expression.property('type').equalTo(Expression.string('response')),
         );
@@ -44,7 +48,7 @@ class ResponsedbHelper {
     final List<ResponseModel> responses = [];
 
     await for (final row in result.asStream()) {
-      final data = row.dictionary(dbName);
+      final data = row.dictionary(collection.name);
 
       if (data != null) {
         final dataMap = Map<String, dynamic>.from(data.toPlainMap());
@@ -72,10 +76,11 @@ class ResponsedbHelper {
 
   Future<List<ResponseModel>> getResponsesForRequest(String requestId) async {
     final db = await _core.database;
+    final collection = await db.defaultCollection;
 
     final query = await QueryBuilder.createAsync()
         .select(SelectResult.all())
-        .from(DataSource.database(db))
+        .from(DataSource.collection(collection))
         .where(
           Expression.property('type')
               .equalTo(Expression.string('response'))
@@ -119,8 +124,9 @@ class ResponsedbHelper {
 
   Future<void> assignTaskFromResponse(String responseId) async {
     final db = await _core.database;
+    final collection = await db.defaultCollection;
 
-    final doc = await db.document(responseId);
+    final doc = await collection.document(responseId);
 
     if (doc == null) {
       debugPrint("Response not found: $responseId");
@@ -131,7 +137,7 @@ class ResponsedbHelper {
 
     final mutableDoc = doc.toMutable();
     mutableDoc.setBoolean(key: 'taskAssigned', true);
-    await db.saveDocument(mutableDoc);
+    await collection.saveDocument(mutableDoc);
     debugPrint("Task assigned to response: $responseId");
   }
 }

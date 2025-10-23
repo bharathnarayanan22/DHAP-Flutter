@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 const Color primaryColor = Color(0xFF0A2744);
 const Color accentColor = Color(0xFF42A5F5);
@@ -49,23 +48,23 @@ class _StatusFilterSegmentState extends State<StatusFilterSegment> {
           widget.onStatusChanged(newSelection.first);
         },
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color?>(
+          backgroundColor: WidgetStateProperty.resolveWith<Color?>(
                 (states) {
-              if (states.contains(MaterialState.selected)) {
+              if (states.contains(WidgetState.selected)) {
                 return primaryColor;
               }
               return Colors.white;
             },
           ),
-          foregroundColor: MaterialStateProperty.resolveWith<Color?>(
+          foregroundColor: WidgetStateProperty.resolveWith<Color?>(
                 (states) {
-              if (states.contains(MaterialState.selected)) {
+              if (states.contains(WidgetState.selected)) {
                 return Colors.white;
               }
               return primaryColor;
             },
           ),
-          shape: MaterialStateProperty.all(
+          shape: WidgetStateProperty.all(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
               side: const BorderSide(color: primaryColor, width: 1.5),

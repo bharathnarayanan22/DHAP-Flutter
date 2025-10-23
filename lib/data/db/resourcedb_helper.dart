@@ -9,6 +9,8 @@ class ResourcedbHelper {
 
   Future<String> addResource(ResourceModel resource) async {
     final db = await _core.database;
+    final collection = await db.defaultCollection;
+
     final doc = MutableDocument.withId(
       resource.id,
       {
@@ -23,7 +25,7 @@ class ResourcedbHelper {
       },
     );
 
-    await db.saveDocument(doc);
+    await collection.saveDocument(doc);
     debugPrint("Task saved in Couchbase: ${resource.resource}");
     return resource.id;
   }
@@ -70,11 +72,13 @@ class ResourcedbHelper {
 
   Future<List<ResourceModel>> getAllResources() async {
     final db = await _core.database;
+    final collection = await db.defaultCollection;
+
     final dbName = 'dhap';
 
     final query = await QueryBuilder.createAsync()
         .select(SelectResult.all())
-        .from(DataSource.database(db))
+        .from(DataSource.collection(collection))
         .where(
       Expression.property('type').equalTo(Expression.string('resource')),
     );
@@ -84,7 +88,7 @@ class ResourcedbHelper {
     final List<ResourceModel> resources = [];
 
     await for (final row in result.asStream()) {
-      final data = row.dictionary(dbName);
+      final data = row.dictionary(collection.name);
       if (data == null) continue;
 
       final dataMap = Map<String, dynamic>.from(data.toPlainMap());
@@ -119,9 +123,11 @@ class ResourcedbHelper {
 
   Future<void> deleteResource(String id) async {
     final db = await _core.database;
-    final doc = await db.document(id);
+    final collection = await db.defaultCollection;
+
+    final doc = await collection.document(id);
     if (doc != null) {
-      await db.deleteDocument(doc);
+      await collection.deleteDocument(doc);
       debugPrint("Task deleted: $id");
     }
   }

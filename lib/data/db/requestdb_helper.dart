@@ -9,6 +9,7 @@ class RequestdbHelper {
 
   Future<void> addRequest(Request request) async {
     final db = await _core.database;
+    final collection = await db.defaultCollection;
     debugPrint('DB: ${db.name}');
 
     final doc = MutableDocument.withId(request.id, {
@@ -25,17 +26,18 @@ class RequestdbHelper {
 
     debugPrint("Request document: $doc");
 
-    await db.saveDocument(doc);
+    await collection.saveDocument(doc);
     debugPrint("Request saved in Couchbase: ${request.resource}");
   }
 
   Future<List<Request>> getAllRequests() async {
     final db = await _core.database;
+    final collection = await db.defaultCollection;
     final dbName = 'dhap';
 
     final query = await QueryBuilder.createAsync()
         .select(SelectResult.all())
-        .from(DataSource.database(db))
+        .from(DataSource.collection(collection))
         .where(
           Expression.property('type').equalTo(Expression.string('request')),
         );
@@ -45,7 +47,7 @@ class RequestdbHelper {
     final List<Request> requests = [];
 
     await for (final row in result.asStream()) {
-      final data = row.dictionary(dbName);
+      final data = row.dictionary(collection.name);
 
       debugPrint('Data: $data');
 
@@ -77,9 +79,10 @@ class RequestdbHelper {
 
   Future<void> AddResponseID(String requestId, String responseId) async {
     final db = await _core.database;
+    final collection = await db.defaultCollection;
     debugPrint('DB: ${db.name}');
     debugPrint("Adding response ID $responseId to request $requestId");
-    final doc = await db.document('$requestId');
+    final doc = await collection.document('$requestId');
     debugPrint("Request document: $doc");
     if (doc == null) {
       debugPrint("Request not found: $requestId");
@@ -97,10 +100,28 @@ class RequestdbHelper {
         key: 'responseIds',
         MutableArray(existingResponseIds),
       );
-      await db.saveDocument(mutableDoc);
-      debugPrint("Response ID $responseId added to request $requestId");
     } else {
       debugPrint("Response ID already exists for request $requestId");
     }
+
+    int totalQuantityProvided = 0;
+    for (final id in existingResponseIds) {
+      final responseDoc = await collection.document(id);
+      if (responseDoc != null) {
+        final provided = responseDoc.integer('quantityProvided');
+        totalQuantityProvided += provided;
+      }
+    }
+
+    final requestedQuantity = doc.integer('quantity');
+    if (totalQuantityProvided >= requestedQuantity) {
+      mutableDoc.setString(key: 'status', 'Accepted');
+      debugPrint("Request $requestId marked as Accepted");
+    } else {
+      debugPrint("Request $requestId still pending: "
+          "$totalQuantityProvided / $requestedQuantity provided");
+    }
+    await collection.saveDocument(mutableDoc);
+    debugPrint("Response ID $responseId linked to request $requestId successfully");
   }
 }

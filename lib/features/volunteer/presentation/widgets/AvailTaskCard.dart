@@ -84,7 +84,7 @@ class AvailTaskCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: primaryColor.withOpacity(0.2),
+            color: primaryColor.withAlpha((0.2 * 255).round()),
             blurRadius: 10,
             spreadRadius: 2,
             offset: const Offset(0, 5),

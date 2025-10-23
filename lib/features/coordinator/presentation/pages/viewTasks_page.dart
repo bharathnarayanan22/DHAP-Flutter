@@ -20,8 +20,8 @@ const List<String> statusFilters = [
   'All',
   'In Progress',
   'Completed',
-  'Unassigned',
-  'Verified',
+  'Pending',
+  'In Verification'
 ];
 
 class ViewTasksPage extends StatefulWidget {

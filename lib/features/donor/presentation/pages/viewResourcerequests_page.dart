@@ -52,10 +52,10 @@ class _ViewResourceRequestsPageState extends State<ViewResourceRequestsPage> {
       ),
       body: BlocConsumer<DonorBloc, DonorState>(
         listener: (context, state) {
-          if (state is FetchRequestSuccess && state.msg != null) {
+          if (state is FetchRequestSuccess) {
             ScaffoldMessenger.of(
               context,
-            ).showSnackBar(SnackBar(content: Text(state.msg!)));
+            ).showSnackBar(SnackBar(content: Text(state.msg)));
           } else if (state is DonorFailure) {
             ScaffoldMessenger.of(
               context,

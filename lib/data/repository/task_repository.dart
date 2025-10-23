@@ -1,6 +1,5 @@
 import 'package:dhap_flutter_project/data/db/taskdb_helper.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:latlong2/latlong.dart';
 import '../model/task_model.dart';
 
 class TaskRepository {

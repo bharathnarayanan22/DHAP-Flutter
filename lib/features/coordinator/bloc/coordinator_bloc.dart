@@ -8,7 +8,6 @@ import '../../../data/repository/user_repository.dart';
 import '../../../data/repository/resource_repository.dart';
 import '../../../data/repository/request_repository.dart';
 import '../../../data/model/task_model.dart';
-import '../../../data/model/user_model.dart';
 
 import '../../../data/model/resource_model.dart';
 import 'coordinator_event.dart';
@@ -42,9 +41,7 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
             task.description.isEmpty ||
             task.volunteer == 0 ||
             task.StartAddress.isEmpty ||
-            task.EndAddress.isEmpty ||
-            task.StartLocation == null ||
-            task.EndLocation == null) {
+            task.EndAddress.isEmpty) {
           emit(CoordinatorFailure(error: 'All fields are required'));
           print('All fields are required');
           return;
@@ -133,8 +130,7 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
         if (request.resource.isEmpty ||
             request.quantity == 0 ||
             request.description.isEmpty ||
-            request.address.isEmpty ||
-            request.location == null) {
+            request.address.isEmpty ) {
           emit(CoordinatorFailure(error: 'All fields are required'));
           return;
         } else {
@@ -178,8 +174,7 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
         );
         if (resource.resource.isEmpty ||
             resource.quantity == 0 ||
-            resource.address.isEmpty ||
-            resource.location == null) {
+            resource.address.isEmpty) {
           emit(CoordinatorFailure(error: 'All fields are required'));
           return;
         } else {

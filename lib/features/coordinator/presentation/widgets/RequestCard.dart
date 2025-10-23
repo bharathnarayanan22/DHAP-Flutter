@@ -1,5 +1,4 @@
 import 'package:dhap_flutter_project/data/model/request_model.dart';
-import 'package:dhap_flutter_project/features/coordinator/presentation/widgets/ResponsesListScreen.dart';
 import 'package:flutter/material.dart';
 
 const Color primaryColor = Color(0xFF0A2744);
@@ -105,7 +104,7 @@ class RequestCard extends StatelessWidget {
                 Text(
                   request.description,
                   style: TextStyle(
-                    color: primaryColor.withOpacity(0.8),
+                    color: primaryColor.withAlpha((0.8 * 255).round()),
                     fontSize: 14,
                     fontStyle: FontStyle.italic,
                   ),

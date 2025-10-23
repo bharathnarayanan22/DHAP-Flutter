@@ -4,8 +4,11 @@ import 'package:flutter/cupertino.dart';
 
 class Sessiondb_helper {
   final _core = CouchbaseCoreHelper();
+
   Future<void> saveSession(String email, String role) async {
     final db = await _core.database;
+    final collection = await db.defaultCollection;
+
     final sessionDoc = MutableDocument.withId(
       'session',
       {
@@ -14,19 +17,23 @@ class Sessiondb_helper {
         'email': email,
       },
     );
-    await db!.saveDocument(sessionDoc);
+    await collection.saveDocument(sessionDoc);
     debugPrint("Session saved in Couchbase: $email");
   }
 
   Future<bool> isLoggedIn() async {
     final db = await _core.database;
-    final sessionDoc = await db!.document('session');
+    final collection = await db.defaultCollection;
+
+    final sessionDoc = await collection.document('session');
     return sessionDoc?.boolean('isLoggedIn') ?? false;
   }
 
   Future<String> getUserEmail() async {
     final db = await _core.database;
-    final sessionDoc = await db!.document('session');
+    final collection = await db.defaultCollection;
+
+    final sessionDoc = await collection.document('session');
     //if (sessionDoc == null) return null;
 
     final email = sessionDoc?.string('email');
@@ -36,9 +43,11 @@ class Sessiondb_helper {
 
   Future<void> clearSession() async {
     final db = await _core.database;
-    final sessionDoc = await db!.document('session');
+    final collection = await db.defaultCollection;
+
+    final sessionDoc = await collection.document('session');
     if(sessionDoc != null) {
-      await db!.deleteDocument(sessionDoc);
+      await collection.deleteDocument(sessionDoc);
       debugPrint("Session cleared in Couchbase");
     }
   }

@@ -1,5 +1,4 @@
 import 'package:dhap_flutter_project/data/db/resourcedb_helper.dart';
-import 'package:latlong2/latlong.dart';
 
 import '../model/resource_model.dart';
 

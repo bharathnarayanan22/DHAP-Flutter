@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:dhap_flutter_project/data/model/task_model.dart';
-import 'dart:io';
 
 const Color primaryColor = Color(0xFF0A2744);
 const Color accentColor = Color(0xFF42A5F5);
@@ -170,7 +169,7 @@ class _MyTaskCardState extends State<MyTaskCard> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: primaryColor.withOpacity(0.2),
+            color: primaryColor.withAlpha((0.2 * 255).round()),
             blurRadius: 10,
             spreadRadius: 2,
             offset: const Offset(0, 5),

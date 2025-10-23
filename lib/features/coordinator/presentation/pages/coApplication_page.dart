@@ -56,8 +56,7 @@ class _CoordinatorApplicationsPageState
           _selectedStatus == 'All' ||
           app.status.toLowerCase() == _selectedStatus.toLowerCase();
       final matchesSearch =
-          searchTerm.isEmpty ||
-          (user.name != null && user.name.toLowerCase().contains(searchTerm));
+          searchTerm.isEmpty || (user.name.toLowerCase().contains(searchTerm));
       if (matchesStatus && matchesSearch) {
         filtered.add({'app': app, 'user': user});
       }

@@ -2,7 +2,6 @@ import 'package:dhap_flutter_project/data/db/requestdb_helper.dart';
 import 'package:dhap_flutter_project/data/db/responsedb_helper.dart';
 import 'package:dhap_flutter_project/data/model/response_model.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:latlong2/latlong.dart';
 
 class ResponseRepository {
   final List<ResponseModel> _responses = [

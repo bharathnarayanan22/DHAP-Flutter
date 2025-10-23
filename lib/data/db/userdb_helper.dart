@@ -8,6 +8,7 @@ class Userdb_helper {
 
   Future<void> saveUser(User user) async {
     final db = await _core.database;
+    final collection = await db.defaultCollection;
 
     final doc = MutableDocument.withId(user.email, {
       'type': 'user',
@@ -28,18 +29,19 @@ class Userdb_helper {
       'isSubmitted': user.isSubmitted,
     });
 
-    await db.saveDocument(doc);
+    await collection.saveDocument(doc);
     debugPrint("User saved in Couchbase: ${user.email}");
   }
 
   Future<List<User>> getAllUsers() async {
     final db = await _core.database;
-    final dbName = 'dhap';
-    // if (db == null) await init();
+    final collection = await db.defaultCollection;
+
+    //final dbName = 'dhap';
 
     final query = await QueryBuilder.createAsync()
         .select(SelectResult.all())
-        .from(DataSource.database(db))
+        .from(DataSource.collection(collection))
         .where(Expression.property('type').equalTo(Expression.string('user')));
 
     final result = await query.execute();
@@ -47,7 +49,7 @@ class Userdb_helper {
     final List<User> users = [];
 
     await for (final row in result.asStream()) {
-      final data = row.dictionary(dbName);
+      final data = row.dictionary(collection.name);
 
       if (data != null) {
         users.add(
@@ -79,8 +81,10 @@ class Userdb_helper {
 
   Future<User?> getUserByEmail(String email) async {
     final db = await _core.database;
+    final collection = await db.defaultCollection;
+
     //if (_db == null) await init();
-    final doc = await db.document(email);
+    final doc = await collection.document(email);
     if (doc == null) return null;
 
     return User(
@@ -103,17 +107,21 @@ class Userdb_helper {
 
   Future<void> deleteUser(String email) async {
     final db = await _core.database;
+    final collection = await db.defaultCollection;
+
     //if (_db == null) await init();
-    final doc = await db.document(email);
+    final doc = await collection.document(email);
     if (doc != null) {
-      await db!.deleteDocument(doc);
+      await collection.deleteDocument(doc);
       debugPrint("User deleted: $email");
     }
   }
 
   Future<void> updateUserRole(String email, String newRole) async {
     final db = await _core.database;
-    final doc = await db.document(email);
+    final collection = await db.defaultCollection;
+
+    final doc = await collection.document(email);
     if (doc == null) {
       debugPrint("User not found: $email");
       return;
@@ -121,15 +129,16 @@ class Userdb_helper {
 
     final mutableDoc = doc.toMutable();
     mutableDoc.setString(key: 'role', newRole);
-    await db.saveDocument(mutableDoc);
+    await collection.saveDocument(mutableDoc);
 
     debugPrint("User role updated to: $newRole for $email");
   }
 
   Future<void> acceptTask(String taskId, String userEmail) async {
     final db = await _core.database;
+    final collection = await db.defaultCollection;
 
-    final userDoc = await db.document(userEmail);
+    final userDoc = await collection.document(userEmail);
     if (userDoc == null) {
       debugPrint("User not found: $userEmail");
       return;
@@ -151,10 +160,10 @@ class Userdb_helper {
       }
 
       mutableUser.setArray(key: 'taskIds', mutableArray);
-      await db.saveDocument(mutableUser);
+      await collection.saveDocument(mutableUser);
       debugPrint("Task $taskId added to user $userEmail");
 
-      final taskDoc = await db.document(taskId);
+      final taskDoc = await collection.document(taskId);
       if (taskDoc == null) {
         debugPrint("Task not found for id: $taskId");
         return;
@@ -170,7 +179,7 @@ class Userdb_helper {
         mutableTask.setString(key: 'Status', 'In Progress');
       }
 
-      await db.saveDocument(mutableTask);
+      await collection.saveDocument(mutableTask);
       debugPrint(
         "Task $taskId volunteersAccepted incremented to ${currentVolunteers + 1}",
       );
@@ -181,8 +190,9 @@ class Userdb_helper {
 
   Future<void> addResource(String resourceId, String userEmail) async {
     final db = await _core.database;
+    final collection = await db.defaultCollection;
 
-    final userDoc = await db.document(userEmail);
+    final userDoc = await collection.document(userEmail);
     if (userDoc == null) {
       debugPrint("User not found: $userEmail");
       return;
@@ -203,7 +213,7 @@ class Userdb_helper {
       }
 
       mutableUser.setArray(key: 'resourceIds', mutableArray);
-      await db.saveDocument(mutableUser);
+      await collection.saveDocument(mutableUser);
       debugPrint("Task $resourceId added to user $userEmail");
     } else {
       debugPrint("Task already accepted by user: $resourceId");
@@ -212,8 +222,9 @@ class Userdb_helper {
 
   Future<void> updateUserSubmissionStatus(String email, bool isSubmitted) async {
     final db = await _core.database;
+    final collection = await db.defaultCollection;
 
-    final userDoc = await db.document(email);
+    final userDoc = await collection.document(email);
     if (userDoc == null) {
       debugPrint("User not found: $email");
       return;
@@ -222,7 +233,7 @@ class Userdb_helper {
     final mutableUser = userDoc.toMutable();
     mutableUser.setBoolean(key: 'isSubmitted', isSubmitted);
 
-    await db.saveDocument(mutableUser);
+    await collection.saveDocument(mutableUser);
     debugPrint("User $email submission status updated to: $isSubmitted");
   }
 

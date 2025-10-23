@@ -75,7 +75,7 @@ class ProfilePage extends StatelessWidget {
                             user.role.toUpperCase(),
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.white.withOpacity(0.7),
+                              color: Colors.white.withValues(alpha: 179),
                               fontStyle: FontStyle.italic,
                             ),
                           ),
@@ -224,7 +224,8 @@ class ProfilePage extends StatelessWidget {
                           children: [
                             CircleAvatar(
                               radius: 24,
-                              backgroundColor: successColor.withOpacity(0.1),
+                              backgroundColor: successColor.withAlpha((0.1 * 255).round()),
+
                               child: Icon(
                                 Icons.assignment_ind,
                                 color: successColor,
@@ -254,7 +255,7 @@ class ProfilePage extends StatelessWidget {
                           children: [
                             CircleAvatar(
                               radius: 24,
-                              backgroundColor: warningColor.withOpacity(0.1),
+                              backgroundColor: warningColor.withAlpha((0.1 * 255).round()),
                               child: Icon(
                                 Icons.local_shipping,
                                 color: warningColor,

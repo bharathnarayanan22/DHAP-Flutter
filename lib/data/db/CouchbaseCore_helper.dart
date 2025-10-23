@@ -80,11 +80,11 @@ class CouchbaseCoreHelper {
 
   Future<void> _loadInitialUsersIfEmpty() async {
     final db = await database;
+    final collection = await db.defaultCollection;
 
-
-    final query = await QueryBuilder.createAsync()
+    final query = QueryBuilder.createAsync()
         .select(SelectResult.expression(Meta.id))
-        .from(DataSource.database(db))
+        .from(DataSource.collection(collection))
         .where(Expression.property('type').equalTo(Expression.string('user')));
 
     final result = await query.execute();
@@ -109,9 +109,9 @@ class CouchbaseCoreHelper {
 
         if (id != null) {
           final MutableDocument doc = MutableDocument.withId(id, userData);
-          await db.saveDocument(doc);
+          await collection.saveDocument(doc);
         } else {
-          await db.saveDocument(MutableDocument(userData));
+          await collection.saveDocument(MutableDocument(userData));
         }
       }
 
@@ -121,71 +121,24 @@ class CouchbaseCoreHelper {
     }
   }
 
-  // Future<void> _loadInitialUsers() async {
-  //   final db = await database;
-  //
-  //   debugPrint("Deleting existing users from DB...");
-  //
-  //   // Query all user documents
-  //   final query = await QueryBuilder.createAsync()
-  //       .select(SelectResult.expression(Meta.id))
-  //       .from(DataSource.database(db))
-  //       .where(Expression.property('type').equalTo(Expression.string('user')));
-  //
-  //   final result = await query.execute();
-  //
-  //   await for (final row in result.asStream()) {
-  //     final docId = row.string('id');
-  //     if (docId != null) {
-  //       final doc = await db.document(docId);
-  //       if (doc != null) {
-  //         await db.deleteDocument(doc);
-  //       }
-  //     }
-  //   }
-  //
-  //   debugPrint("Existing users deleted. Loading new users from JSON...");
-  //
-  //   try {
-  //     final jsonString = await rootBundle.loadString('lib/assets/data/users.json');
-  //     final List<dynamic> userList = jsonDecode(jsonString);
-  //
-  //     for (final raw in userList) {
-  //       if (raw is! Map<String, dynamic>) continue;
-  //
-  //       final Map<String, dynamic> userData = raw;
-  //       final id = (userData['email'] is String) ? userData['email'] as String : null;
-  //
-  //       if (id != null) {
-  //         final MutableDocument doc = MutableDocument.withId(id, userData);
-  //         await db.saveDocument(doc);
-  //       } else {
-  //         await db.saveDocument(MutableDocument(userData));
-  //       }
-  //     }
-  //
-  //     debugPrint("Users imported from users.json");
-  //   } catch (e) {
-  //     debugPrint("Error loading users.json: $e");
-  //   }
-  // }
 
 
   Future<void> _loadInitialResourcesIfEmpty() async {
     final db = await database;
+    final collection = await db.defaultCollection;
 
-    final query = await QueryBuilder.createAsync()
+    final query = QueryBuilder.createAsync()
         .select(SelectResult.expression(Meta.id))
-        .from(DataSource.database(db))
+        .from(DataSource.collection(collection))
         .where(Expression.property('type').equalTo(Expression.string('resource')));
 
     final result = await query.execute();
     final hasResources = await result.asStream().isEmpty == false;
 
-    // if (hasResources) {
-    //   debugPrint("Resources already exist in DB — skipping JSON load.");
-    //   return;
-    // }
+    if (hasResources) {
+      debugPrint("Resources already exist in DB — skipping JSON load.");
+      return;
+    }
 
     debugPrint("Loading initial resources from JSON...");
 
@@ -203,7 +156,7 @@ class CouchbaseCoreHelper {
             ? MutableDocument.withId(id, resourceData)
             : MutableDocument(resourceData);
 
-        await db.saveDocument(doc);
+        await collection.saveDocument(doc);
       }
 
       debugPrint("Initial resources imported from resources.json");
