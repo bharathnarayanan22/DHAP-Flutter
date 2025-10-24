@@ -96,6 +96,62 @@ class TaskdbHelper {
     return tasks;
   }
 
+  Stream<List<Task>> watchAllTasks() async* {
+    final db = await _core.database;
+    final collection = await db.defaultCollection;
+
+    final query = QueryBuilder.createAsync()
+        .select(SelectResult.all())
+        .from(DataSource.collection(collection))
+        .where(Expression.property('type').equalTo(Expression.string('task')));
+
+    final listener = await query.changes();
+
+    await for (final change in listener.asBroadcastStream()) {
+      final results = await change.results?.allResults();
+      final List<Task> tasks = [];
+
+      if (results != null) {
+        for (final row in results) {
+          final data = row.dictionary(collection.name);
+          if (data == null) continue;
+
+          final dataMap = Map<String, dynamic>.from(data.toPlainMap());
+          final startParts = (dataMap['StartLocation'] as String? ?? "0,0").split(',');
+          final endParts = (dataMap['EndLocation'] as String? ?? "0,0").split(',');
+
+          tasks.add(Task(
+            id: data.string('id'),
+            title: data.string('title') ?? '',
+            description: data.string('description') ?? '',
+            volunteer: data.integer('volunteer'),
+            volunteersAccepted: data.integer('volunteersAccepted'),
+            StartAddress: data.string('StartAddress') ?? '',
+            EndAddress: data.string('EndAddress') ?? '',
+            StartLocation: LatLng(
+              double.tryParse(startParts[0]) ?? 0.0,
+              double.tryParse(startParts[1]) ?? 0.0,
+            ),
+            EndLocation: LatLng(
+              double.tryParse(endParts[0]) ?? 0.0,
+              double.tryParse(endParts[1]) ?? 0.0,
+            ),
+            Status: data.string('Status') ?? '',
+            proofs: (dataMap['proofs'] as List<dynamic>? ?? [])
+                .map((e) => Proof(
+              message: e['message'] ?? '',
+              mediaPaths: List<String>.from(e['mediaPaths'] ?? []),
+            ))
+                .toList(),
+          ));
+        }
+      }
+
+      yield tasks;
+    }
+  }
+
+
   Future<void> deleteTask(String id) async {
     debugPrint("Deleting task with id: $id");
     final db = await _core.database;

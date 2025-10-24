@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dhap_flutter_project/data/model/request_model.dart';
 import 'package:dhap_flutter_project/data/repository/application_repository.dart';
 import 'package:dhap_flutter_project/data/repository/response_repository.dart';
@@ -19,6 +21,7 @@ final RequestRepository _requestRepository = RequestRepository();
 final ResourceRepository _resourceRepository = ResourceRepository();
 final ResponseRepository _responseRepository = ResponseRepository();
 final ApplicationRepository _applicationRepository = ApplicationRepository();
+StreamSubscription<List<Task>>? _taskSubscription;
 
 class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
   CoordinatorBloc() : super(CoordinatorInitial()) {
@@ -60,15 +63,33 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
       }
     });
 
+    // on<FetchTasksEvent>((event, emit) async {
+    //   emit(CoordinatorLoading());
+    //   try {
+    //     final tasks = await _taskRepository.getAllTasks();
+    //     print("Fetched tasks: $tasks");
+    //     emit(
+    //       CoordinatorSuccess(
+    //         message: 'Tasks fetched successfully',
+    //         tasks: tasks,
+    //       ),
+    //     );
+    //   } catch (e) {
+    //     emit(CoordinatorFailure(error: e.toString()));
+    //   }
+    // });
+
     on<FetchTasksEvent>((event, emit) async {
       emit(CoordinatorLoading());
       try {
-        final tasks = await _taskRepository.getAllTasks();
-        print("Fetched tasks: $tasks");
-        emit(
-          CoordinatorSuccess(
-            message: 'Tasks fetched successfully',
+        await emit.forEach<List<Task>>(
+          _taskRepository.watchAllTasks(),
+          onData: (tasks) => CoordinatorSuccess(
+            message: 'Live tasks updated',
             tasks: tasks,
+          ),
+          onError: (error, stackTrace) => CoordinatorFailure(
+            error: error.toString(),
           ),
         );
       } catch (e) {

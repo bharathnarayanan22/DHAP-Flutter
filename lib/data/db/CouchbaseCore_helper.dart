@@ -48,36 +48,6 @@ class CouchbaseCoreHelper {
     }
   }
 
-
-  // Future<void> close() async {
-  //   await _db?.close();
-  //   _db = null;
-  // }
-
-  // Future<void> _loadInitialUsersIfEmpty() async {
-  //   final db = await database;
-  //
-  //   debugPrint("Loading initial users from JSON...");
-  //
-  //   final jsonString = await rootBundle.loadString('lib/assets/data/users.json');
-  //   final List<dynamic> userList = jsonDecode(jsonString);
-  //
-  //   for (final raw in userList) {
-  //     if (raw is! Map<String, dynamic>) continue;
-  //
-  //     final Map<String, dynamic> userData = raw;
-  //     final id = (userData['email'] is String) ? userData['email'] as String : null;
-  //
-  //     final MutableDocument doc = (id != null)
-  //         ? MutableDocument.withId(id, userData)
-  //         : MutableDocument(userData);
-  //
-  //     await db.saveDocument(doc);
-  //   }
-  //
-  //   debugPrint("Initial users imported from user.json");
-  // }
-
   Future<void> _loadInitialUsersIfEmpty() async {
     final db = await database;
     final collection = await db.defaultCollection;
@@ -121,8 +91,6 @@ class CouchbaseCoreHelper {
     }
   }
 
-
-
   Future<void> _loadInitialResourcesIfEmpty() async {
     final db = await database;
     final collection = await db.defaultCollection;
@@ -165,3 +133,148 @@ class CouchbaseCoreHelper {
     }
   }
 }
+
+
+// import 'dart:convert';
+// import 'package:flutter/services.dart';
+// import 'package:flutter/foundation.dart';
+// import 'package:path/path.dart';
+// import 'package:sqflite/sqflite.dart' as sql;
+// import 'package:sqflite/sqlite_api.dart';
+//
+// class SQLiteCoreHelper {
+//   static final SQLiteCoreHelper _instance = SQLiteCoreHelper._internal();
+//   static Database? _db;
+//   static const _dbName = "dhap.db";
+//   static const _dbVersion = 1;
+//
+//   SQLiteCoreHelper._internal();
+//   factory SQLiteCoreHelper() => _instance;
+//
+//   Future<Database> get database async {
+//     if (_db != null) return _db!;
+//     await _init();
+//     return _db!;
+//   }
+//
+//   Future<void> _init() async {
+//     final dbPath = await sql.getDatabasesPath();
+//     final path = join(dbPath, _dbName);
+//
+//     _db = await sql.openDatabase(
+//       path,
+//       version: _dbVersion,
+//       onCreate: (db, version) async {
+//         await db.execute('''
+//           CREATE TABLE users (
+//             email TEXT PRIMARY KEY,
+//             name TEXT,
+//             mobile TEXT,
+//             addressLine TEXT,
+//             city TEXT,
+//             country TEXT,
+//             pincode TEXT,
+//             role TEXT
+//           )
+//         ''');
+//
+//         await db.execute('''
+//           CREATE TABLE resources (
+//             id TEXT PRIMARY KEY,
+//             name TEXT,
+//             type TEXT,
+//             description TEXT,
+//             otherData TEXT
+//           )
+//         ''');
+//       },
+//     );
+//
+//     debugPrint("SQLite DB initialized at $path");
+//
+//     await _loadInitialUsersIfEmpty();
+//     await _loadInitialResourcesIfEmpty();
+//   }
+//
+//   Future<void> close() async {
+//     if (_db != null) {
+//       await _db!.close();
+//       _db = null;
+//       debugPrint("SQLite DB closed");
+//     }
+//   }
+//
+//   Future<void> _loadInitialUsersIfEmpty() async {
+//     final db = await database;
+//     final count = sql.Sqflite.firstIntValue(
+//         await db.rawQuery('SELECT COUNT(*) FROM users'));
+//
+//     if ((count ?? 0) > 0) {
+//       debugPrint("Users already exist — skipping JSON load.");
+//       return;
+//     }
+//
+//     debugPrint("Loading initial users from JSON...");
+//
+//     try {
+//       final jsonString = await rootBundle.loadString('lib/assets/data/users.json');
+//       final List<dynamic> userList = jsonDecode(jsonString);
+//
+//       final batch = db.batch();
+//       for (final raw in userList) {
+//         if (raw is! Map<String, dynamic>) continue;
+//         final userData = raw;
+//
+//         batch.insert('users', userData,
+//             conflictAlgorithm: ConflictAlgorithm.replace);
+//       }
+//       await batch.commit(noResult: true);
+//
+//       debugPrint("Initial users imported from users.json");
+//     } catch (e) {
+//       debugPrint("Error loading users.json: $e");
+//     }
+//   }
+//
+//   Future<void> _loadInitialResourcesIfEmpty() async {
+//     final db = await database;
+//     final count = sql.Sqflite.firstIntValue(
+//         await db.rawQuery('SELECT COUNT(*) FROM resources'));
+//
+//     if ((count ?? 0) > 0) {
+//       debugPrint("Resources already exist — skipping JSON load.");
+//       return;
+//     }
+//
+//     debugPrint("Loading initial resources from JSON...");
+//
+//     try {
+//       final jsonString = await rootBundle.loadString('lib/assets/data/resources.json');
+//       final List<dynamic> resourceList = jsonDecode(jsonString);
+//
+//       final batch = db.batch();
+//       for (final raw in resourceList) {
+//         if (raw is! Map<String, dynamic>) continue;
+//         final resourceData = Map<String, dynamic>.from(raw);
+//
+//         batch.insert('resources', resourceData,
+//             conflictAlgorithm: ConflictAlgorithm.replace);
+//       }
+//       await batch.commit(noResult: true);
+//
+//       debugPrint("Initial resources imported from resources.json");
+//     } catch (e) {
+//       debugPrint("Error loading resources.json: $e");
+//     }
+//   }
+//
+//   Future<List<Map<String, dynamic>>> getAllUsers() async {
+//     final db = await database;
+//     return db.query('users');
+//   }
+//
+//   Future<List<Map<String, dynamic>>> getAllResources() async {
+//     final db = await database;
+//     return db.query('resources');
+//   }
+// }

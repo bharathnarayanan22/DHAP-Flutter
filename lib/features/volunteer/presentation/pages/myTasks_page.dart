@@ -5,10 +5,12 @@ import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_event.dar
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_state.dart';
 import 'package:dhap_flutter_project/features/volunteer/presentation/widgets/MyTaskCard.dart';
 import 'package:dhap_flutter_project/features/volunteer/presentation/widgets/StatusFilterSegment.dart';
+import 'package:dhap_flutter_project/utils/method_channel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
 import '../widgets/videoProofPlayer.dart';
@@ -19,6 +21,7 @@ const Color accentColor = Color(0xFF42A5F5);
 class MyTasksPage extends StatefulWidget {
   //final Map<String, dynamic> userDetails;
   final User userDetails;
+
   const MyTasksPage({super.key, required this.userDetails});
 
   @override
@@ -28,36 +31,282 @@ class MyTasksPage extends StatefulWidget {
 class _MyTasksPageState extends State<MyTasksPage> {
   String _selectedStatus = "All";
 
-  void showSubmitProofSheet(
-    BuildContext context,
-    Function(String msg, List<XFile> files) onSubmit, {
-    String? initialMessage,
-    List<XFile>? initialFiles,
-  }) {
-    final TextEditingController messageController = TextEditingController(
-      text: initialMessage,
-    );
+  // void showSubmitProofSheet(
+  //   BuildContext context,
+  //   Function(String msg, List<XFile> files) onSubmit, {
+  //   String? initialMessage,
+  //   List<XFile>? initialFiles,
+  // }) {
+  //   final TextEditingController messageController = TextEditingController(text: initialMessage);
+  //
+  //   List<XFile> selectedFiles = initialFiles != null ? List<XFile>.from(initialFiles) : [];
+  //
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+  //     builder: (context) {
+  //       return StatefulBuilder(
+  //         builder: (context, setState) {
+  //           return Padding(
+  //             padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 16, right: 16, top: 16),
+  //             child: SingleChildScrollView(
+  //               child: Column(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 children: [
+  //                   const Text(
+  //                     "Submit Proof",
+  //                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: primaryColor),
+  //                   ),
+  //                   const SizedBox(height: 12),
+  //
+  //                   TextField(
+  //                     controller: messageController,
+  //                     maxLines: 3,
+  //                     decoration: const InputDecoration(labelText: "Message", border: OutlineInputBorder()),
+  //                   ),
+  //                   const SizedBox(height: 12),
+  //
+  //                   ElevatedButton.icon(
+  //                     style: ElevatedButton.styleFrom(
+  //                       foregroundColor: primaryColor,
+  //                       backgroundColor: primaryColor,
+  //                       shape: RoundedRectangleBorder(
+  //                         borderRadius: BorderRadius.circular(8),
+  //                         side: const BorderSide(color: primaryColor, width: 1),
+  //                       ),
+  //                     ),
+  //                     // onPressed: () async {
+  //                     //   final ImagePicker picker = ImagePicker();
+  //                     //   showModalBottomSheet(
+  //                     //     context: context,
+  //                     //     builder: (ctx) {
+  //                     //       return Wrap(
+  //                     //         children: [
+  //                     //           ListTile(
+  //                     //             leading: const Icon(Icons.image, color: primaryColor),
+  //                     //             title: const Text("Pick Images from Gallery", style: TextStyle(color: primaryColor)),
+  //                     //             onTap: () async {
+  //                     //               final files = await picker.pickMultiImage();
+  //                     //               if (files.isNotEmpty) {
+  //                     //                 setState(() {
+  //                     //                   selectedFiles.addAll(files);
+  //                     //                 });
+  //                     //               }
+  //                     //               Navigator.pop(ctx);
+  //                     //             },
+  //                     //           ),
+  //                     //           ListTile(
+  //                     //             leading: const Icon(Icons.camera_alt, color: primaryColor),
+  //                     //             title: const Text("Capture Image with Camera", style: TextStyle(color: primaryColor)),
+  //                     //             onTap: () async {
+  //                     //               final file = await picker.pickImage(source: ImageSource.camera);
+  //                     //               if (file != null) {
+  //                     //                 setState(() {
+  //                     //                   selectedFiles.add(file);
+  //                     //                 });
+  //                     //               }
+  //                     //               Navigator.pop(ctx);
+  //                     //             },
+  //                     //           ),
+  //                     //
+  //                     //           ListTile(
+  //                     //             leading: const Icon(Icons.videocam, color: primaryColor),
+  //                     //             title: const Text("Pick Video from Gallery", style: TextStyle(color: primaryColor)),
+  //                     //             onTap: () async {
+  //                     //               final file = await picker.pickVideo(source: ImageSource.gallery);
+  //                     //               if (file != null) {
+  //                     //                 setState(() {
+  //                     //                   selectedFiles.add(file);
+  //                     //                 });
+  //                     //               }
+  //                     //               Navigator.pop(ctx);
+  //                     //             },
+  //                     //           ),
+  //                     //           ListTile(
+  //                     //             leading: const Icon(Icons.videocam_outlined, color: primaryColor),
+  //                     //             title: const Text("Record Video with Camera", style: TextStyle(color: primaryColor)),
+  //                     //             onTap: () async {
+  //                     //               final file = await picker.pickVideo(source: ImageSource.camera);
+  //                     //               if (file != null) {
+  //                     //                 setState(() {
+  //                     //                   selectedFiles.add(file);
+  //                     //                 });
+  //                     //               }
+  //                     //               Navigator.pop(ctx);
+  //                     //             },
+  //                     //           ),
+  //                     //         ],
+  //                     //       );
+  //                     //     },
+  //                     //   );
+  //                     // },
+  //                     onPressed: () async {
+  //                       showModalBottomSheet(
+  //                         context: context,
+  //                         builder: (ctx) {
+  //                           return Wrap(
+  //                             children: [
+  //                               ListTile(
+  //                                 leading: const Icon(Icons.image, color: primaryColor),
+  //                                 title: const Text("Pick Image from Gallery", style: TextStyle(color: primaryColor)),
+  //                                 onTap: () async {
+  //                                   final path = await MediaChannel.pickFromGallery();
+  //                                   if (path != null) {
+  //                                     setState(() {
+  //                                       selectedFiles.add(XFile(path));
+  //                                     });
+  //                                   }
+  //                                   Navigator.pop(ctx);
+  //                                 },
+  //                               ),
+  //                               ListTile(
+  //                                 leading: const Icon(Icons.camera_alt, color: primaryColor),
+  //                                 title: const Text("Capture Image", style: TextStyle(color: primaryColor)),
+  //                                 onTap: () async {
+  //                                   final path = await MediaChannel.captureImage();
+  //                                   if (path != null) {
+  //                                     setState(() {
+  //                                       selectedFiles.add(XFile(path));
+  //                                     });
+  //                                   }
+  //                                   Navigator.pop(ctx);
+  //                                 },
+  //                               ),
+  //                               ListTile(
+  //                                 leading: const Icon(Icons.videocam, color: primaryColor),
+  //                                 title: const Text("Record Video", style: TextStyle(color: primaryColor)),
+  //                                 onTap: () async {
+  //                                   final path = await MediaChannel.recordVideo();
+  //                                   if (path != null) {
+  //                                     setState(() {
+  //                                       selectedFiles.add(XFile(path));
+  //                                     });
+  //                                   }
+  //                                   Navigator.pop(ctx);
+  //                                 },
+  //                               ),
+  //                             ],
+  //                           );
+  //                         },
+  //                       );
+  //                     },
+  //
+  //
+  //                     icon: const Icon(Icons.add_a_photo, color: Colors.white),
+  //                     label: Text(
+  //                       selectedFiles.isEmpty ? "Add Images/Videos" : "Add More (${selectedFiles.length} currently)",
+  //                       style: const TextStyle(color: Colors.white),
+  //                     ),
+  //                   ),
+  //
+  //                   if (selectedFiles.isNotEmpty) ...[
+  //                     const SizedBox(height: 12),
+  //                     Wrap(
+  //                       spacing: 8,
+  //                       runSpacing: 8,
+  //                       children: selectedFiles.asMap().entries.map((entry) {
+  //                         final index = entry.key;
+  //                         final file = entry.value;
+  //                         final Widget contentWidget;
+  //                         if (file.path.endsWith(".mp4")) {
+  //                           contentWidget = const Icon(Icons.videocam, size: 80, color: primaryColor);
+  //                         } else {
+  //                           contentWidget = ClipRRect(
+  //                             borderRadius: BorderRadius.circular(8),
+  //                             child: Image.file(File(file.path), width: 80, height: 80, fit: BoxFit.cover),
+  //                           );
+  //                         }
+  //
+  //                         return Stack(
+  //                           children: [
+  //                             SizedBox(width: 80, height: 80, child: Center(child: contentWidget)),
+  //                             Positioned(
+  //                               top: -10,
+  //                               right: -10,
+  //                               child: IconButton(
+  //                                 icon: const Icon(Icons.cancel, color: Colors.red, size: 24),
+  //                                 style: IconButton.styleFrom(minimumSize: Size.zero, padding: EdgeInsets.zero),
+  //                                 onPressed: () {
+  //                                   setState(() {
+  //                                     selectedFiles.removeAt(index);
+  //                                   });
+  //                                 },
+  //                               ),
+  //                             ),
+  //                           ],
+  //                         );
+  //                       }).toList(),
+  //                     ),
+  //                   ],
+  //
+  //                   const SizedBox(height: 12),
+  //                   ElevatedButton.icon(
+  //                     style: ElevatedButton.styleFrom(
+  //                       //maximumSize: const Size(double.infinity, 100),
+  //                       backgroundColor: primaryColor,
+  //                       padding: const EdgeInsets.symmetric(
+  //                         horizontal: 40,
+  //                         //vertical: 12,
+  //                       ),
+  //                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+  //                     ),
+  //                     onPressed: () {
+  //                       if (messageController.text.isNotEmpty || selectedFiles.isNotEmpty) {
+  //                         onSubmit(messageController.text, selectedFiles);
+  //                         Navigator.pop(context);
+  //                       } else {
+  //                         ScaffoldMessenger.of(context).showSnackBar(
+  //                           const SnackBar(
+  //                             content: Text("Please add a message or files to submit proof."),
+  //                             backgroundColor: Colors.redAccent,
+  //                           ),
+  //                         );
+  //                       }
+  //                     },
+  //                     icon: const Icon(Icons.send, color: Colors.white),
+  //                     label: const Text(
+  //                       "Submit Proof",
+  //                       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+  //                     ),
+  //                   ),
+  //                   const SizedBox(height: 12),
+  //                 ],
+  //               ),
+  //             ),
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 
-    List<XFile> selectedFiles = initialFiles != null
-        ? List<XFile>.from(initialFiles)
-        : [];
+  void showSubmitProofSheet(
+      BuildContext context,
+      Function(String msg, List<XFile> files) onSubmit, {
+        String? initialMessage,
+        List<XFile>? initialFiles,
+      }) {
+    final TextEditingController messageController =
+    TextEditingController(text: initialMessage);
+
+    List<XFile> selectedFiles =
+    initialFiles != null ? List<XFile>.from(initialFiles) : [];
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
             return Padding(
               padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-                left: 16,
-                right: 16,
-                top: 16,
-              ),
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                  left: 16,
+                  right: 16,
+                  top: 16),
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -65,10 +314,9 @@ class _MyTasksPageState extends State<MyTasksPage> {
                     const Text(
                       "Submit Proof",
                       style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: primaryColor,
-                      ),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: primaryColor),
                     ),
                     const SizedBox(height: 12),
 
@@ -76,19 +324,16 @@ class _MyTasksPageState extends State<MyTasksPage> {
                       controller: messageController,
                       maxLines: 3,
                       decoration: const InputDecoration(
-                        labelText: "Message",
-                        border: OutlineInputBorder(),
-                      ),
+                          labelText: "Message", border: OutlineInputBorder()),
                     ),
                     const SizedBox(height: 12),
 
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        foregroundColor: primaryColor,
+                        foregroundColor: Colors.white,
                         backgroundColor: primaryColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
-                          side: const BorderSide(color: primaryColor, width: 1),
                         ),
                       ),
                       onPressed: () async {
@@ -99,14 +344,10 @@ class _MyTasksPageState extends State<MyTasksPage> {
                             return Wrap(
                               children: [
                                 ListTile(
-                                  leading: const Icon(
-                                    Icons.image,
-                                    color: primaryColor,
-                                  ),
-                                  title: const Text(
-                                    "Pick Images from Gallery",
-                                    style: TextStyle(color: primaryColor),
-                                  ),
+                                  leading: const Icon(Icons.image,
+                                      color: primaryColor),
+                                  title: const Text("Pick Image from Gallery",
+                                      style: TextStyle(color: primaryColor)),
                                   onTap: () async {
                                     final files = await picker.pickMultiImage();
                                     if (files.isNotEmpty) {
@@ -118,18 +359,13 @@ class _MyTasksPageState extends State<MyTasksPage> {
                                   },
                                 ),
                                 ListTile(
-                                  leading: const Icon(
-                                    Icons.camera_alt,
-                                    color: primaryColor,
-                                  ),
-                                  title: const Text(
-                                    "Capture Image with Camera",
-                                    style: TextStyle(color: primaryColor),
-                                  ),
+                                  leading: const Icon(Icons.camera_alt,
+                                      color: primaryColor),
+                                  title: const Text("Capture Image",
+                                      style: TextStyle(color: primaryColor)),
                                   onTap: () async {
-                                    final file = await picker.pickImage(
-                                      source: ImageSource.camera,
-                                    );
+                                    final file =
+                                    await picker.pickImage(source: ImageSource.camera);
                                     if (file != null) {
                                       setState(() {
                                         selectedFiles.add(file);
@@ -138,44 +374,43 @@ class _MyTasksPageState extends State<MyTasksPage> {
                                     Navigator.pop(ctx);
                                   },
                                 ),
+                                ListTile(
+                                  leading:
+                                  const Icon(Icons.videocam, color: primaryColor),
+                                  title: const Text("Pick Video from Gallery",
+                                      style: TextStyle(color: primaryColor)),
+                                  onTap: () async {
+                                    final file =
+                                    await picker.pickVideo(source: ImageSource.gallery);
+                                    if (file != null) {
+                                      final cacheDir = await getTemporaryDirectory();
+                                      final newPath =
+                                          '${cacheDir.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
+                                      final newFile = await File(file.path).copy(newPath);
 
-                                ListTile(
-                                  leading: const Icon(
-                                    Icons.videocam,
-                                    color: primaryColor,
-                                  ),
-                                  title: const Text(
-                                    "Pick Video from Gallery",
-                                    style: TextStyle(color: primaryColor),
-                                  ),
-                                  onTap: () async {
-                                    final file = await picker.pickVideo(
-                                      source: ImageSource.gallery,
-                                    );
-                                    if (file != null) {
                                       setState(() {
-                                        selectedFiles.add(file);
+                                        selectedFiles.add(XFile(newFile.path));
                                       });
                                     }
                                     Navigator.pop(ctx);
                                   },
                                 ),
                                 ListTile(
-                                  leading: const Icon(
-                                    Icons.videocam_outlined,
-                                    color: primaryColor,
-                                  ),
-                                  title: const Text(
-                                    "Record Video with Camera",
-                                    style: TextStyle(color: primaryColor),
-                                  ),
+                                  leading: const Icon(Icons.videocam_outlined,
+                                      color: primaryColor),
+                                  title: const Text("Record Video",
+                                      style: TextStyle(color: primaryColor)),
                                   onTap: () async {
-                                    final file = await picker.pickVideo(
-                                      source: ImageSource.camera,
-                                    );
+                                    final file =
+                                    await picker.pickVideo(source: ImageSource.camera);
                                     if (file != null) {
+                                      final cacheDir = await getTemporaryDirectory();
+                                      final newPath =
+                                          '${cacheDir.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
+                                      final newFile = await File(file.path).copy(newPath);
+
                                       setState(() {
-                                        selectedFiles.add(file);
+                                        selectedFiles.add(XFile(newFile.path));
                                       });
                                     }
                                     Navigator.pop(ctx);
@@ -195,53 +430,51 @@ class _MyTasksPageState extends State<MyTasksPage> {
                       ),
                     ),
 
-                    if (selectedFiles.isNotEmpty) ...[
-                      const SizedBox(height: 12),
+                    const SizedBox(height: 12),
+
+                    if (selectedFiles.isNotEmpty)
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
                         children: selectedFiles.asMap().entries.map((entry) {
                           final index = entry.key;
                           final file = entry.value;
+
                           final Widget contentWidget;
                           if (file.path.endsWith(".mp4")) {
-                            contentWidget = const Icon(
-                              Icons.videocam,
-                              size: 80,
-                              color: primaryColor,
+                            contentWidget = IconButton(
+                              icon: const Icon(Icons.play_circle_fill,
+                                  size: 80, color: primaryColor),
+                              onPressed: () {
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (_) =>
+                                //         VideoPreviewPage(videoFile: File(file.path)),
+                                //   ),
+                                // );
+                              },
                             );
                           } else {
                             contentWidget = ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: Image.file(
-                                File(file.path),
-                                width: 80,
-                                height: 80,
-                                fit: BoxFit.cover,
-                              ),
+                              child: Image.file(File(file.path),
+                                  width: 80, height: 80, fit: BoxFit.cover),
                             );
                           }
 
                           return Stack(
                             children: [
                               SizedBox(
-                                width: 80,
-                                height: 80,
-                                child: Center(child: contentWidget),
-                              ),
+                                  width: 80, height: 80, child: Center(child: contentWidget)),
                               Positioned(
                                 top: -10,
                                 right: -10,
                                 child: IconButton(
-                                  icon: const Icon(
-                                    Icons.cancel,
-                                    color: Colors.red,
-                                    size: 24,
-                                  ),
+                                  icon:
+                                  const Icon(Icons.cancel, color: Colors.red, size: 24),
                                   style: IconButton.styleFrom(
-                                    minimumSize: Size.zero,
-                                    padding: EdgeInsets.zero,
-                                  ),
+                                      minimumSize: Size.zero, padding: EdgeInsets.zero),
                                   onPressed: () {
                                     setState(() {
                                       selectedFiles.removeAt(index);
@@ -253,20 +486,15 @@ class _MyTasksPageState extends State<MyTasksPage> {
                           );
                         }).toList(),
                       ),
-                    ],
 
                     const SizedBox(height: 12),
+
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        //maximumSize: const Size(double.infinity, 100),
                         backgroundColor: primaryColor,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 40,
-                          //vertical: 12,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                            borderRadius: BorderRadius.circular(8)),
                       ),
                       onPressed: () {
                         if (messageController.text.isNotEmpty ||
@@ -277,8 +505,7 @@ class _MyTasksPageState extends State<MyTasksPage> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text(
-                                "Please add a message or files to submit proof.",
-                              ),
+                                  "Please add a message or files to submit proof."),
                               backgroundColor: Colors.redAccent,
                             ),
                           );
@@ -287,10 +514,8 @@ class _MyTasksPageState extends State<MyTasksPage> {
                       icon: const Icon(Icons.send, color: Colors.white),
                       label: const Text(
                         "Submit Proof",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style:
+                        TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -304,23 +529,241 @@ class _MyTasksPageState extends State<MyTasksPage> {
     );
   }
 
+  // void showSubmitProofSheet(
+  //     BuildContext context,
+  //     Function(String msg, List<XFile> files) onSubmit, {
+  //       String? initialMessage,
+  //       List<XFile>? initialFiles,
+  //     }) {
+  //   final TextEditingController messageController =
+  //   TextEditingController(text: initialMessage);
+  //
+  //   List<XFile> selectedFiles =
+  //   initialFiles != null ? List<XFile>.from(initialFiles) : [];
+  //
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     shape: const RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+  //     builder: (context) {
+  //       return StatefulBuilder(
+  //         builder: (context, setState) {
+  //           return Padding(
+  //             padding: EdgeInsets.only(
+  //                 bottom: MediaQuery.of(context).viewInsets.bottom,
+  //                 left: 16,
+  //                 right: 16,
+  //                 top: 16),
+  //             child: SingleChildScrollView(
+  //               child: Column(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 children: [
+  //                   const Text(
+  //                     "Submit Proof",
+  //                     style: TextStyle(
+  //                         fontSize: 18,
+  //                         fontWeight: FontWeight.bold,
+  //                         color: primaryColor),
+  //                   ),
+  //                   const SizedBox(height: 12),
+  //
+  //                   TextField(
+  //                     controller: messageController,
+  //                     maxLines: 3,
+  //                     decoration: const InputDecoration(
+  //                         labelText: "Message", border: OutlineInputBorder()),
+  //                   ),
+  //                   const SizedBox(height: 12),
+  //
+  //                   ElevatedButton.icon(
+  //                     style: ElevatedButton.styleFrom(
+  //                       foregroundColor: Colors.white,
+  //                       backgroundColor: primaryColor,
+  //                       shape: RoundedRectangleBorder(
+  //                         borderRadius: BorderRadius.circular(8),
+  //                       ),
+  //                     ),
+  //                     onPressed: () async {
+  //                       showModalBottomSheet(
+  //                         context: context,
+  //                         builder: (ctx) {
+  //                           return Wrap(
+  //                             children: [
+  //                               ListTile(
+  //                                 leading:
+  //                                 const Icon(Icons.image, color: primaryColor),
+  //                                 title: const Text(
+  //                                   "Pick from Gallery",
+  //                                   style: TextStyle(color: primaryColor),
+  //                                 ),
+  //                                 onTap: () async {
+  //                                   final path = await MediaChannel.pickFromGallery();
+  //                                   if (path != null) {
+  //                                     setState(() {
+  //                                       selectedFiles.add(XFile(path));
+  //                                     });
+  //                                   }
+  //                                   Navigator.pop(ctx);
+  //                                 },
+  //                               ),
+  //                               ListTile(
+  //                                 leading:
+  //                                 const Icon(Icons.camera_alt, color: primaryColor),
+  //                                 title: const Text(
+  //                                   "Capture Image",
+  //                                   style: TextStyle(color: primaryColor),
+  //                                 ),
+  //                                 onTap: () async {
+  //                                   final path = await MediaChannel.captureImage();
+  //                                   if (path != null) {
+  //                                     setState(() {
+  //                                       selectedFiles.add(XFile(path));
+  //                                     });
+  //                                   }
+  //                                   Navigator.pop(ctx);
+  //                                 },
+  //                               ),
+  //                               ListTile(
+  //                                 leading:
+  //                                 const Icon(Icons.videocam, color: primaryColor),
+  //                                 title: const Text(
+  //                                   "Record Video",
+  //                                   style: TextStyle(color: primaryColor),
+  //                                 ),
+  //                                 onTap: () async {
+  //                                   final path = await MediaChannel.recordVideo();
+  //                                   if (path != null) {
+  //                                     setState(() {
+  //                                       selectedFiles.add(XFile(path));
+  //                                     });
+  //                                   }
+  //                                   Navigator.pop(ctx);
+  //                                 },
+  //                               ),
+  //                             ],
+  //                           );
+  //                         },
+  //                       );
+  //                     },
+  //                     icon: const Icon(Icons.add_a_photo, color: Colors.white),
+  //                     label: Text(
+  //                       selectedFiles.isEmpty
+  //                           ? "Add Images/Videos"
+  //                           : "Add More (${selectedFiles.length} currently)",
+  //                       style: const TextStyle(color: Colors.white),
+  //                     ),
+  //                   ),
+  //
+  //                   const SizedBox(height: 12),
+  //
+  //                   if (selectedFiles.isNotEmpty)
+  //                     Wrap(
+  //                       spacing: 8,
+  //                       runSpacing: 8,
+  //                       children: selectedFiles.asMap().entries.map((entry) {
+  //                         final index = entry.key;
+  //                         final file = entry.value;
+  //
+  //                         final Widget contentWidget;
+  //                         if (file.path.endsWith(".mp4")) {
+  //                           contentWidget = IconButton(
+  //                             icon: const Icon(Icons.play_circle_fill,
+  //                                 size: 80, color: primaryColor),
+  //                             onPressed: () {
+  //                               // Video preview logic
+  //                             },
+  //                           );
+  //                         } else {
+  //                           contentWidget = ClipRRect(
+  //                             borderRadius: BorderRadius.circular(8),
+  //                             child: Image.file(File(file.path),
+  //                                 width: 80, height: 80, fit: BoxFit.cover),
+  //                           );
+  //                         }
+  //
+  //                         return Stack(
+  //                           children: [
+  //                             SizedBox(
+  //                                 width: 80,
+  //                                 height: 80,
+  //                                 child: Center(child: contentWidget)),
+  //                             Positioned(
+  //                               top: -10,
+  //                               right: -10,
+  //                               child: IconButton(
+  //                                 icon: const Icon(Icons.cancel,
+  //                                     color: Colors.red, size: 24),
+  //                                 style: IconButton.styleFrom(
+  //                                     minimumSize: Size.zero, padding: EdgeInsets.zero),
+  //                                 onPressed: () {
+  //                                   setState(() {
+  //                                     selectedFiles.removeAt(index);
+  //                                   });
+  //                                 },
+  //                               ),
+  //                             ),
+  //                           ],
+  //                         );
+  //                       }).toList(),
+  //                     ),
+  //
+  //                   const SizedBox(height: 12),
+  //
+  //                   ElevatedButton.icon(
+  //                     style: ElevatedButton.styleFrom(
+  //                       backgroundColor: primaryColor,
+  //                       padding: const EdgeInsets.symmetric(horizontal: 40),
+  //                       shape: RoundedRectangleBorder(
+  //                           borderRadius: BorderRadius.circular(8)),
+  //                     ),
+  //                     onPressed: () {
+  //                       if (messageController.text.isNotEmpty ||
+  //                           selectedFiles.isNotEmpty) {
+  //                         onSubmit(messageController.text, selectedFiles);
+  //                         Navigator.pop(context);
+  //                       } else {
+  //                         ScaffoldMessenger.of(context).showSnackBar(
+  //                           const SnackBar(
+  //                             content: Text(
+  //                                 "Please add a message or files to submit proof."),
+  //                             backgroundColor: Colors.redAccent,
+  //                           ),
+  //                         );
+  //                       }
+  //                     },
+  //                     icon: const Icon(Icons.send, color: Colors.white),
+  //                     label: const Text(
+  //                       "Submit Proof",
+  //                       style: TextStyle(
+  //                           color: Colors.white, fontWeight: FontWeight.bold),
+  //                     ),
+  //                   ),
+  //                   const SizedBox(height: 12),
+  //                 ],
+  //               ),
+  //             ),
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 
   void showProofViewer(BuildContext context, List<Proof> proofs) {
     if (proofs.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("No proofs available.")),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("No proofs available.")));
       return;
     }
 
     final allMedia = proofs.expand((p) => p.mediaPaths).toList();
-   // final allMessages = proofs.expand((p) => List.filled(p.mediaPaths.length, p.message)).toList();
+    // final allMessages = proofs.expand((p) => List.filled(p.mediaPaths.length, p.message)).toList();
 
     showDialog(
       context: context,
       builder: (context) {
         PageController controller = PageController();
-       // ValueNotifier<int> indexNotifier = ValueNotifier<int>(0);
+        // ValueNotifier<int> indexNotifier = ValueNotifier<int>(0);
 
         return Dialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -338,7 +781,7 @@ class _MyTasksPageState extends State<MyTasksPage> {
                   //onPageChanged: (index) => indexNotifier.value = index,
                   itemBuilder: (context, index) {
                     final path = allMedia[index];
-                   // final msg = allMessages[index];
+                    // final msg = allMessages[index];
 
                     return Column(
                       children: [
@@ -360,10 +803,7 @@ class _MyTasksPageState extends State<MyTasksPage> {
                     icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 28),
                     onPressed: () {
                       if (controller.page! > 0) {
-                        controller.previousPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
+                        controller.previousPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
                       }
                     },
                   ),
@@ -375,10 +815,7 @@ class _MyTasksPageState extends State<MyTasksPage> {
                     icon: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 28),
                     onPressed: () {
                       if (controller.page! < allMedia.length - 1) {
-                        controller.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
+                        controller.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
                       }
                     },
                   ),
@@ -409,17 +846,12 @@ class _MyTasksPageState extends State<MyTasksPage> {
         );
       },
     );
-
   }
-
-
 
   @override
   void initState() {
     super.initState();
-    context.read<volunteerBloc>().add(
-      FetchMyTasksEvent(taskIds: widget.userDetails.taskIds),
-    );
+    context.read<volunteerBloc>().add(FetchMyTasksEvent(taskIds: widget.userDetails.taskIds));
     print("User Details: ${widget.userDetails.inTask}");
     print("My Tasks: ${widget.userDetails.taskIds}");
   }
@@ -463,17 +895,11 @@ class _MyTasksPageState extends State<MyTasksPage> {
                     listener: (context, state) {
                       if (state is SubmissionSuccess) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Proof submitted successfully!"),
-                            backgroundColor: Colors.green,
-                          ),
+                          const SnackBar(content: Text("Proof submitted successfully!"), backgroundColor: Colors.green),
                         );
 
-                        context.read<volunteerBloc>().add(
-                          FetchMyTasksEvent(
-                            taskIds: widget.userDetails.taskIds,
-                          ),
-                        );
+                        context.read<volunteerBloc>().add(FetchMyTasksEvent(taskIds: widget.userDetails.taskIds));
+                        setState(() {});
                       }
                     },
                     builder: (context, state) {

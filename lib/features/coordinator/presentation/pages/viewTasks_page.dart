@@ -46,7 +46,7 @@ class _ViewTasksPageState extends State<ViewTasksPage> {
 
   @override
   void dispose() {
-    Navigator.of(context).pop(_taskModified);
+    //Navigator.of(context).pop(_taskModified);
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     super.dispose();

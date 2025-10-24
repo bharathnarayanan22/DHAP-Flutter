@@ -33,6 +33,7 @@ class _TasksPageState extends State<tasksPage> {
     });
   }
 
+  
   @override
   void dispose() {
     super.dispose();
@@ -47,79 +48,73 @@ class _TasksPageState extends State<tasksPage> {
         return false;
       },
       child: Scaffold(
-          backgroundColor: Colors.grey[200],
-          appBar: AppBar(
-            title: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.task_alt, color: Colors.white, size: 24),
-                SizedBox(width: 8),
-                Text(
-                  "Available Tasks",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            backgroundColor: primaryColor,
-            foregroundColor: Colors.white,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {
-                print('Back button pressed: ${_taskAccepted}');
-                Navigator.of(context).pop(currentUser);
-              },
-            ),
+        backgroundColor: Colors.grey[200],
+        appBar: AppBar(
+          title: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.task_alt, color: Colors.white, size: 24),
+              SizedBox(width: 8),
+              Text("Available Tasks", style: TextStyle(fontWeight: FontWeight.bold)),
+            ],
           ),
-          body: BlocListener<volunteerBloc, volunteerState>(
-            listener: (context, state) {
-
-              if (state is AcceptSuccess) {
-                setState(() {
-                  currentUser = state.user;
-                });
-                context.read<volunteerBloc>().add(FetchPendingTasksEvent());
+          backgroundColor: primaryColor,
+          foregroundColor: Colors.white,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              print('Back button pressed: ${_taskAccepted}');
+              Navigator.of(context).pop(currentUser);
+            },
+          ),
+        ),
+        body: BlocListener<volunteerBloc, volunteerState>(
+          listener: (context, state) {
+            if (state is AcceptSuccess) {
+              setState(() {
+                currentUser = state.user;
+              });
+              context.read<volunteerBloc>().add(FetchPendingTasksEvent());
+            }
+          },
+          child: BlocBuilder<volunteerBloc, volunteerState>(
+            builder: (context, state) {
+              if (state is volunteerLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is volunteerSuccess) {
+                final tasks = state.tasks;
+                if (tasks.isEmpty) {
+                  return const Center(child: Text("No tasks available"));
+                }
+                return Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 1000),
+                    child: Center(
+                      child: ListView.builder(
+                        itemCount: tasks.length,
+                        itemBuilder: (context, index) {
+                          final task = tasks[index];
+                          return AvailTaskCard(
+                            task: task,
+                            user: widget.user,
+                            onTaskAccepted: () {
+                              print("Task accepted");
+                              setState(() {
+                                _taskAccepted = true;
+                              });
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                );
+              } else {
+                return const Center(child: Text("Something went wrong"));
               }
             },
-            child: BlocBuilder<volunteerBloc, volunteerState>(
-                builder: (context, state) {
-                  if (state is volunteerLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  else if (state is volunteerSuccess) {
-                    final tasks = state.tasks;
-                    if (tasks.isEmpty) {
-                      return const Center(child: Text("No tasks available"));
-                    }
-                    return Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 1000),
-                        child: Center(
-                          child: ListView.builder(
-                              itemCount: tasks.length,
-                              itemBuilder: (context, index) {
-                                final task = tasks[index];
-                                return AvailTaskCard(
-                                  task: task,
-                                  user: widget.user,
-                                  onTaskAccepted: () {
-                                    print("Task accepted");
-                                    setState(() {
-                                      _taskAccepted = true;
-                                    });
-                                  },
-                                );
-                              }
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                  else {
-                    return const Center(child: Text("Something went wrong"));
-                  }
-                }
-            ),
-          )
+          ),
+        ),
       ),
     );
   }

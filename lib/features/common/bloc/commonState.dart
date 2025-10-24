@@ -60,4 +60,8 @@ class BecomeCoSuccess extends commonState {
   BecomeCoSuccess({required this.message});
 }
 
+class TaskCreationSuccess extends commonState {
+  final String message;
 
+  TaskCreationSuccess({required this.message});
+}

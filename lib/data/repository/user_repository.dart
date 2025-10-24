@@ -13,6 +13,10 @@ class UserRepository {
     return await _dbHelper.getAllUsers();
   }
 
+  Stream<List<User>> watchAllUsers() async* {
+    yield* _dbHelper.watchAllUsers();
+  }
+
   Future<User?> getUserByEmail(String email) async {
     return await _dbHelper.getUserByEmail(email);
   }

@@ -1,3 +1,5 @@
+import 'package:latlong2/latlong.dart';
+
 abstract class commonEvent {}
 
 class FetchUserData extends commonEvent {}
@@ -18,6 +20,24 @@ class BecomeCoSubmitted extends commonEvent {
   BecomeCoSubmitted({required this.message, required this.email});
 }
 
+class CreateTaskEvent extends commonEvent {
+  final String title;
+  final String description;
+  final int volunteer;
+  final String StartAddress;
+  final String EndAddress;
+  final LatLng StartLocation;
+  final LatLng EndLocation;
 
+  CreateTaskEvent({
+    required this.title,
+    required this.description,
+    required this.volunteer,
+    required this.StartAddress,
+    required this.EndAddress,
+    required this.StartLocation,
+    required this.EndLocation,
+  });
+}
 
 

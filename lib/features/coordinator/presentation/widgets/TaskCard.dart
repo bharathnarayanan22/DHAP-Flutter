@@ -33,11 +33,11 @@ class TaskCard extends StatelessWidget {
       case 'Completed':
         return successColor;
       case 'In Progress':
-        return accentColor;
-      case 'Unassigned':
+        return Colors.orangeAccent;
+      case 'Pending':
         return warningColor;
-      case 'Verified':
-        return primaryColor;
+      case 'In Verification':
+        return accentColor;
       default:
         return Colors.grey;
     }

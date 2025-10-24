@@ -15,4 +15,7 @@ class RequestRepository {
     return await _dbHelper.getAllRequests();
   }
 
+  Stream<List<Request>> watchAllRequests() async* {
+    yield* _dbHelper.watchAllRequests();
+  }
 }

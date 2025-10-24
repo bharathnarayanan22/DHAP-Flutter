@@ -17,6 +17,9 @@ class ResourceRepository {
     return await _dbHelper.getAllResources();
   }
 
+  Stream<List<ResourceModel>> watchAllResources() async* {
+    yield* _dbHelper.watchAllResources();
+  }
   // List<ResourceModel> getResources() {
   //   return List.unmodifiable(_resources);
   // }

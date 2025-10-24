@@ -4,6 +4,7 @@ import 'package:dhap_flutter_project/data/db/userdb_helper.dart';
 import 'package:dhap_flutter_project/data/model/user_model.dart';
 import 'package:dhap_flutter_project/features/auth/presentation/pages/auth_page.dart';
 import 'package:dhap_flutter_project/features/common/bloc/commonBloc.dart';
+import 'package:dhap_flutter_project/features/common/bloc/commonEvent.dart';
 import 'package:dhap_flutter_project/features/common/presentation/pages/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,33 +32,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "DHAP",
-      // theme: ThemeData(
-      //   useMaterial3: true,
-      //   primaryColor: const Color(0xFF0A2744),
-      //   colorScheme: ColorScheme.fromSeed(
-      //     seedColor: const Color(0xFF0A2744),
-      //     primary: const Color(0xFF0A2744),
-      //     secondary: const Color(0xFF4A90E2),
-      //   ),
-      //   scaffoldBackgroundColor: const Color(0xFF0A2744),
-      // ),
-      // home: SafeArea(child: DashboardPage(userDetails:
-      //     userDetails
-      // ))
-      home: MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (_) => commonBloc()),
-        ],
-        child: SafeArea(
+    return MultiBlocProvider(
+      providers: [
+        // Provide commonBloc at the top level
+        BlocProvider<commonBloc>(
+          create: (context) => commonBloc()..add(FetchDataEvent()),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: "DHAP",
+        home: SafeArea(
           child: isLoggedIn && userDetails != null
               ? DashboardPage(userDetails: userDetails!)
               : AuthPage(),
         ),
       ),
-
     );
   }
 }

@@ -77,6 +77,54 @@ class RequestdbHelper {
     return requests;
   }
 
+  Stream<List<Request>> watchAllRequests() async* {
+    final db = await _core.database;
+    final collection = await db.defaultCollection;
+
+    final query = QueryBuilder.createAsync()
+        .select(SelectResult.all())
+        .from(DataSource.collection(collection))
+        .where(Expression.property('type').equalTo(Expression.string('request')));
+
+    final listener = await query.changes();
+
+    await for (final change in listener.asBroadcastStream()) {
+      final results = await change.results?.allResults();
+      final List<Request> requests = [];
+
+      if (results != null) {
+        for (final row in results) {
+          final data = row.dictionary(collection.name);
+
+          if (data != null) {
+            final dataMap = Map<String, dynamic>.from(data.toPlainMap());
+            final geoParts = (dataMap['location'] as String? ?? "0,0").split(',');
+
+            requests.add(
+              Request(
+                id: data.string('id') ?? '',
+                resource: data.string('resource') ?? '',
+                quantity: data.integer('quantity'),
+                address: data.string('address') ?? '',
+                description: data.string('description') ?? '',
+                location: LatLng(
+                  double.tryParse(geoParts[0]) ?? 0.0,
+                  double.tryParse(geoParts[1]) ?? 0.0,
+                ),
+                status: data.string('status') ?? '',
+                responseIds: List<String>.from(
+                  data.array('responseIds')?.toList() ?? [],
+                ),
+              ),
+            );
+          }
+        }
+      }
+      yield requests;
+    }
+  }
+
+
   Future<void> AddResponseID(String requestId, String responseId) async {
     final db = await _core.database;
     final collection = await db.defaultCollection;

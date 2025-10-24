@@ -74,6 +74,53 @@ class ResponsedbHelper {
     return responses;
   }
 
+  Stream<List<ResponseModel>> watchAllResponses() async* {
+    final db = await _core.database;
+    final collection = await db.defaultCollection;
+
+    final query = await QueryBuilder.createAsync()
+        .select(SelectResult.all())
+        .from(DataSource.collection(collection))
+        .where(
+      Expression.property('type').equalTo(Expression.string('response')),
+    );
+
+    final changeListener = await query.changes();
+
+    await for (final change in changeListener) {
+      final result = await query.execute();
+      final List<ResponseModel> responses = [];
+
+      await for (final row in result.asStream()) {
+        final data = row.dictionary(collection.name);
+        if (data == null) continue;
+
+        final dataMap = Map<String, dynamic>.from(data.toPlainMap());
+        final geoParts = (dataMap['location'] as String? ?? "0,0").split(',');
+
+        responses.add(
+          ResponseModel(
+            id: data.string('id'),
+            requestId: data.string('requestId') ?? '',
+            responderName: data.string('responderName') ?? '',
+            message: data.string('message') ?? '',
+            quantityProvided: data.integer('quantityProvided'),
+            address: data.string('address') ?? '',
+            taskAssigned: data.boolean('taskAssigned'),
+            location: LatLng(
+              double.tryParse(geoParts[0]) ?? 0.0,
+              double.tryParse(geoParts[1]) ?? 0.0,
+            ),
+          ),
+        );
+      }
+
+      debugPrint("Updated Responses (${responses.length})");
+      yield responses;
+    }
+  }
+
+
   Future<List<ResponseModel>> getResponsesForRequest(String requestId) async {
     final db = await _core.database;
     final collection = await db.defaultCollection;

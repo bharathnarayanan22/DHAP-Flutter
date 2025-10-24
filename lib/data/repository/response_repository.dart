@@ -57,7 +57,9 @@ class ResponseRepository {
     return await _dbHelper.getAllResponses();
   }
 
-
+  Stream<List<ResponseModel>> watchAllResponses() async* {
+    yield* _dbHelper.watchAllResponses();
+  }
   List<ResponseModel> getResponsesForRequest(String requestId) {
     return _responses.where((res) => res.requestId == requestId).toList();
   }

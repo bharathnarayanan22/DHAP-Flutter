@@ -79,6 +79,57 @@ class Userdb_helper {
     return users;
   }
 
+  Stream<List<User>> watchAllUsers() async* {
+    final db = await _core.database;
+    final collection = await db.defaultCollection;
+
+    final query = QueryBuilder.createAsync()
+        .select(SelectResult.all())
+        .from(DataSource.collection(collection))
+        .where(Expression.property('type').equalTo(Expression.string('user')));
+
+    final listener = query.changes();
+
+    await for (final change in listener.asBroadcastStream()) {
+      final results = await change.results?.allResults();
+      final List<User> users = [];
+
+      if (results != null) {
+        for (final row in results) {
+          final data = row.dictionary(collection.name);
+
+          if (data != null) {
+            users.add(
+              User(
+                id: data.string('id'),
+                name: data.string('name') ?? '',
+                email: data.string('email') ?? '',
+                password: data.string('password') ?? '',
+                mobile: data.string('mobile') ?? '',
+                addressLine: data.string('addressLine') ?? '',
+                city: data.string('city') ?? '',
+                country: data.string('country') ?? '',
+                pincode: data.string('pincode') ?? '',
+                role: data.string('role') ?? '',
+                inTask: data.boolean('inTask'),
+                isCoordinator: data.boolean('isCoordinator'),
+                isSubmitted: data.boolean('isSubmitted'),
+                taskIds: List<String>.from(data.array('taskIds')?.toList() ?? []),
+                resourceIds: List<String>.from(
+                  data.array('resourceIds')?.toList() ?? [],
+                ),
+              ),
+            );
+          }
+        }
+      }
+
+      // 👇 Yield each time query results change
+      yield users;
+    }
+  }
+
+
   Future<User?> getUserByEmail(String email) async {
     final db = await _core.database;
     final collection = await db.defaultCollection;
