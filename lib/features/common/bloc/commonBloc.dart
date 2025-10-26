@@ -87,7 +87,30 @@ class commonBloc extends Bloc<commonEvent, commonState> {
       emit(commonLoading());
 
       try {
-        final combinedStream = Rx.combineLatest5<List<User>, List<Task>, List<ResourceModel>, List<Request>, List<ResponseModel>,
+        // Step 1: Fetch current snapshot immediately
+        final users = await _userRepository.getAllUsers(); // Add this method
+        final tasks = await _taskRepository.getAllTasks();
+        final resources = await _resourceRepository.getAllResources();
+        final requests = await _requestRepository.getAllRequests();
+        final responses = await _responseRepository.getAllResponses();
+
+        // Emit initial data right away
+        emit(FetchDataSuccess(
+          message: "Initial load",
+          users: users,
+          tasks: tasks,
+          resources: resources,
+          requests: requests,
+          responses: responses,
+        ));
+
+        // Step 2: Now listen to live updates
+        final combinedStream = Rx.combineLatest5<
+            List<User>,
+            List<Task>,
+            List<ResourceModel>,
+            List<Request>,
+            List<ResponseModel>,
             FetchDataSuccess>(
           _userRepository.watchAllUsers(),
           _taskRepository.watchAllTasks(),
@@ -106,6 +129,7 @@ class commonBloc extends Bloc<commonEvent, commonState> {
           },
         );
 
+        // Continue listening for live updates
         await emit.forEach<FetchDataSuccess>(
           combinedStream,
           onData: (data) => data,
@@ -171,6 +195,34 @@ class commonBloc extends Bloc<commonEvent, commonState> {
       }
     });
 
-
+    on<CreateResourceRequestEvent>((event, emit) async {
+      emit(commonLoading());
+      try {
+        final request = Request(
+          resource: event.resource,
+          quantity: event.quantity,
+          description: event.description,
+          address: event.address,
+          location: event.location,
+        );
+        if (request.resource.isEmpty ||
+            request.quantity == 0 ||
+            request.description.isEmpty ||
+            request.address.isEmpty ) {
+          emit(commonFailure(error: 'All fields are required'));
+          return;
+        } else {
+          _requestRepository.addRequest(request);
+          print('Request created successfully');
+          emit(
+            RequestSuccess(
+              message: 'Request created successfully',
+            ),
+          );
+        }
+      } catch (e) {
+        emit(commonFailure(error: e.toString()));
+      }
+    });
   }
 }

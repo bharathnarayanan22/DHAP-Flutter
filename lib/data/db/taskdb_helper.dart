@@ -105,7 +105,7 @@ class TaskdbHelper {
         .from(DataSource.collection(collection))
         .where(Expression.property('type').equalTo(Expression.string('task')));
 
-    final listener = await query.changes();
+    final listener = query.changes();
 
     await for (final change in listener.asBroadcastStream()) {
       final results = await change.results?.allResults();

@@ -40,4 +40,19 @@ class CreateTaskEvent extends commonEvent {
   });
 }
 
+class CreateResourceRequestEvent extends commonEvent {
+  final String resource;
+  final int quantity;
+  final String description;
+  final String address;
+  final LatLng location;
+
+  CreateResourceRequestEvent({
+    required this.resource,
+    required this.quantity,
+    required this.description,
+    required this.address,
+    required this.location,
+  });
+}
 

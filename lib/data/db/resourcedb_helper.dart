@@ -88,35 +88,33 @@ class ResourcedbHelper {
     final query = QueryBuilder.createAsync()
         .select(SelectResult.all())
         .from(DataSource.collection(collection))
-        .where(
-      Expression.property('type').equalTo(Expression.string('resource')),
-    );
+        .where(Expression.property('type').equalTo(Expression.string('resource')));
 
-    final changeListener = query.changes();
+    final listener = query.changes();
 
-    await for (final change in changeListener) {
-      final result = await query.execute();
+    await for (final change in listener.asBroadcastStream()) {
+      final results = await change.results?.allResults();
       final List<ResourceModel> resources = [];
 
-      await for (final row in result.asStream()) {
-        final data = row.dictionary(collection.name);
-        if (data == null) continue;
+      if (results != null) {
+        for (final row in results) {
+          final data = row.dictionary(collection.name);
+          if (data == null) continue;
 
-        final dataMap = Map<String, dynamic>.from(data.toPlainMap());
+          final dataMap = Map<String, dynamic>.from(data.toPlainMap());
+          double lat = 0.0, lng = 0.0;
 
-        double lat = 0.0, lng = 0.0;
-        final locationRaw = dataMap['location'];
-        if (locationRaw is String) {
-          final parts = locationRaw.split(',');
-          lat = double.tryParse(parts[0]) ?? 0.0;
-          lng = double.tryParse(parts[1]) ?? 0.0;
-        } else if (locationRaw is Map) {
-          lat = (locationRaw['latitude'] as num?)?.toDouble() ?? 0.0;
-          lng = (locationRaw['longitude'] as num?)?.toDouble() ?? 0.0;
-        }
+          final locationRaw = dataMap['location'];
+          if (locationRaw is String) {
+            final parts = locationRaw.split(',');
+            lat = double.tryParse(parts[0]) ?? 0.0;
+            lng = double.tryParse(parts[1]) ?? 0.0;
+          } else if (locationRaw is Map) {
+            lat = (locationRaw['latitude'] as num?)?.toDouble() ?? 0.0;
+            lng = (locationRaw['longitude'] as num?)?.toDouble() ?? 0.0;
+          }
 
-        resources.add(
-          ResourceModel(
+          resources.add(ResourceModel(
             id: data.string('id') ?? '',
             resource: data.string('resource') ?? '',
             quantity: data.integer('quantity'),
@@ -124,14 +122,15 @@ class ResourcedbHelper {
             DonorName: data.string('DonorName') ?? '',
             ResourceType: data.string('ResourceType') ?? '',
             location: LatLng(lat, lng),
-          ),
-        );
+          ));
+        }
       }
 
       debugPrint("Updated Resources (${resources.length})");
       yield resources;
     }
   }
+
 
   Future<void> deleteResource(String id) async {
     final db = await _core.database;

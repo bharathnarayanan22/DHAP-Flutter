@@ -146,8 +146,8 @@ class _LoginFormState extends State<LoginForm> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => BlocProvider(
-                          create: (_) => commonBloc(),
+                        builder: (_) => BlocProvider.value(
+                          value: context.read<commonBloc>(),
                           child: DashboardPage(userDetails: user.copyWith(role: 'Coordinator')),
                         ),
                       ),
@@ -156,8 +156,8 @@ class _LoginFormState extends State<LoginForm> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => BlocProvider(
-                          create: (_) => commonBloc(),
+                        builder: (_) => BlocProvider.value(
+                          value: context.read<commonBloc>(),
                           child: DashboardPage(userDetails: user.copyWith(role:'Volunteer')),
                         ),
                       ),
@@ -166,8 +166,8 @@ class _LoginFormState extends State<LoginForm> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => BlocProvider(
-                          create: (_) => commonBloc(),
+                        builder: (_) => BlocProvider.value(
+                          value: context.read<commonBloc>(),
                           child: DashboardPage(userDetails: user),
                         ),
                       ),
@@ -177,8 +177,8 @@ class _LoginFormState extends State<LoginForm> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => BlocProvider(
-                        create: (_) => commonBloc(),
+                      builder: (_) => BlocProvider.value(
+                        value: context.read<commonBloc>(),
                         child: DashboardPage(userDetails: user),
                       ),
                     ),

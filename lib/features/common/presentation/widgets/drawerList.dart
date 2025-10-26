@@ -1,4 +1,5 @@
 import 'package:dhap_flutter_project/data/model/user_model.dart';
+import 'package:dhap_flutter_project/features/common/bloc/commonBloc.dart';
 import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_bloc.dart';
 import 'package:dhap_flutter_project/features/donor/bloc/donor_bloc.dart';
 import 'package:dhap_flutter_project/features/volunteer/bloc/volunteer_bloc.dart';
@@ -50,19 +51,16 @@ class RoleBasedDrawerItems extends StatelessWidget {
           title: const Text('Create Tasks'),
           onTap: () async {
             Navigator.pop(context);
-            final bool? res = await Navigator.push(
+            await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => BlocProvider(
-                  create: (context) => CoordinatorBloc(),
+                builder: (context) => BlocProvider.value(
+                  value: context.read<commonBloc>(),
                   child: CreateTasksPage(),
                 ),
               ),
             );
-            print('res: $res');
-            if (res == true) {
-              onRefresh();
-            }
+
           },
         ),
         ListTile(
@@ -121,17 +119,14 @@ class RoleBasedDrawerItems extends StatelessWidget {
           title: const Text('Resource Request'),
           onTap: () async {
             Navigator.pop(context);
-            final bool? res = await Navigator.of(context).push(
+             await Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => BlocProvider(
-                  create: (context) => CoordinatorBloc(),
+                builder: (context) => BlocProvider.value(
+                  value: context.read<commonBloc>(),
                   child: ResourceRequestPage(),
                 ),
               ),
             );
-            if (res == true) {
-              onRefresh();
-            }
           },
         ),
         ListTile(

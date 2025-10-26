@@ -78,28 +78,26 @@ class ResponsedbHelper {
     final db = await _core.database;
     final collection = await db.defaultCollection;
 
-    final query = await QueryBuilder.createAsync()
+    final query = QueryBuilder.createAsync()
         .select(SelectResult.all())
         .from(DataSource.collection(collection))
-        .where(
-      Expression.property('type').equalTo(Expression.string('response')),
-    );
+        .where(Expression.property('type').equalTo(Expression.string('response')));
 
-    final changeListener = await query.changes();
+    final listener = query.changes();
 
-    await for (final change in changeListener) {
-      final result = await query.execute();
+    await for (final change in listener.asBroadcastStream()) {
+      final results = await change.results?.allResults();
       final List<ResponseModel> responses = [];
 
-      await for (final row in result.asStream()) {
-        final data = row.dictionary(collection.name);
-        if (data == null) continue;
+      if (results != null) {
+        for (final row in results) {
+          final data = row.dictionary(collection.name);
+          if (data == null) continue;
 
-        final dataMap = Map<String, dynamic>.from(data.toPlainMap());
-        final geoParts = (dataMap['location'] as String? ?? "0,0").split(',');
+          final dataMap = Map<String, dynamic>.from(data.toPlainMap());
+          final geoParts = (dataMap['location'] as String? ?? "0,0").split(',');
 
-        responses.add(
-          ResponseModel(
+          responses.add(ResponseModel(
             id: data.string('id'),
             requestId: data.string('requestId') ?? '',
             responderName: data.string('responderName') ?? '',
@@ -111,14 +109,15 @@ class ResponsedbHelper {
               double.tryParse(geoParts[0]) ?? 0.0,
               double.tryParse(geoParts[1]) ?? 0.0,
             ),
-          ),
-        );
+          ));
+        }
       }
 
       debugPrint("Updated Responses (${responses.length})");
       yield responses;
     }
   }
+
 
 
   Future<List<ResponseModel>> getResponsesForRequest(String requestId) async {

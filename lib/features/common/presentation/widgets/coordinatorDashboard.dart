@@ -206,8 +206,7 @@ class coordinatorDashboard extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => BlocProvider.value(
-                          value: context.read<CoordinatorBloc>(),
+                        builder: (context) => BlocProvider(create: (context) => CoordinatorBloc(),
                           child: ViewTasksPage(),
                         ),
                       ),
@@ -255,16 +254,15 @@ class coordinatorDashboard extends StatelessWidget {
                   imageAsset: 'images/c5.svg',
                   description: 'Submit or manage requests for essential relief resources.',
                   onTap: () async {
-                    final bool res = await Navigator.push(
+                    await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            BlocProvider(create: (context) => CoordinatorBloc(), child: ResourceRequestPage()),
+                            BlocProvider.value(
+                                value: context.read<commonBloc>(), child: ResourceRequestPage()),
                       ),
                     );
-                    if (res == true) {
-                      dashboardBloc.add(FetchDataEvent());
-                    }
+
                   },
                 ),
                 const SizedBox(height: 12),

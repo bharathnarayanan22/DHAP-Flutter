@@ -65,3 +65,9 @@ class TaskCreationSuccess extends commonState {
 
   TaskCreationSuccess({required this.message});
 }
+
+class RequestSuccess extends commonState {
+  final String message;
+
+  RequestSuccess({required this.message});
+}
