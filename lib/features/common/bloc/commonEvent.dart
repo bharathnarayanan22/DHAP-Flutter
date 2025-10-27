@@ -56,3 +56,4 @@ class CreateResourceRequestEvent extends commonEvent {
   });
 }
 
+class FetchNewsEvent extends commonEvent {}

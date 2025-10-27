@@ -25,7 +25,7 @@ StreamSubscription<List<Task>>? _taskSubscription;
 
 class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
   CoordinatorBloc() : super(CoordinatorInitial()) {
-    on<CreateTaskEvent>((event, emit) async {
+    on<CreateTaskEvent1>((event, emit) async {
       emit(CoordinatorLoading());
       try {
         final task = Task(
@@ -82,20 +82,22 @@ class CoordinatorBloc extends Bloc<CoordinatorEvent, CoordinatorState> {
     on<FetchTasksEvent>((event, emit) async {
       emit(CoordinatorLoading());
       try {
+        final initialTasks = await _taskRepository.getAllTasks();
+        emit(CoordinatorSuccess(message: 'Initial tasks loaded', tasks: initialTasks));
+
         await emit.forEach<List<Task>>(
           _taskRepository.watchAllTasks(),
           onData: (tasks) => CoordinatorSuccess(
             message: 'Live tasks updated',
             tasks: tasks,
           ),
-          onError: (error, stackTrace) => CoordinatorFailure(
-            error: error.toString(),
-          ),
+          onError: (error, stackTrace) => CoordinatorFailure(error: error.toString()),
         );
       } catch (e) {
         emit(CoordinatorFailure(error: e.toString()));
       }
     });
+
 
     on<DeleteTaskEvent>((event, emit) async {
       emit(CoordinatorLoading());

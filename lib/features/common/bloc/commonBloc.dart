@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:dhap_flutter_project/data/db/sessiondb_helper.dart';
 import 'package:dhap_flutter_project/data/model/request_model.dart';
@@ -18,6 +19,7 @@ import '../../../data/repository/request_repository.dart';
 import '../../../data/repository/resource_repository.dart';
 import '../../../data/repository/response_repository.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:http/http.dart' as http;
 
 final UserRepository _userRepository = UserRepository();
 final TaskRepository _taskRepository = TaskRepository();
@@ -87,14 +89,12 @@ class commonBloc extends Bloc<commonEvent, commonState> {
       emit(commonLoading());
 
       try {
-        // Step 1: Fetch current snapshot immediately
-        final users = await _userRepository.getAllUsers(); // Add this method
+        final users = await _userRepository.getAllUsers();
         final tasks = await _taskRepository.getAllTasks();
         final resources = await _resourceRepository.getAllResources();
         final requests = await _requestRepository.getAllRequests();
         final responses = await _responseRepository.getAllResponses();
 
-        // Emit initial data right away
         emit(FetchDataSuccess(
           message: "Initial load",
           users: users,
@@ -104,7 +104,6 @@ class commonBloc extends Bloc<commonEvent, commonState> {
           responses: responses,
         ));
 
-        // Step 2: Now listen to live updates
         final combinedStream = Rx.combineLatest5<
             List<User>,
             List<Task>,
@@ -128,8 +127,6 @@ class commonBloc extends Bloc<commonEvent, commonState> {
             );
           },
         );
-
-        // Continue listening for live updates
         await emit.forEach<FetchDataSuccess>(
           combinedStream,
           onData: (data) => data,
@@ -224,5 +221,94 @@ class commonBloc extends Bloc<commonEvent, commonState> {
         emit(commonFailure(error: e.toString()));
       }
     });
+
+    // on<FetchNewsEvent>((event, emit) async {
+    //   emit(FetchNewsLoading());
+    //   try {
+    //     final response = await http.get(Uri.parse(
+    //         'https://gnews.io/api/v4/top-headlines?lang=en&max=20&apikey=a5c8343f0f1c07f31288edaef39ac5e9'));
+    //     if (response.statusCode == 200) {
+    //       final data = jsonDecode(response.body);
+    //       emit(FetchNewsSuccess(data['articles']));
+    //     } else {
+    //       emit(commonFailure(error: 'Failed to fetch news: ${response.statusCode}'));
+    //     }
+    //   } catch (e) {
+    //     emit(commonFailure(error: 'Error fetching news: $e'));
+    //   }
+    // });
+    //
+    Future<List<dynamic>> _fetchNewsStream() async {
+      final response = await http.get(Uri.parse(
+        'https://gnews.io/api/v4/top-headlines?apikey=a5c8343f0f1c07f31288edaef39ac5e9',
+      ));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final articles = data['articles'] as List;
+
+        final List<dynamic> partial = [];
+        for (var article in articles) {
+          partial.add(article);
+          await Future.delayed(const Duration(milliseconds: 200));
+        }
+        return partial;
+      } else {
+        throw Exception('Failed to fetch news: ${response.statusCode}');
+      }
+    }
+
+    on<FetchNewsEvent>((event, emit) async {
+      emit(FetchNewsLoading());
+
+      try {
+        final stream = Stream<List<dynamic>>.fromFuture(_fetchNewsStream());
+
+        await emit.forEach<List<dynamic>>(
+          stream,
+          onData: (articles) => FetchNewsSuccess(articles),
+          onError: (e, _) => commonFailure(error: e.toString()),
+        );
+      } catch (e) {
+        emit(commonFailure(error: 'Error fetching news: $e'));
+      }
+    });
+
+    // Stream<List<dynamic>> _fetchNewsStream() async* {
+    //   final response = await http.get(Uri.parse(
+    //     'https://gnews.io/api/v4/top-headlines?lang=en&max=20&apikey=a5c8343f0f1c07f31288edaef39ac5e9',
+    //   ));
+    //
+    //   if (response.statusCode == 200) {
+    //     final data = jsonDecode(response.body);
+    //     final articles = data['articles'] as List;
+    //
+    //     final List<dynamic> partial = [];
+    //     for (var article in articles) {
+    //       partial.add(article);
+    //       await Future.delayed(const Duration(milliseconds: 200));
+    //       yield List<dynamic>.from(partial);
+    //     }
+    //   } else {
+    //     throw Exception('Failed to fetch news: ${response.statusCode}');
+    //   }
+    // }
+    //
+    // on<FetchNewsEvent>((event, emit) async {
+    //   emit(FetchNewsLoading());
+    //   try {
+    //     await for (final articles in _fetchNewsStream()) {
+    //       emit(FetchNewsSuccess(articles));
+    //     }
+    //   } catch (e) {
+    //     emit(commonFailure(error: 'Error fetching news: $e'));
+    //   }
+    // });
+
+
+
+
   }
+
+
 }

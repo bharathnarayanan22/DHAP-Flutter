@@ -13,6 +13,8 @@ import 'package:dhap_flutter_project/features/common/presentation/widgets/volunt
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'notification_page.dart';
+
 class DashboardPage extends StatefulWidget {
   //final Map<String, dynamic> userDetails;
   final User userDetails;
@@ -65,7 +67,13 @@ class _DashboardPageState extends State<DashboardPage> {
               foregroundColor: Colors.white,
               backgroundColor: Color(0xFF0A2744),
               actions: [
-                IconButton(icon: Icon(Icons.notifications), onPressed: () {}),
+                IconButton(icon: Icon(Icons.notifications), onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => NotificationsPage(),
+                    ),
+                  );
+                }),
               ],
             ),
             drawer: Drawer(

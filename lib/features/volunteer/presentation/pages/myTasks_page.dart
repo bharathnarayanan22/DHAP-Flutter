@@ -31,386 +31,156 @@ class MyTasksPage extends StatefulWidget {
 class _MyTasksPageState extends State<MyTasksPage> {
   String _selectedStatus = "All";
 
-  // void showSubmitProofSheet(
-  //   BuildContext context,
-  //   Function(String msg, List<XFile> files) onSubmit, {
-  //   String? initialMessage,
-  //   List<XFile>? initialFiles,
-  // }) {
-  //   final TextEditingController messageController = TextEditingController(text: initialMessage);
-  //
-  //   List<XFile> selectedFiles = initialFiles != null ? List<XFile>.from(initialFiles) : [];
-  //
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-  //     builder: (context) {
-  //       return StatefulBuilder(
-  //         builder: (context, setState) {
-  //           return Padding(
-  //             padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 16, right: 16, top: 16),
-  //             child: SingleChildScrollView(
-  //               child: Column(
-  //                 mainAxisSize: MainAxisSize.min,
-  //                 children: [
-  //                   const Text(
-  //                     "Submit Proof",
-  //                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: primaryColor),
-  //                   ),
-  //                   const SizedBox(height: 12),
-  //
-  //                   TextField(
-  //                     controller: messageController,
-  //                     maxLines: 3,
-  //                     decoration: const InputDecoration(labelText: "Message", border: OutlineInputBorder()),
-  //                   ),
-  //                   const SizedBox(height: 12),
-  //
-  //                   ElevatedButton.icon(
-  //                     style: ElevatedButton.styleFrom(
-  //                       foregroundColor: primaryColor,
-  //                       backgroundColor: primaryColor,
-  //                       shape: RoundedRectangleBorder(
-  //                         borderRadius: BorderRadius.circular(8),
-  //                         side: const BorderSide(color: primaryColor, width: 1),
-  //                       ),
-  //                     ),
-  //                     // onPressed: () async {
-  //                     //   final ImagePicker picker = ImagePicker();
-  //                     //   showModalBottomSheet(
-  //                     //     context: context,
-  //                     //     builder: (ctx) {
-  //                     //       return Wrap(
-  //                     //         children: [
-  //                     //           ListTile(
-  //                     //             leading: const Icon(Icons.image, color: primaryColor),
-  //                     //             title: const Text("Pick Images from Gallery", style: TextStyle(color: primaryColor)),
-  //                     //             onTap: () async {
-  //                     //               final files = await picker.pickMultiImage();
-  //                     //               if (files.isNotEmpty) {
-  //                     //                 setState(() {
-  //                     //                   selectedFiles.addAll(files);
-  //                     //                 });
-  //                     //               }
-  //                     //               Navigator.pop(ctx);
-  //                     //             },
-  //                     //           ),
-  //                     //           ListTile(
-  //                     //             leading: const Icon(Icons.camera_alt, color: primaryColor),
-  //                     //             title: const Text("Capture Image with Camera", style: TextStyle(color: primaryColor)),
-  //                     //             onTap: () async {
-  //                     //               final file = await picker.pickImage(source: ImageSource.camera);
-  //                     //               if (file != null) {
-  //                     //                 setState(() {
-  //                     //                   selectedFiles.add(file);
-  //                     //                 });
-  //                     //               }
-  //                     //               Navigator.pop(ctx);
-  //                     //             },
-  //                     //           ),
-  //                     //
-  //                     //           ListTile(
-  //                     //             leading: const Icon(Icons.videocam, color: primaryColor),
-  //                     //             title: const Text("Pick Video from Gallery", style: TextStyle(color: primaryColor)),
-  //                     //             onTap: () async {
-  //                     //               final file = await picker.pickVideo(source: ImageSource.gallery);
-  //                     //               if (file != null) {
-  //                     //                 setState(() {
-  //                     //                   selectedFiles.add(file);
-  //                     //                 });
-  //                     //               }
-  //                     //               Navigator.pop(ctx);
-  //                     //             },
-  //                     //           ),
-  //                     //           ListTile(
-  //                     //             leading: const Icon(Icons.videocam_outlined, color: primaryColor),
-  //                     //             title: const Text("Record Video with Camera", style: TextStyle(color: primaryColor)),
-  //                     //             onTap: () async {
-  //                     //               final file = await picker.pickVideo(source: ImageSource.camera);
-  //                     //               if (file != null) {
-  //                     //                 setState(() {
-  //                     //                   selectedFiles.add(file);
-  //                     //                 });
-  //                     //               }
-  //                     //               Navigator.pop(ctx);
-  //                     //             },
-  //                     //           ),
-  //                     //         ],
-  //                     //       );
-  //                     //     },
-  //                     //   );
-  //                     // },
-  //                     onPressed: () async {
-  //                       showModalBottomSheet(
-  //                         context: context,
-  //                         builder: (ctx) {
-  //                           return Wrap(
-  //                             children: [
-  //                               ListTile(
-  //                                 leading: const Icon(Icons.image, color: primaryColor),
-  //                                 title: const Text("Pick Image from Gallery", style: TextStyle(color: primaryColor)),
-  //                                 onTap: () async {
-  //                                   final path = await MediaChannel.pickFromGallery();
-  //                                   if (path != null) {
-  //                                     setState(() {
-  //                                       selectedFiles.add(XFile(path));
-  //                                     });
-  //                                   }
-  //                                   Navigator.pop(ctx);
-  //                                 },
-  //                               ),
-  //                               ListTile(
-  //                                 leading: const Icon(Icons.camera_alt, color: primaryColor),
-  //                                 title: const Text("Capture Image", style: TextStyle(color: primaryColor)),
-  //                                 onTap: () async {
-  //                                   final path = await MediaChannel.captureImage();
-  //                                   if (path != null) {
-  //                                     setState(() {
-  //                                       selectedFiles.add(XFile(path));
-  //                                     });
-  //                                   }
-  //                                   Navigator.pop(ctx);
-  //                                 },
-  //                               ),
-  //                               ListTile(
-  //                                 leading: const Icon(Icons.videocam, color: primaryColor),
-  //                                 title: const Text("Record Video", style: TextStyle(color: primaryColor)),
-  //                                 onTap: () async {
-  //                                   final path = await MediaChannel.recordVideo();
-  //                                   if (path != null) {
-  //                                     setState(() {
-  //                                       selectedFiles.add(XFile(path));
-  //                                     });
-  //                                   }
-  //                                   Navigator.pop(ctx);
-  //                                 },
-  //                               ),
-  //                             ],
-  //                           );
-  //                         },
-  //                       );
-  //                     },
-  //
-  //
-  //                     icon: const Icon(Icons.add_a_photo, color: Colors.white),
-  //                     label: Text(
-  //                       selectedFiles.isEmpty ? "Add Images/Videos" : "Add More (${selectedFiles.length} currently)",
-  //                       style: const TextStyle(color: Colors.white),
-  //                     ),
-  //                   ),
-  //
-  //                   if (selectedFiles.isNotEmpty) ...[
-  //                     const SizedBox(height: 12),
-  //                     Wrap(
-  //                       spacing: 8,
-  //                       runSpacing: 8,
-  //                       children: selectedFiles.asMap().entries.map((entry) {
-  //                         final index = entry.key;
-  //                         final file = entry.value;
-  //                         final Widget contentWidget;
-  //                         if (file.path.endsWith(".mp4")) {
-  //                           contentWidget = const Icon(Icons.videocam, size: 80, color: primaryColor);
-  //                         } else {
-  //                           contentWidget = ClipRRect(
-  //                             borderRadius: BorderRadius.circular(8),
-  //                             child: Image.file(File(file.path), width: 80, height: 80, fit: BoxFit.cover),
-  //                           );
-  //                         }
-  //
-  //                         return Stack(
-  //                           children: [
-  //                             SizedBox(width: 80, height: 80, child: Center(child: contentWidget)),
-  //                             Positioned(
-  //                               top: -10,
-  //                               right: -10,
-  //                               child: IconButton(
-  //                                 icon: const Icon(Icons.cancel, color: Colors.red, size: 24),
-  //                                 style: IconButton.styleFrom(minimumSize: Size.zero, padding: EdgeInsets.zero),
-  //                                 onPressed: () {
-  //                                   setState(() {
-  //                                     selectedFiles.removeAt(index);
-  //                                   });
-  //                                 },
-  //                               ),
-  //                             ),
-  //                           ],
-  //                         );
-  //                       }).toList(),
-  //                     ),
-  //                   ],
-  //
-  //                   const SizedBox(height: 12),
-  //                   ElevatedButton.icon(
-  //                     style: ElevatedButton.styleFrom(
-  //                       //maximumSize: const Size(double.infinity, 100),
-  //                       backgroundColor: primaryColor,
-  //                       padding: const EdgeInsets.symmetric(
-  //                         horizontal: 40,
-  //                         //vertical: 12,
-  //                       ),
-  //                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-  //                     ),
-  //                     onPressed: () {
-  //                       if (messageController.text.isNotEmpty || selectedFiles.isNotEmpty) {
-  //                         onSubmit(messageController.text, selectedFiles);
-  //                         Navigator.pop(context);
-  //                       } else {
-  //                         ScaffoldMessenger.of(context).showSnackBar(
-  //                           const SnackBar(
-  //                             content: Text("Please add a message or files to submit proof."),
-  //                             backgroundColor: Colors.redAccent,
-  //                           ),
-  //                         );
-  //                       }
-  //                     },
-  //                     icon: const Icon(Icons.send, color: Colors.white),
-  //                     label: const Text(
-  //                       "Submit Proof",
-  //                       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-  //                     ),
-  //                   ),
-  //                   const SizedBox(height: 12),
-  //                 ],
-  //               ),
-  //             ),
-  //           );
-  //         },
-  //       );
-  //     },
-  //   );
-  // }
-
   void showSubmitProofSheet(
-      BuildContext context,
-      Function(String msg, List<XFile> files) onSubmit, {
-        String? initialMessage,
-        List<XFile>? initialFiles,
-      }) {
-    final TextEditingController messageController =
-    TextEditingController(text: initialMessage);
+    BuildContext context,
+    Function(String msg, List<XFile> files) onSubmit, {
+    String? initialMessage,
+    List<XFile>? initialFiles,
+  }) {
+    final TextEditingController messageController = TextEditingController(text: initialMessage);
 
-    List<XFile> selectedFiles =
-    initialFiles != null ? List<XFile>.from(initialFiles) : [];
+    List<XFile> selectedFiles = initialFiles != null ? List<XFile>.from(initialFiles) : [];
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
             return Padding(
-              padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom,
-                  left: 16,
-                  right: 16,
-                  top: 16),
+              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 16, right: 16, top: 16),
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
                       "Submit Proof",
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: primaryColor),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: primaryColor),
                     ),
                     const SizedBox(height: 12),
 
                     TextField(
                       controller: messageController,
                       maxLines: 3,
-                      decoration: const InputDecoration(
-                          labelText: "Message", border: OutlineInputBorder()),
+                      decoration: const InputDecoration(labelText: "Message", border: OutlineInputBorder()),
                     ),
                     const SizedBox(height: 12),
 
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
+                        foregroundColor: primaryColor,
                         backgroundColor: primaryColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
+                          side: const BorderSide(color: primaryColor, width: 1),
                         ),
                       ),
+                      // onPressed: () async {
+                      //   final ImagePicker picker = ImagePicker();
+                      //   showModalBottomSheet(
+                      //     context: context,
+                      //     builder: (ctx) {
+                      //       return Wrap(
+                      //         children: [
+                      //           ListTile(
+                      //             leading: const Icon(Icons.image, color: primaryColor),
+                      //             title: const Text("Pick Images from Gallery", style: TextStyle(color: primaryColor)),
+                      //             onTap: () async {
+                      //               final files = await picker.pickMultiImage();
+                      //               if (files.isNotEmpty) {
+                      //                 setState(() {
+                      //                   selectedFiles.addAll(files);
+                      //                 });
+                      //               }
+                      //               Navigator.pop(ctx);
+                      //             },
+                      //           ),
+                      //           ListTile(
+                      //             leading: const Icon(Icons.camera_alt, color: primaryColor),
+                      //             title: const Text("Capture Image with Camera", style: TextStyle(color: primaryColor)),
+                      //             onTap: () async {
+                      //               final file = await picker.pickImage(source: ImageSource.camera);
+                      //               if (file != null) {
+                      //                 setState(() {
+                      //                   selectedFiles.add(file);
+                      //                 });
+                      //               }
+                      //               Navigator.pop(ctx);
+                      //             },
+                      //           ),
+                      //
+                      //           ListTile(
+                      //             leading: const Icon(Icons.videocam, color: primaryColor),
+                      //             title: const Text("Pick Video from Gallery", style: TextStyle(color: primaryColor)),
+                      //             onTap: () async {
+                      //               final file = await picker.pickVideo(source: ImageSource.gallery);
+                      //               if (file != null) {
+                      //                 setState(() {
+                      //                   selectedFiles.add(file);
+                      //                 });
+                      //               }
+                      //               Navigator.pop(ctx);
+                      //             },
+                      //           ),
+                      //           ListTile(
+                      //             leading: const Icon(Icons.videocam_outlined, color: primaryColor),
+                      //             title: const Text("Record Video with Camera", style: TextStyle(color: primaryColor)),
+                      //             onTap: () async {
+                      //               final file = await picker.pickVideo(source: ImageSource.camera);
+                      //               if (file != null) {
+                      //                 setState(() {
+                      //                   selectedFiles.add(file);
+                      //                 });
+                      //               }
+                      //               Navigator.pop(ctx);
+                      //             },
+                      //           ),
+                      //         ],
+                      //       );
+                      //     },
+                      //   );
+                      // },
                       onPressed: () async {
-                        final ImagePicker picker = ImagePicker();
                         showModalBottomSheet(
                           context: context,
                           builder: (ctx) {
                             return Wrap(
                               children: [
                                 ListTile(
-                                  leading: const Icon(Icons.image,
-                                      color: primaryColor),
-                                  title: const Text("Pick Image from Gallery",
-                                      style: TextStyle(color: primaryColor)),
+                                  leading: const Icon(Icons.image, color: primaryColor),
+                                  title: const Text("Pick Image from Gallery", style: TextStyle(color: primaryColor)),
                                   onTap: () async {
-                                    final files = await picker.pickMultiImage();
-                                    if (files.isNotEmpty) {
+                                    final path = await MediaChannel.pickFromGallery();
+                                    if (path != null) {
                                       setState(() {
-                                        selectedFiles.addAll(files);
+                                        selectedFiles.add(XFile(path));
                                       });
                                     }
                                     Navigator.pop(ctx);
                                   },
                                 ),
                                 ListTile(
-                                  leading: const Icon(Icons.camera_alt,
-                                      color: primaryColor),
-                                  title: const Text("Capture Image",
-                                      style: TextStyle(color: primaryColor)),
+                                  leading: const Icon(Icons.camera_alt, color: primaryColor),
+                                  title: const Text("Capture Image", style: TextStyle(color: primaryColor)),
                                   onTap: () async {
-                                    final file =
-                                    await picker.pickImage(source: ImageSource.camera);
-                                    if (file != null) {
+                                    final path = await MediaChannel.captureImage();
+                                    if (path != null) {
                                       setState(() {
-                                        selectedFiles.add(file);
+                                        selectedFiles.add(XFile(path));
                                       });
                                     }
                                     Navigator.pop(ctx);
                                   },
                                 ),
                                 ListTile(
-                                  leading:
-                                  const Icon(Icons.videocam, color: primaryColor),
-                                  title: const Text("Pick Video from Gallery",
-                                      style: TextStyle(color: primaryColor)),
+                                  leading: const Icon(Icons.videocam, color: primaryColor),
+                                  title: const Text("Record Video", style: TextStyle(color: primaryColor)),
                                   onTap: () async {
-                                    final file =
-                                    await picker.pickVideo(source: ImageSource.gallery);
-                                    if (file != null) {
-                                      final cacheDir = await getTemporaryDirectory();
-                                      final newPath =
-                                          '${cacheDir.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
-                                      final newFile = await File(file.path).copy(newPath);
-
+                                    final path = await MediaChannel.recordVideo();
+                                    if (path != null) {
                                       setState(() {
-                                        selectedFiles.add(XFile(newFile.path));
-                                      });
-                                    }
-                                    Navigator.pop(ctx);
-                                  },
-                                ),
-                                ListTile(
-                                  leading: const Icon(Icons.videocam_outlined,
-                                      color: primaryColor),
-                                  title: const Text("Record Video",
-                                      style: TextStyle(color: primaryColor)),
-                                  onTap: () async {
-                                    final file =
-                                    await picker.pickVideo(source: ImageSource.camera);
-                                    if (file != null) {
-                                      final cacheDir = await getTemporaryDirectory();
-                                      final newPath =
-                                          '${cacheDir.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
-                                      final newFile = await File(file.path).copy(newPath);
-
-                                      setState(() {
-                                        selectedFiles.add(XFile(newFile.path));
+                                        selectedFiles.add(XFile(path));
                                       });
                                     }
                                     Navigator.pop(ctx);
@@ -421,60 +191,42 @@ class _MyTasksPageState extends State<MyTasksPage> {
                           },
                         );
                       },
+
+
                       icon: const Icon(Icons.add_a_photo, color: Colors.white),
                       label: Text(
-                        selectedFiles.isEmpty
-                            ? "Add Images/Videos"
-                            : "Add More (${selectedFiles.length} currently)",
+                        selectedFiles.isEmpty ? "Add Images/Videos" : "Add More (${selectedFiles.length} currently)",
                         style: const TextStyle(color: Colors.white),
                       ),
                     ),
 
-                    const SizedBox(height: 12),
-
-                    if (selectedFiles.isNotEmpty)
+                    if (selectedFiles.isNotEmpty) ...[
+                      const SizedBox(height: 12),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
                         children: selectedFiles.asMap().entries.map((entry) {
                           final index = entry.key;
                           final file = entry.value;
-
                           final Widget contentWidget;
                           if (file.path.endsWith(".mp4")) {
-                            contentWidget = IconButton(
-                              icon: const Icon(Icons.play_circle_fill,
-                                  size: 80, color: primaryColor),
-                              onPressed: () {
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (_) =>
-                                //         VideoPreviewPage(videoFile: File(file.path)),
-                                //   ),
-                                // );
-                              },
-                            );
+                            contentWidget = const Icon(Icons.videocam, size: 80, color: primaryColor);
                           } else {
                             contentWidget = ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: Image.file(File(file.path),
-                                  width: 80, height: 80, fit: BoxFit.cover),
+                              child: Image.file(File(file.path), width: 80, height: 80, fit: BoxFit.cover),
                             );
                           }
 
                           return Stack(
                             children: [
-                              SizedBox(
-                                  width: 80, height: 80, child: Center(child: contentWidget)),
+                              SizedBox(width: 80, height: 80, child: Center(child: contentWidget)),
                               Positioned(
                                 top: -10,
                                 right: -10,
                                 child: IconButton(
-                                  icon:
-                                  const Icon(Icons.cancel, color: Colors.red, size: 24),
-                                  style: IconButton.styleFrom(
-                                      minimumSize: Size.zero, padding: EdgeInsets.zero),
+                                  icon: const Icon(Icons.cancel, color: Colors.red, size: 24),
+                                  style: IconButton.styleFrom(minimumSize: Size.zero, padding: EdgeInsets.zero),
                                   onPressed: () {
                                     setState(() {
                                       selectedFiles.removeAt(index);
@@ -486,26 +238,27 @@ class _MyTasksPageState extends State<MyTasksPage> {
                           );
                         }).toList(),
                       ),
+                    ],
 
                     const SizedBox(height: 12),
-
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
+                        //maximumSize: const Size(double.infinity, 100),
                         backgroundColor: primaryColor,
-                        padding: const EdgeInsets.symmetric(horizontal: 40),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 40,
+                          //vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                       onPressed: () {
-                        if (messageController.text.isNotEmpty ||
-                            selectedFiles.isNotEmpty) {
+                        if (messageController.text.isNotEmpty || selectedFiles.isNotEmpty) {
                           onSubmit(messageController.text, selectedFiles);
                           Navigator.pop(context);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text(
-                                  "Please add a message or files to submit proof."),
+                              content: Text("Please add a message or files to submit proof."),
                               backgroundColor: Colors.redAccent,
                             ),
                           );
@@ -514,8 +267,7 @@ class _MyTasksPageState extends State<MyTasksPage> {
                       icon: const Icon(Icons.send, color: Colors.white),
                       label: const Text(
                         "Submit Proof",
-                        style:
-                        TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -528,6 +280,254 @@ class _MyTasksPageState extends State<MyTasksPage> {
       },
     );
   }
+
+  // void showSubmitProofSheet(
+  //     BuildContext context,
+  //     Function(String msg, List<XFile> files) onSubmit, {
+  //       String? initialMessage,
+  //       List<XFile>? initialFiles,
+  //     }) {
+  //   final TextEditingController messageController =
+  //   TextEditingController(text: initialMessage);
+  //
+  //   List<XFile> selectedFiles =
+  //   initialFiles != null ? List<XFile>.from(initialFiles) : [];
+  //
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     shape: const RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+  //     builder: (context) {
+  //       return StatefulBuilder(
+  //         builder: (context, setState) {
+  //           return Padding(
+  //             padding: EdgeInsets.only(
+  //                 bottom: MediaQuery.of(context).viewInsets.bottom,
+  //                 left: 16,
+  //                 right: 16,
+  //                 top: 16),
+  //             child: SingleChildScrollView(
+  //               child: Column(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 children: [
+  //                   const Text(
+  //                     "Submit Proof",
+  //                     style: TextStyle(
+  //                         fontSize: 18,
+  //                         fontWeight: FontWeight.bold,
+  //                         color: primaryColor),
+  //                   ),
+  //                   const SizedBox(height: 12),
+  //
+  //                   TextField(
+  //                     controller: messageController,
+  //                     maxLines: 3,
+  //                     decoration: const InputDecoration(
+  //                         labelText: "Message", border: OutlineInputBorder()),
+  //                   ),
+  //                   const SizedBox(height: 12),
+  //
+  //                   ElevatedButton.icon(
+  //                     style: ElevatedButton.styleFrom(
+  //                       foregroundColor: Colors.white,
+  //                       backgroundColor: primaryColor,
+  //                       shape: RoundedRectangleBorder(
+  //                         borderRadius: BorderRadius.circular(8),
+  //                       ),
+  //                     ),
+  //                     onPressed: () async {
+  //                       final ImagePicker picker = ImagePicker();
+  //                       showModalBottomSheet(
+  //                         context: context,
+  //                         builder: (ctx) {
+  //                           return Wrap(
+  //                             children: [
+  //                               ListTile(
+  //                                 leading: const Icon(Icons.image,
+  //                                     color: primaryColor),
+  //                                 title: const Text("Pick Image from Gallery",
+  //                                     style: TextStyle(color: primaryColor)),
+  //                                 onTap: () async {
+  //                                   final files = await picker.pickMultiImage();
+  //                                   if (files.isNotEmpty) {
+  //                                     setState(() {
+  //                                       selectedFiles.addAll(files);
+  //                                     });
+  //                                   }
+  //                                   Navigator.pop(ctx);
+  //                                 },
+  //                               ),
+  //                               ListTile(
+  //                                 leading: const Icon(Icons.camera_alt,
+  //                                     color: primaryColor),
+  //                                 title: const Text("Capture Image",
+  //                                     style: TextStyle(color: primaryColor)),
+  //                                 onTap: () async {
+  //                                   final file =
+  //                                   await picker.pickImage(source: ImageSource.camera);
+  //                                   if (file != null) {
+  //                                     setState(() {
+  //                                       selectedFiles.add(file);
+  //                                     });
+  //                                   }
+  //                                   Navigator.pop(ctx);
+  //                                 },
+  //                               ),
+  //                               ListTile(
+  //                                 leading:
+  //                                 const Icon(Icons.videocam, color: primaryColor),
+  //                                 title: const Text("Pick Video from Gallery",
+  //                                     style: TextStyle(color: primaryColor)),
+  //                                 onTap: () async {
+  //                                   final file =
+  //                                   await picker.pickVideo(source: ImageSource.gallery);
+  //                                   if (file != null) {
+  //                                     final cacheDir = await getTemporaryDirectory();
+  //                                     final newPath =
+  //                                         '${cacheDir.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
+  //                                     final newFile = await File(file.path).copy(newPath);
+  //
+  //                                     setState(() {
+  //                                       selectedFiles.add(XFile(newFile.path));
+  //                                     });
+  //                                   }
+  //                                   Navigator.pop(ctx);
+  //                                 },
+  //                               ),
+  //                               ListTile(
+  //                                 leading: const Icon(Icons.videocam_outlined,
+  //                                     color: primaryColor),
+  //                                 title: const Text("Record Video",
+  //                                     style: TextStyle(color: primaryColor)),
+  //                                 onTap: () async {
+  //                                   final file =
+  //                                   await picker.pickVideo(source: ImageSource.camera);
+  //                                   if (file != null) {
+  //                                     final cacheDir = await getTemporaryDirectory();
+  //                                     final newPath =
+  //                                         '${cacheDir.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
+  //                                     final newFile = await File(file.path).copy(newPath);
+  //
+  //                                     setState(() {
+  //                                       selectedFiles.add(XFile(newFile.path));
+  //                                     });
+  //                                   }
+  //                                   Navigator.pop(ctx);
+  //                                 },
+  //                               ),
+  //                             ],
+  //                           );
+  //                         },
+  //                       );
+  //                     },
+  //                     icon: const Icon(Icons.add_a_photo, color: Colors.white),
+  //                     label: Text(
+  //                       selectedFiles.isEmpty
+  //                           ? "Add Images/Videos"
+  //                           : "Add More (${selectedFiles.length} currently)",
+  //                       style: const TextStyle(color: Colors.white),
+  //                     ),
+  //                   ),
+  //
+  //                   const SizedBox(height: 12),
+  //
+  //                   if (selectedFiles.isNotEmpty)
+  //                     Wrap(
+  //                       spacing: 8,
+  //                       runSpacing: 8,
+  //                       children: selectedFiles.asMap().entries.map((entry) {
+  //                         final index = entry.key;
+  //                         final file = entry.value;
+  //
+  //                         final Widget contentWidget;
+  //                         if (file.path.endsWith(".mp4")) {
+  //                           contentWidget = IconButton(
+  //                             icon: const Icon(Icons.play_circle_fill,
+  //                                 size: 80, color: primaryColor),
+  //                             onPressed: () {
+  //                               // Navigator.push(
+  //                               //   context,
+  //                               //   MaterialPageRoute(
+  //                               //     builder: (_) =>
+  //                               //         VideoPreviewPage(videoFile: File(file.path)),
+  //                               //   ),
+  //                               // );
+  //                             },
+  //                           );
+  //                         } else {
+  //                           contentWidget = ClipRRect(
+  //                             borderRadius: BorderRadius.circular(8),
+  //                             child: Image.file(File(file.path),
+  //                                 width: 80, height: 80, fit: BoxFit.cover),
+  //                           );
+  //                         }
+  //
+  //                         return Stack(
+  //                           children: [
+  //                             SizedBox(
+  //                                 width: 80, height: 80, child: Center(child: contentWidget)),
+  //                             Positioned(
+  //                               top: -10,
+  //                               right: -10,
+  //                               child: IconButton(
+  //                                 icon:
+  //                                 const Icon(Icons.cancel, color: Colors.red, size: 24),
+  //                                 style: IconButton.styleFrom(
+  //                                     minimumSize: Size.zero, padding: EdgeInsets.zero),
+  //                                 onPressed: () {
+  //                                   setState(() {
+  //                                     selectedFiles.removeAt(index);
+  //                                   });
+  //                                 },
+  //                               ),
+  //                             ),
+  //                           ],
+  //                         );
+  //                       }).toList(),
+  //                     ),
+  //
+  //                   const SizedBox(height: 12),
+  //
+  //                   ElevatedButton.icon(
+  //                     style: ElevatedButton.styleFrom(
+  //                       backgroundColor: primaryColor,
+  //                       padding: const EdgeInsets.symmetric(horizontal: 40),
+  //                       shape: RoundedRectangleBorder(
+  //                           borderRadius: BorderRadius.circular(8)),
+  //                     ),
+  //                     onPressed: () {
+  //                       if (messageController.text.isNotEmpty ||
+  //                           selectedFiles.isNotEmpty) {
+  //                         onSubmit(messageController.text, selectedFiles);
+  //                         Navigator.pop(context);
+  //                       } else {
+  //                         ScaffoldMessenger.of(context).showSnackBar(
+  //                           const SnackBar(
+  //                             content: Text(
+  //                                 "Please add a message or files to submit proof."),
+  //                             backgroundColor: Colors.redAccent,
+  //                           ),
+  //                         );
+  //                       }
+  //                     },
+  //                     icon: const Icon(Icons.send, color: Colors.white),
+  //                     label: const Text(
+  //                       "Submit Proof",
+  //                       style:
+  //                       TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+  //                     ),
+  //                   ),
+  //                   const SizedBox(height: 12),
+  //                 ],
+  //               ),
+  //             ),
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 
   // void showSubmitProofSheet(
   //     BuildContext context,

@@ -71,3 +71,12 @@ class RequestSuccess extends commonState {
 
   RequestSuccess({required this.message});
 }
+
+class FetchNewsLoading extends commonState {}
+
+class FetchNewsSuccess extends commonState {
+  final List<dynamic> newsList;
+  FetchNewsSuccess(this.newsList);
+}
+
+

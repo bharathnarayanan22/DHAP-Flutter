@@ -2,6 +2,8 @@ import 'package:dhap_flutter_project/data/model/task_model.dart';
 import 'package:dhap_flutter_project/features/common/bloc/commonBloc.dart';
 import 'package:dhap_flutter_project/features/common/bloc/commonEvent.dart';
 import 'package:dhap_flutter_project/features/common/bloc/commonState.dart';
+import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_bloc.dart';
+import 'package:dhap_flutter_project/features/coordinator/bloc/coordinator_event.dart';
 import 'package:dhap_flutter_project/features/coordinator/presentation/widgets/LocationInputSection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -231,7 +233,7 @@ class _CreateTasksPageState extends State<CreateTasksPage> {
                         const SizedBox(height: 24),
 
                         LocationInputSection(
-                          title: "1. Start Location (Pickup Point)",
+                          title: "1. Start Location ",
                           icon: Icons.upload_file,
                           addressController: _startAddressController,
                           currentLocation: _startLocation,
@@ -243,7 +245,7 @@ class _CreateTasksPageState extends State<CreateTasksPage> {
                         const SizedBox(height: 24),
 
                         LocationInputSection(
-                          title: "2. Delivery Location (Drop-off Point)",
+                          title: "2. Delivery Location ",
                           icon: Icons.download_done,
                           addressController: _deliveryAddressController,
                           currentLocation: _deliveryLocation,
@@ -278,21 +280,21 @@ class _CreateTasksPageState extends State<CreateTasksPage> {
                                   _startLocation != null &&
                                   _deliveryLocation != null) {
                                 if (widget.existingTask != null) {
-                                  // final updatedTask = Task(
-                                  //   id: widget.existingTask!.id,
-                                  //   title: _titleController.text,
-                                  //   description: _descriptionController.text,
-                                  //   volunteer: int.parse(_volunteerController.text),
-                                  //   volunteersAccepted: widget.existingTask!.volunteersAccepted,
-                                  //   StartAddress: _startAddressController.text,
-                                  //   EndAddress: _deliveryAddressController.text,
-                                  //   StartLocation: _startLocation!,
-                                  //   EndLocation: _deliveryLocation!,
-                                  //   Status: widget.existingTask!.Status,
-                                  // );
-                                  // BlocProvider.of<CoordinatorBloc>(context).add(
-                                  //   UpdateTaskEvent(updatedTask: updatedTask),
-                                  // );
+                                  final updatedTask = Task(
+                                    id: widget.existingTask!.id,
+                                    title: _titleController.text,
+                                    description: _descriptionController.text,
+                                    volunteer: int.parse(_volunteerController.text),
+                                    volunteersAccepted: widget.existingTask!.volunteersAccepted,
+                                    StartAddress: _startAddressController.text,
+                                    EndAddress: _deliveryAddressController.text,
+                                    StartLocation: _startLocation!,
+                                    EndLocation: _deliveryLocation!,
+                                    Status: widget.existingTask!.Status,
+                                  );
+                                  BlocProvider.of<CoordinatorBloc>(context).add(
+                                    UpdateTaskEvent(updatedTask: updatedTask),
+                                  );
                                   // Navigator.pop(context, true);
                                 } else {
                                   _commonBloc.add(

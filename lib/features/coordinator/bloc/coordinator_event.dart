@@ -3,7 +3,7 @@ import 'package:latlong2/latlong.dart';
 
 abstract class CoordinatorEvent {}
 
-class CreateTaskEvent extends CoordinatorEvent {
+class CreateTaskEvent1 extends CoordinatorEvent {
   final String title;
   final String description;
   final int volunteer;
@@ -12,7 +12,7 @@ class CreateTaskEvent extends CoordinatorEvent {
   final LatLng StartLocation;
   final LatLng EndLocation;
 
-  CreateTaskEvent({
+  CreateTaskEvent1({
     required this.title,
     required this.description,
     required this.volunteer,
